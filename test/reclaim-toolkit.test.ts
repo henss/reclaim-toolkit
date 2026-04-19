@@ -5,6 +5,7 @@ import { describe, expect, test } from "vitest";
 import {
   createReclaimClient,
   loadReclaimConfig,
+  parseReclaimTaskInputs,
   runReclaimHealthCheck,
   tasks,
   type ReclaimTaskRecord
@@ -180,6 +181,31 @@ describe("health and tasks", () => {
       snoozeUntil: "2026-05-07T09:00:00+02:00",
       eventCategory: "WORK"
     });
+  });
+
+  test("parses the synthetic scheduling recipe pack", () => {
+    const raw = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), "examples", "scheduling-recipes.example.json"), "utf8")
+    ) as unknown;
+
+    const parsedTasks = parseReclaimTaskInputs(raw);
+    const preview = tasks.previewCreates(parsedTasks, {
+      timeSchemeId: "policy-work",
+      eventCategory: "WORK"
+    });
+
+    expect(parsedTasks).toHaveLength(6);
+    expect(preview.taskCount).toBe(6);
+    expect(preview.tasks.map((task) => task.title)).toContain("Weekly planning review");
+    expect(preview.tasks.find((task) => task.title === "Review design notes")?.request).toMatchObject({
+      timeChunksRequired: 2,
+      minChunkSize: 2,
+      maxChunkSize: 2,
+      snoozeUntil: "2026-05-12T09:30:00+02:00"
+    });
+    expect(preview.tasks.find((task) => task.title === "Update personal admin notes")?.request.eventCategory).toBe(
+      "PERSONAL"
+    );
   });
 
   test("refuses task creation without confirmation", async () => {

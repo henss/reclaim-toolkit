@@ -29,6 +29,7 @@ Create a local config file, usually `config/reclaim.local.json`:
 npm run reclaim:config:status -- --config config/reclaim.local.json
 npm run reclaim:health -- --config config/reclaim.local.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
+npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
 npm run reclaim:tasks:create -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-write
 npm run reclaim:tasks:inspect-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json
 npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-reviewed-delete

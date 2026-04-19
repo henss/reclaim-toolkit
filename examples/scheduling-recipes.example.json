@@ -1,0 +1,56 @@
+{
+  "tasks": [
+    {
+      "title": "Prepare project kickoff agenda",
+      "notes": "Draft the agenda, decisions needed, and open questions for a synthetic project kickoff.",
+      "durationMinutes": 45,
+      "due": "2026-05-11T17:00:00+02:00",
+      "startAfter": "2026-05-11T09:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    },
+    {
+      "title": "Review design notes",
+      "notes": "Read the notes and capture concise feedback before the review window closes.",
+      "durationMinutes": 30,
+      "due": "2026-05-12T12:00:00+02:00",
+      "startAfter": "2026-05-12T09:30:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": false
+    },
+    {
+      "title": "Draft customer-neutral release checklist",
+      "notes": "Convert the planned release steps into a short checklist using placeholder project names.",
+      "durationMinutes": 60,
+      "due": "2026-05-13T16:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    },
+    {
+      "title": "Update personal admin notes",
+      "notes": "Refresh a generic personal note with current contact and reference information.",
+      "durationMinutes": 30,
+      "due": "2026-05-14T18:00:00+02:00",
+      "startAfter": "2026-05-14T15:00:00+02:00",
+      "eventCategory": "PERSONAL",
+      "splitAllowed": false
+    },
+    {
+      "title": "Outline learning session",
+      "notes": "Prepare a short outline for a general skill-building session.",
+      "durationMinutes": 75,
+      "due": "2026-05-15T17:30:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    },
+    {
+      "title": "Weekly planning review",
+      "notes": "Review synthetic work items, choose next actions, and note any follow-up decisions.",
+      "durationMinutes": 45,
+      "due": "2026-05-16T11:00:00+02:00",
+      "startAfter": "2026-05-16T09:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    }
+  ]
+}
