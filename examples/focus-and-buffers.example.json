@@ -1,0 +1,46 @@
+{
+  "focusBlocks": [
+    {
+      "title": "Prototype review block",
+      "notes": "Review a generic prototype and capture follow-up questions.",
+      "durationMinutes": 90,
+      "eventCategory": "WORK",
+      "cadence": "weekly",
+      "daysOfWeek": ["tuesday"],
+      "windowStart": "09:00",
+      "windowEnd": "12:00"
+    },
+    {
+      "title": "Documentation drafting block",
+      "notes": "Draft public-safe notes for a sample toolkit workflow.",
+      "durationMinutes": 60,
+      "eventCategory": "WORK",
+      "cadence": "once",
+      "date": "2026-05-18",
+      "windowStart": "13:00",
+      "windowEnd": "15:00"
+    }
+  ],
+  "buffers": [
+    {
+      "title": "Post-review notes buffer",
+      "notes": "Capture decisions and next steps after a generic review.",
+      "durationMinutes": 15,
+      "eventCategory": "WORK",
+      "placement": "after",
+      "anchor": "Prototype review block",
+      "windowStart": "12:00",
+      "windowEnd": "13:00"
+    },
+    {
+      "title": "Context switch buffer",
+      "notes": "Reset notes and prepare materials before changing work modes.",
+      "durationMinutes": 10,
+      "eventCategory": "PERSONAL",
+      "placement": "between",
+      "anchor": "Work mode transition",
+      "windowStart": "15:00",
+      "windowEnd": "16:00"
+    }
+  ]
+}

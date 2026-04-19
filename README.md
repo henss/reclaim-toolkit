@@ -34,6 +34,8 @@ npm run reclaim:time-policies:list -- --config config/reclaim.local.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
+npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
+npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
 npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
 npm run reclaim:tasks:create -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-write
 npm run reclaim:tasks:inspect-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json
@@ -68,9 +70,10 @@ console.log(result.writeReceipts);
 
 ## Modules
 
-Wave 1 includes config, client, health, task utilities, and preview-only Habit helpers. Future modules can add support for Focus, Buffers, Meetings, Hours, and broader configuration helpers when those APIs are implemented.
+Wave 1 includes config, client, health, task utilities, and preview-only Habit, Focus, and Buffer helpers. Future modules can add support for Meetings, Hours, and broader configuration helpers when those APIs are implemented.
 
 See [docs/habits.md](docs/habits.md) for the public-safe Habit input shape.
+See [docs/focus-and-buffers.md](docs/focus-and-buffers.md) for the public-safe Focus and Buffer input shapes.
 
 ## Related Work
 

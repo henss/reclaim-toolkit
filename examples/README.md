@@ -14,6 +14,7 @@ Rules:
 - `tasks.example.json`: minimal task-create fixture for smoke testing task commands.
 - `scheduling-recipes.example.json`: synthetic recipe pack for common scheduling shapes such as kickoff prep, review windows, release checklists, personal admin, learning blocks, and weekly planning.
 - `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
+- `focus-and-buffers.example.json`: preview-only Focus and Buffer fixture with synthetic focus windows and transition buffers.
 
 The recipe pack is still a task input file, so it can be previewed with:
 
@@ -25,6 +26,13 @@ The Habit fixture is preview-only and does not create live habits:
 
 ```bash
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
+```
+
+The Focus and Buffer fixture is preview-only and does not create live focus blocks or buffers:
+
+```bash
+npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
+npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
 ```
 
 To run the same task flow against a local synthetic mock instead of a Reclaim account, use:

@@ -3,9 +3,13 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
 import {
+  buffers,
   createReclaimClient,
+  focus,
   habits,
   loadReclaimConfig,
+  parseReclaimBufferInputs,
+  parseReclaimFocusInputs,
   parseReclaimHabitInputs,
   parseReclaimTaskInputs,
   runReclaimHealthCheck,
@@ -555,5 +559,84 @@ describe("habits", () => {
         ]
       })
     ).toThrow("Weekly habits require at least one dayOfWeek.");
+  });
+});
+
+describe("focus and buffers", () => {
+  test("parses and previews the synthetic focus and buffer fixture without write capability", () => {
+    const raw = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), "examples", "focus-and-buffers.example.json"), "utf8")
+    ) as unknown;
+
+    const parsedFocusBlocks = parseReclaimFocusInputs(raw);
+    const parsedBuffers = parseReclaimBufferInputs(raw);
+    const focusPreview = focus.previewCreates(parsedFocusBlocks);
+    const bufferPreview = buffers.previewCreates(parsedBuffers);
+
+    expect(parsedFocusBlocks).toHaveLength(2);
+    expect(parsedBuffers).toHaveLength(2);
+    expect(focusPreview).toMatchObject({
+      focusBlockCount: 2,
+      writeSafety: "preview_only"
+    });
+    expect(bufferPreview).toMatchObject({
+      bufferCount: 2,
+      writeSafety: "preview_only"
+    });
+    expect(focusPreview.focusBlocks[0]?.request).toMatchObject({
+      title: "Prototype review block",
+      eventCategory: "WORK",
+      cadence: "weekly",
+      daysOfWeek: ["tuesday"],
+      alwaysPrivate: true
+    });
+    expect(bufferPreview.buffers[0]?.request).toMatchObject({
+      title: "Post-review notes buffer",
+      eventCategory: "WORK",
+      placement: "after",
+      anchor: "Prototype review block",
+      alwaysPrivate: true
+    });
+  });
+
+  test("rejects ambiguous focus and buffer inputs", () => {
+    expect(() =>
+      parseReclaimFocusInputs({
+        focusBlocks: [
+          {
+            title: "Weekly review block",
+            durationMinutes: 60,
+            cadence: "weekly"
+          }
+        ]
+      })
+    ).toThrow("Weekly focus blocks require at least one dayOfWeek.");
+
+    expect(() =>
+      parseReclaimFocusInputs({
+        focusBlocks: [
+          {
+            title: "Daily review block",
+            durationMinutes: 30,
+            cadence: "daily",
+            daysOfWeek: ["monday"]
+          }
+        ]
+      })
+    ).toThrow("Daily focus blocks should omit daysOfWeek.");
+
+    expect(() =>
+      parseReclaimBufferInputs({
+        buffers: [
+          {
+            title: "Transition buffer",
+            durationMinutes: 15,
+            anchor: "Generic review",
+            windowStart: "14:00",
+            windowEnd: "13:00"
+          }
+        ]
+      })
+    ).toThrow("windowEnd must be later than windowStart.");
   });
 });

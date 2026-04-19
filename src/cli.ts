@@ -1,6 +1,8 @@
 import fs from "node:fs";
+import { buffers, parseReclaimBufferInputs } from "./buffers.js";
 import { createReclaimClient } from "./client.js";
 import { getReclaimConfigStatus, loadReclaimConfig } from "./config.js";
+import { focus, parseReclaimFocusInputs } from "./focus.js";
 import { habits, parseReclaimHabitInputs } from "./habits.js";
 import { runReclaimHealthCheck } from "./health.js";
 import { runMockReclaimApiDemo } from "./mock-lab.js";
@@ -63,6 +65,18 @@ async function main(): Promise<void> {
   if (command === "reclaim:habits:preview-create") {
     const habitInputs = parseReclaimHabitInputs(readJsonInput());
     console.log(JSON.stringify(habits.previewCreates(habitInputs), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:focus:preview-create") {
+    const focusInputs = parseReclaimFocusInputs(readJsonInput());
+    console.log(JSON.stringify(focus.previewCreates(focusInputs), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:buffers:preview-create") {
+    const bufferInputs = parseReclaimBufferInputs(readJsonInput());
+    console.log(JSON.stringify(buffers.previewCreates(bufferInputs), null, 2));
     return;
   }
 
