@@ -55,3 +55,7 @@ const result = await tasks.create(client, input, { confirmWrite: true });
 ## Modules
 
 Wave 1 includes config, client, health, and task utilities. Future modules can add support for Focus, Habits, Buffers, Meetings, Hours, and broader configuration helpers when those APIs are implemented.
+
+## Related Work
+
+See [docs/related-work.md](docs/related-work.md) for other unofficial Reclaim.ai SDKs, CLIs, automation nodes, MCP servers, and agent-facing tools.
