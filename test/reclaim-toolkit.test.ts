@@ -1,3 +1,4 @@
+import { spawnSync, type SpawnSyncReturns } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -41,6 +42,53 @@ function writeConfig(repoPath: string): void {
     "utf8"
   );
 }
+
+function npmCommand(): string {
+  return process.platform === "win32" ? "npm.cmd" : "npm";
+}
+
+function runNpmCli(args: string[]): SpawnSyncReturns<string> {
+  if (process.platform === "win32") {
+    return spawnSync(
+      process.env.ComSpec ?? "cmd.exe",
+      ["/d", "/s", "/c", ["npm", "run", "--silent", ...args].join(" ")],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8"
+      }
+    );
+  }
+
+  return spawnSync(npmCommand(), ["run", "--silent", ...args], {
+    cwd: process.cwd(),
+    encoding: "utf8"
+  });
+}
+
+describe("agent-safe CLI JSON profile", () => {
+  test("emits parseable JSON on stdout for successful npm-silent commands", () => {
+    const result = runNpmCli([
+      "reclaim:tasks:preview-create",
+      "--",
+      "--input",
+      path.join("examples", "tasks.example.json")
+    ]);
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    const output = JSON.parse(result.stdout) as { taskCount: number; tasks: Array<{ title: string }> };
+    expect(output.taskCount).toBe(2);
+    expect(output.tasks[0]?.title).toBe("Draft planning notes");
+  });
+
+  test("emits diagnostics on stderr and no JSON stdout for failed npm-silent commands", () => {
+    const result = runNpmCli(["reclaim:tasks:preview-create"]);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr.trim()).toBe("Expected --input <json>.");
+  });
+});
 
 describe("config and client", () => {
   test("loads config and normalizes the Reclaim API URL", () => {
