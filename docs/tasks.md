@@ -52,6 +52,12 @@ npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
 
 The demo creates an in-memory synthetic Reclaim-like API surface, selects a placeholder task-assignment policy, previews the input file, removes one seeded duplicate task, and creates any missing synthetic tasks. It prints JSON so the result can be inspected like other toolkit commands.
 
+The same lab can exercise the larger synthetic scheduling recipe pack:
+
+```bash
+npm run reclaim:demo:mock-api -- --input examples/scheduling-recipes.example.json
+```
+
 This lab is intentionally narrow: it covers the toolkit task flow only, uses invented task and policy data, does not contact Reclaim, and is not a complete emulator or API compatibility promise.
 
 ## Write Receipts

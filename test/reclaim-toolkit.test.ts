@@ -473,6 +473,18 @@ describe("health and tasks", () => {
     expect(result.finalTaskCount).toBe(2);
   });
 
+  test("runs the synthetic mock API demo lab with the scheduling recipe pack", async () => {
+    const result = await runMockReclaimApiDemo(path.join("examples", "scheduling-recipes.example.json"));
+
+    expect(result.health.reachable).toBe(true);
+    expect(result.createPreview.taskCount).toBe(6);
+    expect(result.duplicatePlan.duplicateGroupCount).toBe(0);
+    expect(result.duplicateCleanup.deletedTaskIds).toEqual([]);
+    expect(result.createResult.createdTasks).toHaveLength(6);
+    expect(result.createResult.writeReceipts).toHaveLength(6);
+    expect(result.finalTaskCount).toBe(8);
+  });
+
   test("serves task CRUD through the synthetic mock API fetch", async () => {
     const client = createReclaimClient(
       {
