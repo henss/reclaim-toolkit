@@ -4,5 +4,6 @@ export * from "./buffers.js";
 export * from "./focus.js";
 export * from "./habits.js";
 export * from "./health.js";
+export * from "./meetings-hours.js";
 export * from "./tasks.js";
 export * from "./types.js";

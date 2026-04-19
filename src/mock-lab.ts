@@ -6,6 +6,7 @@ import { parseReclaimTaskInputs, tasks } from "./tasks.js";
 import type {
   ReclaimConfig,
   ReclaimCreateTaskInput,
+  ReclaimMeetingRecord,
   ReclaimTaskAssignmentTimeScheme,
   ReclaimTaskRecord,
   ReclaimUpdateTaskInput
@@ -17,6 +18,7 @@ export interface MockReclaimApiState {
     email: string;
     name: string;
   };
+  meetings: ReclaimMeetingRecord[];
   timeSchemes: ReclaimTaskAssignmentTimeScheme[];
   tasks: ReclaimTaskRecord[];
   nextTaskId: number;
@@ -47,6 +49,16 @@ function createSeedState(): MockReclaimApiState {
       email: "demo.user@example.com",
       name: "Demo User"
     },
+    meetings: [
+      {
+        id: "meeting-demo-1",
+        title: "Project sync",
+        start: "2026-05-06T10:00:00.000Z",
+        end: "2026-05-06T10:30:00.000Z",
+        durationMinutes: 30,
+        attendeeCount: 3
+      }
+    ],
     timeSchemes: [
       {
         id: "policy-work",
@@ -121,6 +133,10 @@ export function createMockReclaimApiFetch(state: MockReclaimApiState = createSee
 
     if (method === "GET" && pathname === "/timeschemes") {
       return jsonResponse(state.timeSchemes);
+    }
+
+    if (method === "GET" && pathname === "/meetings") {
+      return jsonResponse(state.meetings);
     }
 
     if (method === "GET" && pathname === "/tasks") {

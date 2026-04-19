@@ -41,6 +41,8 @@
     "reclaim:habits:preview-create": "tsx src/cli.ts reclaim:habits:preview-create",
     "reclaim:focus:preview-create": "tsx src/cli.ts reclaim:focus:preview-create",
     "reclaim:buffers:preview-create": "tsx src/cli.ts reclaim:buffers:preview-create",
+    "reclaim:meetings-hours:preview-inspect": "tsx src/cli.ts reclaim:meetings-hours:preview-inspect",
+    "reclaim:meetings-hours:inspect": "tsx src/cli.ts reclaim:meetings-hours:inspect",
     "reclaim:demo:mock-api": "tsx src/cli.ts reclaim:demo:mock-api",
     "reclaim:tasks:create": "tsx src/cli.ts reclaim:tasks:create",
     "reclaim:tasks:inspect-duplicates": "tsx src/cli.ts reclaim:tasks:inspect-duplicates",

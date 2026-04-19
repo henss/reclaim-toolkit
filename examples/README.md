@@ -15,6 +15,7 @@ Rules:
 - `scheduling-recipes.example.json`: synthetic recipe pack for common scheduling shapes such as kickoff prep, review windows, release checklists, personal admin, learning blocks, and weekly planning.
 - `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
 - `focus-and-buffers.example.json`: preview-only Focus and Buffer fixture with synthetic focus windows and transition buffers.
+- `meetings-and-hours.example.json`: synthetic Meetings and Hours inspector fixture with placeholder meeting and time-policy summaries.
 
 The recipe pack is still a task input file, so it can be previewed with:
 
@@ -33,6 +34,12 @@ The Focus and Buffer fixture is preview-only and does not create live focus bloc
 ```bash
 npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
 npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
+```
+
+The Meetings and Hours fixture is read-only and does not create meetings or update hours:
+
+```bash
+npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
 ```
 
 To run the same task flow against a local synthetic mock instead of a Reclaim account, use:

@@ -1,0 +1,55 @@
+{
+  "meetings": [
+    {
+      "id": "meeting-demo-1",
+      "title": "Project sync",
+      "start": "2026-05-06T10:00:00.000Z",
+      "end": "2026-05-06T10:30:00.000Z",
+      "durationMinutes": 30,
+      "attendeeCount": 3
+    },
+    {
+      "id": "meeting-demo-2",
+      "title": "Design review",
+      "start": "2026-05-07T14:00:00.000Z",
+      "end": "2026-05-07T15:00:00.000Z",
+      "durationMinutes": 60,
+      "attendeeCount": 4
+    }
+  ],
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Work Hours",
+      "taskCategory": "WORK",
+      "timezone": "Europe/Berlin",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        {
+          "dayOfWeek": "monday",
+          "start": "09:00",
+          "end": "17:00"
+        },
+        {
+          "dayOfWeek": "tuesday",
+          "start": "09:00",
+          "end": "17:00"
+        }
+      ]
+    },
+    {
+      "id": "policy-personal",
+      "title": "Personal Hours",
+      "taskCategory": "PERSONAL",
+      "timezone": "Europe/Berlin",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        {
+          "dayOfWeek": "saturday",
+          "start": "10:00",
+          "end": "12:00"
+        }
+      ]
+    }
+  ]
+}

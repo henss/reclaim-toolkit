@@ -31,12 +31,32 @@ export interface ReclaimTaskRecord {
   snoozeUntil?: string;
 }
 
-export interface ReclaimTaskAssignmentTimeScheme {
+export interface ReclaimMeetingRecord {
+  id: string;
+  title: string;
+  start?: string;
+  end?: string;
+  durationMinutes?: number;
+  attendeeCount?: number;
+}
+
+export interface ReclaimTimeSchemeWindow {
+  dayOfWeek?: string;
+  start?: string;
+  end?: string;
+}
+
+export interface ReclaimTimeSchemeRecord {
   id: string;
   taskCategory: string;
   title: string;
   description?: string;
+  timezone?: string;
   features: string[];
+  windows?: ReclaimTimeSchemeWindow[];
+}
+
+export interface ReclaimTaskAssignmentTimeScheme extends ReclaimTimeSchemeRecord {
 }
 
 export interface ReclaimCreateTaskInput {

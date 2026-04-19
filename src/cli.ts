@@ -5,6 +5,10 @@ import { getReclaimConfigStatus, loadReclaimConfig } from "./config.js";
 import { focus, parseReclaimFocusInputs } from "./focus.js";
 import { habits, parseReclaimHabitInputs } from "./habits.js";
 import { runReclaimHealthCheck } from "./health.js";
+import {
+  meetingsHours,
+  parseReclaimMeetingsAndHoursSnapshot
+} from "./meetings-hours.js";
 import { runMockReclaimApiDemo } from "./mock-lab.js";
 import { parseReclaimTaskInputs, tasks } from "./tasks.js";
 
@@ -77,6 +81,17 @@ async function main(): Promise<void> {
   if (command === "reclaim:buffers:preview-create") {
     const bufferInputs = parseReclaimBufferInputs(readJsonInput());
     console.log(JSON.stringify(buffers.previewCreates(bufferInputs), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:meetings-hours:preview-inspect") {
+    const snapshot = parseReclaimMeetingsAndHoursSnapshot(readJsonInput());
+    console.log(JSON.stringify(meetingsHours.inspectSnapshot(snapshot), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:meetings-hours:inspect") {
+    console.log(JSON.stringify(await meetingsHours.inspect(loadClient()), null, 2));
     return;
   }
 

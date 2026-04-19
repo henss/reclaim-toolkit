@@ -9,9 +9,11 @@ import {
   focus,
   habits,
   loadReclaimConfig,
+  meetingsHours,
   parseReclaimBufferInputs,
   parseReclaimFocusInputs,
   parseReclaimHabitInputs,
+  parseReclaimMeetingsAndHoursSnapshot,
   parseReclaimTaskInputs,
   runReclaimHealthCheck,
   tasks,
@@ -137,6 +139,70 @@ describe("config and client", () => {
     expect(calls[0]?.headers.get("Authorization")).toBe("Bearer secret-key");
     expect(calls[0]?.headers.get("Content-Type")).toBe("application/json");
     expect(calls[0]?.body).toContain("\"alwaysPrivate\":true");
+  });
+
+  test("reads meetings and time schemes through the read-only client surface", async () => {
+    const calls: string[] = [];
+    const client = createReclaimClient(
+      {
+        apiUrl: "https://api.app.reclaim.ai/api",
+        apiKey: "secret-key",
+        timeoutMs: 1000,
+        defaultTaskEventCategory: "WORK"
+      },
+      (async (input: string | URL | Request) => {
+        const url = String(input);
+        calls.push(url);
+        if (url.endsWith("/meetings")) {
+          return new Response(
+            JSON.stringify([
+              {
+                id: "meeting-demo-1",
+                title: "Project sync",
+                start: "2026-05-06T10:00:00.000Z",
+                end: "2026-05-06T10:30:00.000Z",
+                attendees: [{ id: "person-1" }, { id: "person-2" }]
+              }
+            ]),
+            { status: 200 }
+          );
+        }
+        return new Response(
+          JSON.stringify([
+            {
+              id: "policy-work",
+              title: "Work Hours",
+              taskCategory: "WORK",
+              timezone: "Europe/Berlin",
+              features: ["TASK_ASSIGNMENT"],
+              windows: [{ dayOfWeek: "monday", start: "09:00", end: "17:00" }]
+            }
+          ]),
+          { status: 200 }
+        );
+      }) as typeof fetch
+    );
+
+    const inspection = await meetingsHours.inspect(client);
+
+    expect(calls).toEqual([
+      "https://api.app.reclaim.ai/api/meetings",
+      "https://api.app.reclaim.ai/api/timeschemes"
+    ]);
+    expect(inspection).toMatchObject({
+      meetingCount: 1,
+      hourPolicyCount: 1,
+      readSafety: "read_only"
+    });
+    expect(inspection.meetings[0]).toMatchObject({
+      title: "Project sync",
+      durationMinutes: 30,
+      attendeeCount: 2
+    });
+    expect(inspection.hourPolicies[0]).toMatchObject({
+      title: "Work Hours",
+      windowCount: 1
+    });
   });
 
   test("throws useful errors for non-OK responses", async () => {
@@ -698,5 +764,45 @@ describe("focus and buffers", () => {
         ]
       })
     ).toThrow("windowEnd must be later than windowStart.");
+  });
+});
+
+describe("meetings and hours", () => {
+  test("parses and inspects the synthetic meetings and hours fixture", () => {
+    const raw = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), "examples", "meetings-and-hours.example.json"), "utf8")
+    ) as unknown;
+
+    const snapshot = parseReclaimMeetingsAndHoursSnapshot(raw);
+    const inspection = meetingsHours.inspectSnapshot(snapshot);
+
+    expect(inspection).toMatchObject({
+      meetingCount: 2,
+      hourPolicyCount: 2,
+      readSafety: "read_only"
+    });
+    expect(inspection.meetings[0]?.title).toBe("Project sync");
+    expect(inspection.hourPolicies[0]).toMatchObject({
+      id: "policy-work",
+      title: "Work Hours",
+      taskCategory: "WORK",
+      timezone: "Europe/Berlin",
+      windowCount: 2
+    });
+  });
+
+  test("emits parseable JSON for the meetings and hours preview command", () => {
+    const result = runNpmCli([
+      "reclaim:meetings-hours:preview-inspect",
+      "--",
+      "--input",
+      path.join("examples", "meetings-and-hours.example.json")
+    ]);
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    const output = JSON.parse(result.stdout) as { meetingCount: number; readSafety: string };
+    expect(output.meetingCount).toBe(2);
+    expect(output.readSafety).toBe("read_only");
   });
 });

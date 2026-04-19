@@ -6,8 +6,8 @@ Future modules can cover:
 
 - Habit live-write utilities, after the preview-only Habit helper prototype has an approved API contract.
 - Focus and Buffer live-write utilities, after the preview-only helper prototypes have approved API contracts.
-- Meeting utilities.
-- Hours and configuration helpers.
+- Meeting write utilities.
+- Hours write utilities and configuration helpers.
 - Higher-level task search and completion helpers.
 
 New modules should ship only when they have a tested implementation and synthetic examples.
