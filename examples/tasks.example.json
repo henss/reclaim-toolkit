@@ -1,0 +1,21 @@
+{
+  "tasks": [
+    {
+      "title": "Draft planning notes",
+      "notes": "Capture open questions before the weekly review.",
+      "durationMinutes": 45,
+      "due": "2026-05-06T17:00:00+02:00",
+      "startAfter": "2026-05-06T09:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    },
+    {
+      "title": "Review pull request",
+      "notes": "Check the tests and leave concise review notes.",
+      "durationMinutes": 30,
+      "due": "2026-05-07T12:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": false
+    }
+  ]
+}

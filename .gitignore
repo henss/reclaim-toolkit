@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+data/
+backups/
+config/*.local.json
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db

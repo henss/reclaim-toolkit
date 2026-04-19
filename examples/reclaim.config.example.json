@@ -1,0 +1,7 @@
+{
+  "apiUrl": "https://api.app.reclaim.ai",
+  "apiKey": "reclaim_api_key_example",
+  "timeoutMs": 20000,
+  "defaultTaskEventCategory": "PERSONAL",
+  "preferredTimePolicyTitle": "Personal Hours"
+}
