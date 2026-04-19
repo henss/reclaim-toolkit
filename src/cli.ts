@@ -42,6 +42,16 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (command === "reclaim:time-policies:list") {
+    const client = loadClient();
+    console.log(JSON.stringify(tasks.previewTimePolicySelection(await client.listTaskAssignmentTimeSchemes(), {
+      preferredTimePolicyId: client.config.preferredTimePolicyId,
+      preferredTimePolicyTitle: client.config.preferredTimePolicyTitle,
+      eventCategory: client.config.defaultTaskEventCategory
+    }), null, 2));
+    return;
+  }
+
   if (command === "reclaim:tasks:preview-create") {
     const taskInputs = parseReclaimTaskInputs(readJsonInput());
     console.log(JSON.stringify(tasks.previewCreates(taskInputs), null, 2));

@@ -30,6 +30,18 @@ Fields:
 - `splitAllowed`: whether Reclaim may split the task into smaller chunks.
 - `alwaysPrivate`: whether the created Reclaim task should be private. Defaults to `true`.
 
+## Time Policy Discovery
+
+Task creation uses a Reclaim task-assignment time policy. You can discover the policies available to the configured Reclaim account with:
+
+```bash
+npm run reclaim:time-policies:list -- --config config/reclaim.local.json
+```
+
+The command returns the task-assignment policies exposed by Reclaim, marks which policies match `defaultTaskEventCategory`, and includes the policy the toolkit would select from the local config. Configure `preferredTimePolicyId` for exact id selection, or `preferredTimePolicyTitle` for exact or unique partial title selection. If neither is set, task creation selects the first policy matching `defaultTaskEventCategory`, then falls back to the first returned policy.
+
+Use synthetic task input files for previews and keep local config files out of version control.
+
 ## Synthetic Scheduling Recipes
 
 `examples/scheduling-recipes.example.json` contains a public-safe recipe pack for common task shapes:

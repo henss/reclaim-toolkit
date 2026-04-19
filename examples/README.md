@@ -19,3 +19,11 @@ The recipe pack is still a task input file, so it can be previewed with:
 ```bash
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
 ```
+
+To inspect available task-assignment time policies for a local account, use a private local config file and run:
+
+```bash
+npm run reclaim:time-policies:list -- --config config/reclaim.local.json
+```
+
+Do not commit local config files or command output containing account-specific policy ids.

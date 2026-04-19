@@ -17,17 +17,20 @@ Create a local config file, usually `config/reclaim.local.json`:
   "apiUrl": "https://api.app.reclaim.ai",
   "apiKey": "reclaim_api_key_example",
   "timeoutMs": 20000,
-  "defaultTaskEventCategory": "PERSONAL"
+  "defaultTaskEventCategory": "PERSONAL",
+  "preferredTimePolicyTitle": "Personal Hours"
 }
 ```
 
 `apiUrl` is normalized to include `/api`, so either `https://api.app.reclaim.ai` or `https://api.app.reclaim.ai/api` works.
+Set either `preferredTimePolicyId` or `preferredTimePolicyTitle` when task creation should use a specific Reclaim task-assignment time policy. If neither is set, task creation selects the first policy matching `defaultTaskEventCategory`, then falls back to the first returned policy.
 
 ## CLI
 
 ```bash
 npm run reclaim:config:status -- --config config/reclaim.local.json
 npm run reclaim:health -- --config config/reclaim.local.json
+npm run reclaim:time-policies:list -- --config config/reclaim.local.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
 npm run reclaim:tasks:create -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-write
@@ -50,6 +53,10 @@ if (!config) {
 const client = createReclaimClient(config);
 const input = [{ title: "Review pull request", durationMinutes: 30 }];
 const preview = tasks.previewCreates(input, { timeSchemeId: "policy-work" });
+const policyPreview = tasks.previewTimePolicySelection(await client.listTaskAssignmentTimeSchemes(), {
+  preferredTimePolicyTitle: config.preferredTimePolicyTitle,
+  eventCategory: config.defaultTaskEventCategory
+});
 const result = await tasks.create(client, input, { confirmWrite: true });
 ```
 

@@ -208,6 +208,58 @@ describe("health and tasks", () => {
     );
   });
 
+  test("previews time policy discovery and selected policy reasoning", () => {
+    const preview = tasks.previewTimePolicySelection(
+      [
+        {
+          id: "policy-personal",
+          title: "Personal Hours",
+          taskCategory: "PERSONAL",
+          features: ["TASK_ASSIGNMENT"]
+        },
+        {
+          id: "policy-deep-work",
+          title: "Deep Work",
+          taskCategory: "WORK",
+          description: "Default work policy for focused task blocks.",
+          features: ["TASK_ASSIGNMENT"]
+        }
+      ],
+      { preferredTimePolicyTitle: "deep", eventCategory: "WORK" }
+    );
+
+    expect(preview.selectedPolicy).toMatchObject({
+      id: "policy-deep-work",
+      title: "Deep Work",
+      matchesDefaultEventCategory: true
+    });
+    expect(preview.selectionReason).toBe('Matched preferred Reclaim time policy title "deep".');
+    expect(preview.policies).toHaveLength(2);
+  });
+
+  test("falls back to the default event category when no preferred policy is configured", () => {
+    const preview = tasks.previewTimePolicySelection(
+      [
+        {
+          id: "policy-personal",
+          title: "Personal Hours",
+          taskCategory: "PERSONAL",
+          features: ["TASK_ASSIGNMENT"]
+        },
+        {
+          id: "policy-work",
+          title: "Work Hours",
+          taskCategory: "WORK",
+          features: ["TASK_ASSIGNMENT"]
+        }
+      ],
+      { eventCategory: "WORK" }
+    );
+
+    expect(preview.selectedPolicy?.id).toBe("policy-work");
+    expect(preview.selectionReason).toBe("Selected the first Reclaim time policy matching event category WORK.");
+  });
+
   test("refuses task creation without confirmation", async () => {
     const client = createReclaimClient({
       apiUrl: "https://api.app.reclaim.ai/api",
@@ -233,6 +285,19 @@ describe("health and tasks", () => {
       },
       (async (input: string | URL | Request, init?: RequestInit) => {
         const url = String(input);
+        if (url.endsWith("/timeschemes")) {
+          return new Response(
+            JSON.stringify([
+              {
+                id: "policy-work",
+                taskCategory: "WORK",
+                title: "Work Hours",
+                features: ["TASK_ASSIGNMENT"]
+              }
+            ]),
+            { status: 200 }
+          );
+        }
         if (url.endsWith("/tasks") && (init?.method ?? "GET") === "GET") {
           return new Response(
             JSON.stringify([
@@ -284,6 +349,39 @@ describe("health and tasks", () => {
     ]);
     expect(result.createdTasks).toEqual([{ title: "Review pull request", taskId: 10 }]);
     expect(createdBodies[0]).toContain("\"title\":\"Review pull request\"");
+  });
+
+  test("validates configured preferred time policy ids before creating tasks", async () => {
+    const client = createReclaimClient(
+      {
+        apiUrl: "https://api.app.reclaim.ai/api",
+        apiKey: "secret-key",
+        timeoutMs: 1000,
+        preferredTimePolicyId: "policy-missing",
+        defaultTaskEventCategory: "WORK"
+      },
+      (async (input: string | URL | Request) => {
+        const url = String(input);
+        if (url.endsWith("/timeschemes")) {
+          return new Response(
+            JSON.stringify([
+              {
+                id: "policy-work",
+                taskCategory: "WORK",
+                title: "Work Hours",
+                features: ["TASK_ASSIGNMENT"]
+              }
+            ]),
+            { status: 200 }
+          );
+        }
+        return new Response("[]", { status: 200 });
+      }) as typeof fetch
+    );
+
+    await expect(
+      tasks.create(client, [{ title: "Review pull request", durationMinutes: 30 }], { confirmWrite: true })
+    ).rejects.toThrow("Preferred Reclaim time policy id policy-missing was not found.");
   });
 
   test("inspects and cleans exact duplicates while keeping the oldest task", async () => {
