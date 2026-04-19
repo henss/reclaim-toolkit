@@ -42,6 +42,18 @@ The command returns the task-assignment policies exposed by Reclaim, marks which
 
 Use synthetic task input files for previews and keep local config files out of version control.
 
+## Mock API Demo Lab
+
+For credential-free CLI practice, run:
+
+```bash
+npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
+```
+
+The demo creates an in-memory synthetic Reclaim-like API surface, selects a placeholder task-assignment policy, previews the input file, removes one seeded duplicate task, and creates any missing synthetic tasks. It prints JSON so the result can be inspected like other toolkit commands.
+
+This lab is intentionally narrow: it covers the toolkit task flow only, uses invented task and policy data, does not contact Reclaim, and is not a complete emulator or API compatibility promise.
+
 ## Write Receipts
 
 Confirmed task creation and duplicate cleanup return a `writeReceipts` array alongside the existing result fields. Each receipt includes:

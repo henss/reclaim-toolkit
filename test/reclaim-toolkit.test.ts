@@ -10,6 +10,7 @@ import {
   tasks,
   type ReclaimTaskRecord
 } from "../src/index.js";
+import { createMockReclaimApiFetch, runMockReclaimApiDemo } from "../src/mock-lab.js";
 
 function makeTempDir(): string {
   return fs.mkdtempSync(path.join(os.tmpdir(), "reclaim-toolkit-"));
@@ -450,5 +451,47 @@ describe("health and tasks", () => {
     });
     expect(Date.parse(cleanupResult.writeReceipts[0]?.confirmedAt ?? "")).not.toBeNaN();
     expect(deletedIds).toEqual([4]);
+  });
+
+  test("runs the synthetic mock API demo lab without live credentials", async () => {
+    const result = await runMockReclaimApiDemo();
+
+    expect(result.health.reachable).toBe(true);
+    expect(result.health.userEmail).toBe("demo.user@example.com");
+    expect(result.timePolicies.selectedPolicy?.id).toBe("policy-work");
+    expect(result.duplicateCleanup.deletedTaskIds).toEqual([102]);
+    expect(result.createResult.skippedTasks).toEqual([
+      { title: "Draft planning notes", taskId: 101, reason: "already_exists" }
+    ]);
+    expect(result.createResult.createdTasks).toEqual([{ title: "Review pull request", taskId: 200 }]);
+    expect(result.finalTaskCount).toBe(2);
+  });
+
+  test("serves task CRUD through the synthetic mock API fetch", async () => {
+    const client = createReclaimClient(
+      {
+        apiUrl: "https://mock.reclaim.local/api",
+        apiKey: "mock-api-key",
+        timeoutMs: 1000,
+        defaultTaskEventCategory: "WORK"
+      },
+      createMockReclaimApiFetch()
+    );
+
+    const created = await client.createTask({
+      title: "Prepare demo outline",
+      notes: "Use public-safe placeholder material.",
+      timeSchemeId: "policy-work",
+      timeChunksRequired: 2,
+      minChunkSize: 1,
+      maxChunkSize: 2,
+      eventCategory: "WORK"
+    });
+    const updated = await client.updateTask(created.id, { notes: "Keep the demo synthetic." });
+    await client.deleteTask(created.id);
+
+    expect(created.id).toBe(200);
+    expect(updated.notes).toBe("Keep the demo synthetic.");
+    expect((await client.listTasks()).map((task) => task.id)).not.toContain(created.id);
   });
 });

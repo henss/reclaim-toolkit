@@ -33,6 +33,7 @@ npm run reclaim:health -- --config config/reclaim.local.json
 npm run reclaim:time-policies:list -- --config config/reclaim.local.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
+npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
 npm run reclaim:tasks:create -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-write
 npm run reclaim:tasks:inspect-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json
 npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-reviewed-delete
@@ -40,6 +41,8 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 
 Task creation and duplicate deletion require explicit confirmation flags.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
+
+To practice the task flow without Reclaim credentials, run `npm run reclaim:demo:mock-api -- --input examples/tasks.example.json`. The demo uses an in-memory synthetic API surface with placeholder policies and tasks, then prints health, time-policy, preview, duplicate-cleanup, and create results. It is not a complete Reclaim emulator.
 
 ## Library
 

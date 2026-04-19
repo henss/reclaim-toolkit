@@ -2,6 +2,7 @@ import fs from "node:fs";
 import { createReclaimClient } from "./client.js";
 import { getReclaimConfigStatus, loadReclaimConfig } from "./config.js";
 import { runReclaimHealthCheck } from "./health.js";
+import { runMockReclaimApiDemo } from "./mock-lab.js";
 import { parseReclaimTaskInputs, tasks } from "./tasks.js";
 
 function parseFlag(flag: string): string | undefined {
@@ -55,6 +56,11 @@ async function main(): Promise<void> {
   if (command === "reclaim:tasks:preview-create") {
     const taskInputs = parseReclaimTaskInputs(readJsonInput());
     console.log(JSON.stringify(tasks.previewCreates(taskInputs), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:demo:mock-api") {
+    console.log(JSON.stringify(await runMockReclaimApiDemo(parseFlag("--input")), null, 2));
     return;
   }
 

@@ -20,6 +20,14 @@ The recipe pack is still a task input file, so it can be previewed with:
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
 ```
 
+To run the same task flow against a local synthetic mock instead of a Reclaim account, use:
+
+```bash
+npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
+```
+
+The mock demo is an in-memory lab for CLI practice. It includes placeholder task-assignment policies, a duplicate synthetic task, and no live credentials or account data. It is intentionally smaller than the Reclaim API and should not be treated as an emulator.
+
 To inspect available task-assignment time policies for a local account, use a private local config file and run:
 
 ```bash
