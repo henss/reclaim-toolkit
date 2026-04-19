@@ -42,6 +42,18 @@ The command returns the task-assignment policies exposed by Reclaim, marks which
 
 Use synthetic task input files for previews and keep local config files out of version control.
 
+## Write Receipts
+
+Confirmed task creation and duplicate cleanup return a `writeReceipts` array alongside the existing result fields. Each receipt includes:
+
+- `operation`: `task.create` or `task.delete`.
+- `taskId`: the Reclaim task id that was written.
+- `title`: the input or duplicate-group title when available.
+- `confirmedAt`: the ISO timestamp when the toolkit observed the confirmed write.
+- `rollbackHint`: a manual instruction for reviewing or undoing the write outside the toolkit.
+
+The toolkit records rollback hints for auditability only. It does not automatically roll back confirmed creates or deletions.
+
 ## Synthetic Scheduling Recipes
 
 `examples/scheduling-recipes.example.json` contains a public-safe recipe pack for common task shapes:

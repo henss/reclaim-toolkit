@@ -348,6 +348,14 @@ describe("health and tasks", () => {
       { title: "Draft planning notes", taskId: 9, reason: "already_exists" }
     ]);
     expect(result.createdTasks).toEqual([{ title: "Review pull request", taskId: 10 }]);
+    expect(result.writeReceipts).toHaveLength(1);
+    expect(result.writeReceipts[0]).toMatchObject({
+      operation: "task.create",
+      taskId: 10,
+      title: "Review pull request",
+      rollbackHint: "Delete Reclaim task 10 if this confirmed create should be undone."
+    });
+    expect(Date.parse(result.writeReceipts[0]?.confirmedAt ?? "")).not.toBeNaN();
     expect(createdBodies[0]).toContain("\"title\":\"Review pull request\"");
   });
 
@@ -430,9 +438,17 @@ describe("health and tasks", () => {
     await expect(tasks.cleanupDuplicates(client, plan, { confirmDelete: false })).rejects.toThrow(
       "Refusing to delete Reclaim task duplicates without confirmDelete."
     );
-    expect(await tasks.cleanupDuplicates(client, plan, { confirmDelete: true })).toMatchObject({
-      deletedTaskIds: [4]
+    const cleanupResult = await tasks.cleanupDuplicates(client, plan, { confirmDelete: true });
+
+    expect(cleanupResult).toMatchObject({ deletedTaskIds: [4] });
+    expect(cleanupResult.writeReceipts).toHaveLength(1);
+    expect(cleanupResult.writeReceipts[0]).toMatchObject({
+      operation: "task.delete",
+      taskId: 4,
+      title: "Draft planning notes",
+      rollbackHint: "Recreate the task from the reviewed input or audit source if deleting Reclaim task 4 was unintended."
     });
+    expect(Date.parse(cleanupResult.writeReceipts[0]?.confirmedAt ?? "")).not.toBeNaN();
     expect(deletedIds).toEqual([4]);
   });
 });

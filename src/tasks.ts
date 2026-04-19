@@ -42,6 +42,7 @@ export interface TaskCreatePreview {
 export interface TaskCreateResult {
   createdTasks: Array<{ title: string; taskId: number }>;
   skippedTasks: Array<{ title: string; taskId: number; reason: "already_exists" }>;
+  writeReceipts: TaskWriteReceipt[];
 }
 
 export interface DuplicateTaskGroup {
@@ -57,6 +58,15 @@ export interface DuplicateTaskPlan {
 
 export interface DuplicateCleanupResult extends DuplicateTaskPlan {
   deletedTaskIds: number[];
+  writeReceipts: TaskWriteReceipt[];
+}
+
+export interface TaskWriteReceipt {
+  operation: "task.create" | "task.delete";
+  taskId: number;
+  title?: string;
+  confirmedAt: string;
+  rollbackHint: string;
 }
 
 export interface TimePolicyDiscoveryItem {
@@ -149,6 +159,30 @@ function taskMatchesRequest(task: ReclaimTaskRecord, request: ReclaimCreateTaskI
     normalizeDateTime(task.due) === normalizeDateTime(request.due) &&
     normalizeDateTime(task.snoozeUntil) === normalizeDateTime(request.snoozeUntil)
   );
+}
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+function createdTaskReceipt(taskId: number, title: string): TaskWriteReceipt {
+  return {
+    operation: "task.create",
+    taskId,
+    title,
+    confirmedAt: nowIso(),
+    rollbackHint: `Delete Reclaim task ${taskId} if this confirmed create should be undone.`
+  };
+}
+
+function deletedTaskReceipt(taskId: number, title: string): TaskWriteReceipt {
+  return {
+    operation: "task.delete",
+    taskId,
+    title,
+    confirmedAt: nowIso(),
+    rollbackHint: `Recreate the task from the reviewed input or audit source if deleting Reclaim task ${taskId} was unintended.`
+  };
 }
 
 function normalizePolicyTitle(value: string): string {
@@ -285,6 +319,7 @@ export async function create(
   const existingTasks = await client.listTasks();
   const createdTasks: TaskCreateResult["createdTasks"] = [];
   const skippedTasks: TaskCreateResult["skippedTasks"] = [];
+  const writeReceipts: TaskWriteReceipt[] = [];
 
   for (const task of taskInputs) {
     const request = buildCreateInput(task, { timeSchemeId, eventCategory });
@@ -297,9 +332,10 @@ export async function create(
     const createdTask = await client.createTask(request);
     existingTasks.push(createdTask);
     createdTasks.push({ title: task.title, taskId: createdTask.id });
+    writeReceipts.push(createdTaskReceipt(createdTask.id, task.title));
   }
 
-  return { createdTasks, skippedTasks };
+  return { createdTasks, skippedTasks, writeReceipts };
 }
 
 export function inspectDuplicates(
@@ -343,16 +379,19 @@ export async function cleanupDuplicates(
   }
 
   const deletedTaskIds: number[] = [];
+  const writeReceipts: TaskWriteReceipt[] = [];
   for (const group of plan.duplicateGroups) {
     for (const duplicateTaskId of group.duplicateTaskIds) {
       await client.deleteTask(duplicateTaskId);
       deletedTaskIds.push(duplicateTaskId);
+      writeReceipts.push(deletedTaskReceipt(duplicateTaskId, group.title));
     }
   }
 
   return {
     ...plan,
-    deletedTaskIds
+    deletedTaskIds,
+    writeReceipts
   };
 }
 

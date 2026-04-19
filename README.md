@@ -39,6 +39,7 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 ```
 
 Task creation and duplicate deletion require explicit confirmation flags.
+Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
 
 ## Library
 
@@ -58,6 +59,7 @@ const policyPreview = tasks.previewTimePolicySelection(await client.listTaskAssi
   eventCategory: config.defaultTaskEventCategory
 });
 const result = await tasks.create(client, input, { confirmWrite: true });
+console.log(result.writeReceipts);
 ```
 
 ## Modules
