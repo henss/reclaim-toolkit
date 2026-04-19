@@ -1,0 +1,23 @@
+{
+  "habits": [
+    {
+      "title": "Morning project review",
+      "notes": "Review a generic project board and choose one next action.",
+      "durationMinutes": 20,
+      "eventCategory": "WORK",
+      "cadence": "daily",
+      "windowStart": "09:00",
+      "windowEnd": "11:00"
+    },
+    {
+      "title": "Weekly workspace reset",
+      "notes": "Tidy a generic workspace and update a short checklist.",
+      "durationMinutes": 30,
+      "eventCategory": "PERSONAL",
+      "cadence": "weekly",
+      "daysOfWeek": ["friday"],
+      "windowStart": "15:00",
+      "windowEnd": "17:00"
+    }
+  ]
+}

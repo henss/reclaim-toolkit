@@ -13,11 +13,18 @@ Rules:
 
 - `tasks.example.json`: minimal task-create fixture for smoke testing task commands.
 - `scheduling-recipes.example.json`: synthetic recipe pack for common scheduling shapes such as kickoff prep, review windows, release checklists, personal admin, learning blocks, and weekly planning.
+- `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
 
 The recipe pack is still a task input file, so it can be previewed with:
 
 ```bash
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
+```
+
+The Habit fixture is preview-only and does not create live habits:
+
+```bash
+npm run reclaim:habits:preview-create -- --input examples/habits.example.json
 ```
 
 To run the same task flow against a local synthetic mock instead of a Reclaim account, use:

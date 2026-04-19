@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { createReclaimClient } from "./client.js";
 import { getReclaimConfigStatus, loadReclaimConfig } from "./config.js";
+import { habits, parseReclaimHabitInputs } from "./habits.js";
 import { runReclaimHealthCheck } from "./health.js";
 import { runMockReclaimApiDemo } from "./mock-lab.js";
 import { parseReclaimTaskInputs, tasks } from "./tasks.js";
@@ -56,6 +57,12 @@ async function main(): Promise<void> {
   if (command === "reclaim:tasks:preview-create") {
     const taskInputs = parseReclaimTaskInputs(readJsonInput());
     console.log(JSON.stringify(tasks.previewCreates(taskInputs), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:habits:preview-create") {
+    const habitInputs = parseReclaimHabitInputs(readJsonInput());
+    console.log(JSON.stringify(habits.previewCreates(habitInputs), null, 2));
     return;
   }
 
