@@ -60,6 +60,8 @@ npm run reclaim:demo:mock-api -- --input examples/scheduling-recipes.example.jso
 
 This lab is intentionally narrow: it covers the toolkit task flow only, uses invented task and policy data, does not contact Reclaim, and is not a complete emulator or API compatibility promise.
 
+Design note: the lab stays inside this repository as a small in-memory test double rather than adopting a broader SDK, CLI, agent server, or workflow runner. Existing related projects are useful API references, but this demo needs only deterministic task CRUD, time-policy selection, duplicate cleanup, and write-receipt exercise for synthetic fixtures. Keeping that behavior local avoids new credentials, background services, public API commitments, or package-manager surface while preserving a credential-free dogfood path for the npm CLI commands.
+
 ## Write Receipts
 
 Confirmed task creation and duplicate cleanup return a `writeReceipts` array alongside the existing result fields. Each receipt includes:
