@@ -78,9 +78,18 @@ describe("agent-safe CLI JSON profile", () => {
 
     expect(result.status).toBe(0);
     expect(result.stderr).toBe("");
-    const output = JSON.parse(result.stdout) as { taskCount: number; tasks: Array<{ title: string }> };
+    const output = JSON.parse(result.stdout) as {
+      taskCount: number;
+      tasks: Array<{ title: string; request: { timeSchemeId: string; alwaysPrivate: boolean } }>;
+      writeReceipts?: unknown;
+    };
     expect(output.taskCount).toBe(2);
     expect(output.tasks[0]?.title).toBe("Draft planning notes");
+    expect(output.tasks[0]?.request).toMatchObject({
+      timeSchemeId: "TASK_ASSIGNMENT_TIME_SCHEME_ID_REQUIRED",
+      alwaysPrivate: true
+    });
+    expect(output.writeReceipts).toBeUndefined();
   });
 
   test("emits diagnostics on stderr and no JSON stdout for failed npm-silent commands", () => {
@@ -89,6 +98,21 @@ describe("agent-safe CLI JSON profile", () => {
     expect(result.status).toBe(1);
     expect(result.stdout).toBe("");
     expect(result.stderr.trim()).toBe("Expected --input <json>.");
+  });
+
+  test("emits parseable JSON for another local preview command", () => {
+    const result = runNpmCli([
+      "reclaim:meetings-hours:preview-inspect",
+      "--",
+      "--input",
+      path.join("examples", "meetings-and-hours.example.json")
+    ]);
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    const output = JSON.parse(result.stdout) as { meetingCount: number; readSafety: string };
+    expect(output.meetingCount).toBe(2);
+    expect(output.readSafety).toBe("read_only");
   });
 });
 
@@ -791,18 +815,4 @@ describe("meetings and hours", () => {
     });
   });
 
-  test("emits parseable JSON for the meetings and hours preview command", () => {
-    const result = runNpmCli([
-      "reclaim:meetings-hours:preview-inspect",
-      "--",
-      "--input",
-      path.join("examples", "meetings-and-hours.example.json")
-    ]);
-
-    expect(result.status).toBe(0);
-    expect(result.stderr).toBe("");
-    const output = JSON.parse(result.stdout) as { meetingCount: number; readSafety: string };
-    expect(output.meetingCount).toBe(2);
-    expect(output.readSafety).toBe("read_only");
-  });
 });
