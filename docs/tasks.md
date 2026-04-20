@@ -42,6 +42,46 @@ The command returns the task-assignment policies exposed by Reclaim, marks which
 
 Use synthetic task input files for previews and keep local config files out of version control.
 
+## Read-Only Task Listing
+
+List configured-account tasks without writing to Reclaim:
+
+```bash
+npm run reclaim:tasks:list -- --config config/reclaim.local.json
+```
+
+Filter the listing with public-safe field filters:
+
+```bash
+npm run reclaim:tasks:filter -- --config config/reclaim.local.json --title-contains notes --event-category WORK
+```
+
+Supported filter flags are:
+
+- `--title-contains`: case-insensitive title substring.
+- `--event-category`: Reclaim task event category, such as `WORK` or `PERSONAL`.
+- `--time-scheme-id`: exact Reclaim task-assignment time policy id.
+- `--due-after` and `--due-before`: ISO date-time bounds for task deadlines.
+- `--start-after-after` and `--start-after-before`: ISO date-time bounds for the task start-after value.
+
+Both commands return JSON with `readSafety: "read_only"`, the applied `filters`, and normalized task rows containing `id`, `title`, `notes`, `eventCategory`, `timeSchemeId`, `due`, and `startAfter`.
+
+## Read-Only Task Export
+
+Export the same normalized task rows as JSON:
+
+```bash
+npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-category WORK
+```
+
+Or request CSV content while keeping the command output itself parseable JSON:
+
+```bash
+npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-category WORK --format csv
+```
+
+CSV export returns `format: "csv"`, the exported `fields`, and a `content` string. The command does not write files, create tasks, update tasks, or delete tasks.
+
 ## Mock API Demo Lab
 
 For credential-free CLI practice, run:

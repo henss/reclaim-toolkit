@@ -219,6 +219,135 @@ describe("agent-safe CLI JSON profile", () => {
       server.close();
     }
   });
+
+  test("emits task list, filter, and export JSON for authenticated read commands", async () => {
+    const syntheticTasks = [
+      {
+        id: 12,
+        title: "Review pull request",
+        notes: "Check tests and leave concise notes.",
+        eventCategory: "WORK",
+        timeSchemeId: "policy-work",
+        due: "2026-05-07T10:00:00.000Z",
+        snoozeUntil: "2026-05-07T07:00:00.000Z"
+      },
+      {
+        id: 11,
+        title: "Draft planning notes",
+        notes: "Capture open questions.",
+        eventCategory: "WORK",
+        timeSchemeId: "policy-work",
+        due: "2026-05-06T15:00:00.000Z",
+        snoozeUntil: "2026-05-06T07:00:00.000Z"
+      },
+      {
+        id: 13,
+        title: "Update personal admin notes",
+        eventCategory: "PERSONAL",
+        timeSchemeId: "policy-personal"
+      }
+    ];
+    const server = createServer((request, response) => {
+      if (request.url === "/api/tasks") {
+        response.writeHead(200, { "Content-Type": "application/json" });
+        response.end(JSON.stringify(syntheticTasks));
+        return;
+      }
+
+      response.writeHead(404);
+      response.end();
+    });
+    const port = await listen(server);
+    const repoPath = makeTempDir();
+    const configPath = path.join(repoPath, "config", "reclaim.local.json");
+    writeConfigFile(configPath, {
+      apiUrl: `http://127.0.0.1:${port}`,
+      apiKey: "synthetic-key",
+      timeoutMs: 1000,
+      defaultTaskEventCategory: "WORK"
+    });
+
+    try {
+      const listResult = await runNpmCliAsync(["reclaim:tasks:list", "--", "--config", configPath]);
+      expect(listResult.status).toBe(0);
+      expect(listResult.stderr).toBe("");
+      const listOutput = JSON.parse(listResult.stdout) as {
+        taskCount: number;
+        readSafety: string;
+        tasks: Array<{ id: number; title: string; startAfter?: string }>;
+      };
+      expect(listOutput).toMatchObject({ taskCount: 3, readSafety: "read_only" });
+      expect(listOutput.tasks.map((task) => task.id)).toEqual([11, 12, 13]);
+      expect(listOutput.tasks[0]).toMatchObject({
+        title: "Draft planning notes",
+        startAfter: "2026-05-06T07:00:00.000Z"
+      });
+
+      const filterResult = await runNpmCliAsync([
+        "reclaim:tasks:filter",
+        "--",
+        "--config",
+        configPath,
+        "--title-contains",
+        "notes",
+        "--event-category",
+        "WORK",
+        "--due-before",
+        "2026-05-07T00:00:00.000Z"
+      ]);
+      expect(filterResult.status).toBe(0);
+      expect(filterResult.stderr).toBe("");
+      const filterOutput = JSON.parse(filterResult.stdout) as {
+        taskCount: number;
+        filters: { titleContains: string; eventCategory: string; dueBefore: string };
+        tasks: Array<{ title: string }>;
+      };
+      expect(filterOutput).toMatchObject({
+        taskCount: 1,
+        filters: {
+          titleContains: "notes",
+          eventCategory: "WORK",
+          dueBefore: "2026-05-07T00:00:00.000Z"
+        }
+      });
+      expect(filterOutput.tasks).toEqual([
+        {
+          id: 11,
+          title: "Draft planning notes",
+          notes: "Capture open questions.",
+          eventCategory: "WORK",
+          timeSchemeId: "policy-work",
+          due: "2026-05-06T15:00:00.000Z",
+          startAfter: "2026-05-06T07:00:00.000Z"
+        }
+      ]);
+
+      const exportResult = await runNpmCliAsync([
+        "reclaim:tasks:export",
+        "--",
+        "--config",
+        configPath,
+        "--event-category",
+        "WORK",
+        "--format",
+        "csv"
+      ]);
+      expect(exportResult.status).toBe(0);
+      expect(exportResult.stderr).toBe("");
+      const exportOutput = JSON.parse(exportResult.stdout) as {
+        format: string;
+        taskCount: number;
+        readSafety: string;
+        content: string;
+      };
+      expect(exportOutput).toMatchObject({ format: "csv", taskCount: 2, readSafety: "read_only" });
+      expect(exportOutput.content.split("\n")[0]).toBe("id,title,notes,eventCategory,timeSchemeId,due,startAfter");
+      expect(exportOutput.content).toContain("11,Draft planning notes,Capture open questions.,WORK,policy-work");
+      expect(exportOutput.content).toContain("12,Review pull request,Check tests and leave concise notes.,WORK,policy-work");
+    } finally {
+      server.close();
+    }
+  });
 });
 
 describe("config and client", () => {

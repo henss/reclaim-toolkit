@@ -10,7 +10,7 @@ import {
   parseReclaimMeetingsAndHoursSnapshot
 } from "./meetings-hours.js";
 import { runMockReclaimApiDemo } from "./mock-lab.js";
-import { parseReclaimTaskInputs, tasks } from "./tasks.js";
+import { parseReclaimTaskInputs, tasks, type TaskListFilters } from "./tasks.js";
 
 function parseFlag(flag: string): string | undefined {
   const index = process.argv.indexOf(flag);
@@ -19,6 +19,30 @@ function parseFlag(flag: string): string | undefined {
 
 function hasFlag(flag: string): boolean {
   return process.argv.includes(flag);
+}
+
+function parseTaskListFilters(): TaskListFilters {
+  return {
+    titleContains: parseFlag("--title-contains"),
+    eventCategory: parseFlag("--event-category"),
+    timeSchemeId: parseFlag("--time-scheme-id"),
+    dueAfter: parseFlag("--due-after"),
+    dueBefore: parseFlag("--due-before"),
+    startAfterAfter: parseFlag("--start-after-after"),
+    startAfterBefore: parseFlag("--start-after-before")
+  };
+}
+
+function hasAnyTaskListFilter(filters: TaskListFilters): boolean {
+  return Object.values(filters).some((value) => value !== undefined && value !== "");
+}
+
+function parseTaskExportFormat(): "json" | "csv" {
+  const format = parseFlag("--format") ?? "json";
+  if (format !== "json" && format !== "csv") {
+    throw new Error("Expected --format json or --format csv.");
+  }
+  return format;
 }
 
 function readJsonInput(): unknown {
@@ -104,6 +128,31 @@ async function main(): Promise<void> {
     const taskInputs = parseReclaimTaskInputs(readJsonInput());
     console.log(JSON.stringify(await tasks.create(loadClient(), taskInputs, {
       confirmWrite: hasFlag("--confirm-write")
+    }), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:tasks:list") {
+    const client = loadClient();
+    console.log(JSON.stringify(tasks.listExistingTasks(await client.listTasks(), parseTaskListFilters()), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:tasks:filter") {
+    const filters = parseTaskListFilters();
+    if (!hasAnyTaskListFilter(filters)) {
+      throw new Error("Expected at least one task filter flag.");
+    }
+    const client = loadClient();
+    console.log(JSON.stringify(tasks.listExistingTasks(await client.listTasks(), filters), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:tasks:export") {
+    const client = loadClient();
+    console.log(JSON.stringify(tasks.exportExistingTasks(await client.listTasks(), {
+      filters: parseTaskListFilters(),
+      format: parseTaskExportFormat()
     }), null, 2));
     return;
   }

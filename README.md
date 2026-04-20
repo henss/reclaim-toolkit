@@ -39,11 +39,15 @@ npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.exa
 npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
 npm run reclaim:meetings-hours:inspect -- --config config/reclaim.local.json
 npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
+npm run reclaim:tasks:list -- --config config/reclaim.local.json
+npm run reclaim:tasks:filter -- --config config/reclaim.local.json --title-contains notes --event-category WORK
+npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-category WORK --format csv
 npm run reclaim:tasks:create -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-write
 npm run reclaim:tasks:inspect-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json
 npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-reviewed-delete
 ```
 
+Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
 Task creation and duplicate deletion require explicit confirmation flags.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
 For machine parsing, use the npm scripts with `--silent` and follow the [agent-safe JSON CLI profile](docs/cli-json-profile.md).
@@ -79,8 +83,9 @@ const policyPreview = tasks.previewTimePolicySelection(await client.listTaskAssi
   preferredTimePolicyTitle: config.preferredTimePolicyTitle,
   eventCategory: config.defaultTaskEventCategory
 });
+const readOnlyTasks = tasks.listExistingTasks(await client.listTasks(), { eventCategory: "WORK" });
 const result = await tasks.create(client, input, { confirmWrite: true });
-console.log(result.writeReceipts);
+console.log({ readOnlyTasks, writeReceipts: result.writeReceipts });
 ```
 
 ## Modules

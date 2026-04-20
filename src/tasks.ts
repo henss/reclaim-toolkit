@@ -61,6 +61,43 @@ export interface DuplicateCleanupResult extends DuplicateTaskPlan {
   writeReceipts: TaskWriteReceipt[];
 }
 
+export interface TaskListFilters {
+  titleContains?: string;
+  eventCategory?: string;
+  timeSchemeId?: string;
+  dueAfter?: string;
+  dueBefore?: string;
+  startAfterAfter?: string;
+  startAfterBefore?: string;
+}
+
+export interface TaskListItem {
+  id: number;
+  title: string;
+  notes?: string;
+  eventCategory: string;
+  timeSchemeId: string;
+  due?: string;
+  startAfter?: string;
+}
+
+export interface TaskListResult {
+  taskCount: number;
+  readSafety: "read_only";
+  filters: TaskListFilters;
+  tasks: TaskListItem[];
+}
+
+export interface TaskExportResult {
+  format: "json" | "csv";
+  taskCount: number;
+  readSafety: "read_only";
+  filters: TaskListFilters;
+  fields: Array<keyof TaskListItem>;
+  tasks?: TaskListItem[];
+  content?: string;
+}
+
 export interface TaskWriteReceipt {
   operation: "task.create" | "task.delete";
   taskId: number;
@@ -182,6 +219,146 @@ function deletedTaskReceipt(taskId: number, title: string): TaskWriteReceipt {
     title,
     confirmedAt: nowIso(),
     rollbackHint: `Recreate the task from the reviewed input or audit source if deleting Reclaim task ${taskId} was unintended.`
+  };
+}
+
+function normalizeFilters(filters: TaskListFilters = {}): TaskListFilters {
+  return Object.fromEntries(
+    Object.entries(filters).filter(([, value]) => value !== undefined && value !== "")
+  ) as TaskListFilters;
+}
+
+function parseComparableDate(value: string, label: string): number {
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) {
+    throw new Error(`Invalid ${label} date-time: ${value}`);
+  }
+  return parsed;
+}
+
+function taskDateMatches(
+  value: string | undefined,
+  filters: { after?: string; before?: string },
+  label: string
+): boolean {
+  if (!filters.after && !filters.before) {
+    return true;
+  }
+  if (!value) {
+    return false;
+  }
+  const taskTime = parseComparableDate(value, label);
+  if (filters.after && taskTime < parseComparableDate(filters.after, `${label} after`)) {
+    return false;
+  }
+  if (filters.before && taskTime > parseComparableDate(filters.before, `${label} before`)) {
+    return false;
+  }
+  return true;
+}
+
+function toTaskListItem(task: ReclaimTaskRecord): TaskListItem {
+  return {
+    id: task.id,
+    title: task.title,
+    notes: task.notes,
+    eventCategory: task.eventCategory,
+    timeSchemeId: task.timeSchemeId,
+    due: task.due,
+    startAfter: task.snoozeUntil
+  };
+}
+
+function taskMatchesFilters(task: ReclaimTaskRecord, filters: TaskListFilters): boolean {
+  if (filters.titleContains && !task.title.toLowerCase().includes(filters.titleContains.toLowerCase())) {
+    return false;
+  }
+  if (filters.eventCategory && task.eventCategory !== filters.eventCategory) {
+    return false;
+  }
+  if (filters.timeSchemeId && task.timeSchemeId !== filters.timeSchemeId) {
+    return false;
+  }
+  if (!taskDateMatches(task.due, { after: filters.dueAfter, before: filters.dueBefore }, "due")) {
+    return false;
+  }
+  if (!taskDateMatches(
+    task.snoozeUntil,
+    { after: filters.startAfterAfter, before: filters.startAfterBefore },
+    "startAfter"
+  )) {
+    return false;
+  }
+  return true;
+}
+
+export function listExistingTasks(
+  existingTasks: ReclaimTaskRecord[],
+  filters: TaskListFilters = {}
+): TaskListResult {
+  const normalizedFilters = normalizeFilters(filters);
+  const filteredTasks = existingTasks
+    .filter((task) => taskMatchesFilters(task, normalizedFilters))
+    .sort((left, right) => left.id - right.id)
+    .map(toTaskListItem);
+
+  return {
+    taskCount: filteredTasks.length,
+    readSafety: "read_only",
+    filters: normalizedFilters,
+    tasks: filteredTasks
+  };
+}
+
+function escapeCsvCell(value: unknown): string {
+  const text = value === undefined ? "" : String(value);
+  return /[",\r\n]/.test(text) ? `"${text.replaceAll("\"", "\"\"")}"` : text;
+}
+
+function toCsv(rows: TaskListItem[], fields: Array<keyof TaskListItem>): string {
+  return [
+    fields.join(","),
+    ...rows.map((row) => fields.map((field) => escapeCsvCell(row[field])).join(","))
+  ].join("\n");
+}
+
+export function exportExistingTasks(
+  existingTasks: ReclaimTaskRecord[],
+  options: {
+    filters?: TaskListFilters;
+    format?: "json" | "csv";
+  } = {}
+): TaskExportResult {
+  const format = options.format ?? "json";
+  const list = listExistingTasks(existingTasks, options.filters);
+  const fields: Array<keyof TaskListItem> = [
+    "id",
+    "title",
+    "notes",
+    "eventCategory",
+    "timeSchemeId",
+    "due",
+    "startAfter"
+  ];
+
+  if (format === "csv") {
+    return {
+      format,
+      taskCount: list.taskCount,
+      readSafety: "read_only",
+      filters: list.filters,
+      fields,
+      content: toCsv(list.tasks, fields)
+    };
+  }
+
+  return {
+    format,
+    taskCount: list.taskCount,
+    readSafety: "read_only",
+    filters: list.filters,
+    fields,
+    tasks: list.tasks
   };
 }
 
@@ -398,6 +575,8 @@ export async function cleanupDuplicates(
 export const tasks = {
   previewCreates,
   previewTimePolicySelection,
+  listExistingTasks,
+  exportExistingTasks,
   create,
   inspectDuplicates,
   cleanupDuplicates

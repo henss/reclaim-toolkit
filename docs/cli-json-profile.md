@@ -15,7 +15,7 @@ Successful commands write one pretty-printed JSON document to stdout and exit wi
 | Class | Commands | Write behavior |
 | --- | --- | --- |
 | Local preview | `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:meetings-hours:preview-inspect`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
-| Authenticated read | `reclaim:health`, `reclaim:time-policies:list`, `reclaim:tasks:inspect-duplicates`, `reclaim:meetings-hours:inspect` | Reads account data through the configured Reclaim API key. |
+| Authenticated read | `reclaim:health`, `reclaim:time-policies:list`, `reclaim:tasks:list`, `reclaim:tasks:filter`, `reclaim:tasks:export`, `reclaim:tasks:inspect-duplicates`, `reclaim:meetings-hours:inspect` | Reads account data through the configured Reclaim API key. |
 | Confirmed write | `reclaim:tasks:create`, `reclaim:tasks:cleanup-duplicates` | Requires an explicit confirmation flag before live writes. |
 
 `reclaim:tasks:create` refuses to write unless `--confirm-write` is present. `reclaim:tasks:cleanup-duplicates` refuses to delete unless `--confirm-reviewed-delete` is present. Confirmed write results include `writeReceipts` with the operation, task id, confirmation timestamp, and manual rollback hint for audit.
@@ -36,6 +36,9 @@ The JSON shapes are intended to be additive. Consumers should tolerate unknown f
 - `reclaim:config:status` reports config-file presence and parse status without validating credentials.
 - `reclaim:health` validates authenticated reachability and may include the configured API URL, user email, task-assignment policy count, and task count.
 - `reclaim:time-policies:list` returns policy-discovery JSON and the selected policy reasoning for the current config.
+- `reclaim:tasks:list` reads existing tasks and returns normalized task rows with `readSafety: "read_only"`.
+- `reclaim:tasks:filter` requires at least one filter flag and returns the same normalized read-only task rows plus the applied filters.
+- `reclaim:tasks:export` returns filtered task rows as JSON by default; `--format csv` returns CSV text in the JSON `content` field so stdout still contains one parseable JSON document.
 - `reclaim:meetings-hours:preview-inspect` returns the Meetings and Hours inspector shape from a synthetic local fixture.
 - `reclaim:meetings-hours:inspect` reads existing meetings and time schemes from the configured account and returns a summary.
 - `reclaim:tasks:inspect-duplicates` returns a duplicate plan and does not delete tasks.
