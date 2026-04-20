@@ -51,7 +51,6 @@
     "reclaim:tasks:create": "tsx src/cli.ts reclaim:tasks:create",
     "reclaim:tasks:inspect-duplicates": "tsx src/cli.ts reclaim:tasks:inspect-duplicates",
     "reclaim:tasks:cleanup-duplicates": "tsx src/cli.ts reclaim:tasks:cleanup-duplicates",
-    "lint:public-boundary": "tsx scripts/check-public-boundary.ts",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
