@@ -10,6 +10,7 @@ import {
   parseReclaimMeetingsAndHoursSnapshot
 } from "./meetings-hours.js";
 import { runMockReclaimApiDemo } from "./mock-lab.js";
+import { getReclaimOnboardingWizard } from "./onboarding.js";
 import { parseReclaimTaskInputs, tasks, type TaskListFilters } from "./tasks.js";
 
 function parseFlag(flag: string): string | undefined {
@@ -66,6 +67,11 @@ async function main(): Promise<void> {
 
   if (command === "reclaim:config:status") {
     console.log(JSON.stringify(getReclaimConfigStatus(parseFlag("--config")), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:onboarding") {
+    console.log(JSON.stringify(getReclaimOnboardingWizard(parseFlag("--config")), null, 2));
     return;
   }
 

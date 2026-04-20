@@ -14,7 +14,7 @@ Successful commands write one pretty-printed JSON document to stdout and exit wi
 
 | Class | Commands | Write behavior |
 | --- | --- | --- |
-| Local preview | `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:meetings-hours:preview-inspect`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
+| Local preview | `reclaim:onboarding`, `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:meetings-hours:preview-inspect`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
 | Authenticated read | `reclaim:health`, `reclaim:time-policies:list`, `reclaim:tasks:list`, `reclaim:tasks:filter`, `reclaim:tasks:export`, `reclaim:tasks:inspect-duplicates`, `reclaim:meetings-hours:inspect` | Reads account data through the configured Reclaim API key. |
 | Confirmed write | `reclaim:tasks:create`, `reclaim:tasks:cleanup-duplicates` | Requires an explicit confirmation flag before live writes. |
 
@@ -33,6 +33,7 @@ The JSON shapes are intended to be additive. Consumers should tolerate unknown f
 
 ## Command Notes
 
+- `reclaim:onboarding` reports local config readiness, safe synthetic fixture commands, and confirmed-write review reminders without contacting Reclaim or writing files.
 - `reclaim:config:status` reports config-file presence and parse status without validating credentials.
 - `reclaim:health` validates authenticated reachability and may include the configured API URL, user email, task-assignment policy count, and task count.
 - `reclaim:time-policies:list` returns policy-discovery JSON and the selected policy reasoning for the current config.

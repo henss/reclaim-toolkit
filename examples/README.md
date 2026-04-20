@@ -11,6 +11,7 @@ Rules:
 
 ## Files
 
+- `reclaim.config.example.json`: synthetic config shape reference for a private local config file.
 - `tasks.example.json`: minimal task-create fixture for smoke testing task commands.
 - `scheduling-recipes.example.json`: synthetic recipe pack for common scheduling shapes such as kickoff prep, review windows, release checklists, personal admin, learning blocks, and weekly planning.
 - `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
@@ -21,6 +22,12 @@ Run the public-boundary lint before committing example changes:
 
 ```bash
 npm run lint:public-boundary
+```
+
+To see a credential-free onboarding checklist before configuring anything, run:
+
+```bash
+npm run reclaim:onboarding
 ```
 
 The recipe pack is still a task input file, so it can be previewed with:

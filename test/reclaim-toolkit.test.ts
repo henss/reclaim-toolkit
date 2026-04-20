@@ -137,6 +137,65 @@ describe("agent-safe CLI JSON profile", () => {
     expect(result.stderr).toContain("private-orchestrator-surface");
   });
 
+  test("emits a public-safe onboarding wizard without requiring config", () => {
+    const result = runNpmCli(["reclaim:onboarding"]);
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    const output = JSON.parse(result.stdout) as {
+      wizard: string;
+      writeSafety: string;
+      config: { path: string; exists: boolean; parseStatus: string; notes: string[] };
+      steps: Array<{ id: string; safetyClass: string; status: string; command?: string; notes: string[] }>;
+    };
+    expect(output).toMatchObject({
+      wizard: "reclaim-toolkit-onboarding",
+      writeSafety: "no_live_writes",
+      config: {
+        path: "config/reclaim.local.json",
+        exists: false,
+        parseStatus: "missing"
+      }
+    });
+    expect(result.stdout).not.toContain("D:\\workspace");
+    expect(output.steps.find((step) => step.id === "preview-fixtures")).toMatchObject({
+      safetyClass: "local_preview",
+      status: "ready",
+      command: "npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json"
+    });
+    expect(output.steps.find((step) => step.id === "confirmed-write-review")).toMatchObject({
+      safetyClass: "confirmed_write_review",
+      status: "review_required"
+    });
+  });
+
+  test("onboarding reports a synthetic local config as ready without validating credentials", () => {
+    const repoPath = makeTempDir();
+    const configPath = path.join(repoPath, "config", "reclaim.local.json");
+    writeConfigFile(configPath, {
+      apiUrl: "http://127.0.0.1:43210",
+      apiKey: "synthetic-key",
+      timeoutMs: 1000,
+      defaultTaskEventCategory: "WORK"
+    });
+
+    const result = runNpmCli(["reclaim:onboarding", "--", "--config", configPath]);
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    const output = JSON.parse(result.stdout) as {
+      config: { exists: boolean; parseStatus: string; normalizedApiUrl?: string; defaultTaskEventCategory?: string };
+      steps: Array<{ id: string; status: string }>;
+    };
+    expect(output.config).toMatchObject({
+      exists: true,
+      parseStatus: "valid",
+      normalizedApiUrl: "http://127.0.0.1:43210/api",
+      defaultTaskEventCategory: "WORK"
+    });
+    expect(output.steps.find((step) => step.id === "authenticated-read")?.status).toBe("ready");
+  });
+
   test("emits parseable JSON on stdout for successful npm-silent commands", () => {
     const result = runNpmCli([
       "reclaim:tasks:preview-create",

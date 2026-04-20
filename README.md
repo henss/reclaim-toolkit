@@ -28,6 +28,7 @@ Set either `preferredTimePolicyId` or `preferredTimePolicyTitle` when task creat
 ## CLI
 
 ```bash
+npm run reclaim:onboarding
 npm run reclaim:config:status -- --config config/reclaim.local.json
 npm run reclaim:health -- --config config/reclaim.local.json
 npm run reclaim:time-policies:list -- --config config/reclaim.local.json
@@ -47,6 +48,7 @@ npm run reclaim:tasks:inspect-duplicates -- --config config/reclaim.local.json -
 npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-reviewed-delete
 ```
 
+`reclaim:onboarding` is a credential-free wizard that reports local config readiness, safe synthetic fixture commands, and write-guard reminders without contacting Reclaim or writing files.
 Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
 Task creation and duplicate deletion require explicit confirmation flags.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
@@ -57,6 +59,7 @@ For machine parsing, use the npm scripts with `--silent` and follow the [agent-s
 Agent and script callers should use the npm script surface with `--silent`, for example:
 
 ```bash
+npm run --silent reclaim:onboarding
 npm run --silent reclaim:tasks:preview-create -- --input examples/tasks.example.json
 ```
 

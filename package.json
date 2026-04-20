@@ -34,6 +34,7 @@
     "examples"
   ],
   "scripts": {
+    "reclaim:onboarding": "tsx src/cli.ts reclaim:onboarding",
     "reclaim:config:status": "tsx src/cli.ts reclaim:config:status",
     "reclaim:health": "tsx src/cli.ts reclaim:health",
     "reclaim:time-policies:list": "tsx src/cli.ts reclaim:time-policies:list",
