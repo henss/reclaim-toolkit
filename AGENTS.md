@@ -8,7 +8,10 @@ This file is the repo-local agent entrypoint. It is generated from the shared po
 
 - Before non-trivial implementation, read this file and `.codex/portfolio-guidance.md`.
 - Prefer repo-local conventions and verification commands over generic assumptions.
+- Before non-trivial TypeScript edits, run `pnpm check:agent-surface:preedit -- <candidate files>` when that script exists.
+- Prefer named exports and type-only imports, and run repo-local lint/typecheck/test or `pnpm verify:session` before stopping.
 - Promote repeated workflows into reusable skills, scripts, or local automation; promote repeated mistakes or ambiguity into evals or the appropriate durable guidance surface.
+- Use scoped autonomy envelopes to let bounded public, paid, creative, venture, tool, distribution, or ad experiments proceed when downside is capped and recoverable; stop for hard-to-recover legal, financial, reputation, security, client/company, credential, or safety risk.
 - Before non-trivial code edits, use this repo's agent-surface or size guard when present; if a touched file is near-limit or structurally busy, extract a focused seam before adding feature weight.
 - Prefer repo-local current state, generated status, or live tool output before older notes or historical ledgers when deciding what is true now.
 - Record unresolved design questions, repeated confusion, token waste, compatibility ambiguity, or follow-up work in the repo's canonical tracker, decision log, evals, or outcome artifact instead of leaving it only in chat.

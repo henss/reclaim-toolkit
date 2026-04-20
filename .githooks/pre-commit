@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+echo "pre-commit: running staged agent-surface guard"
+npm run --if-present check:agent-surface:staged
+has_eslint_repo_check() { node -e "const fs=require('fs'); const pkgPath='package.json'; const candidateFiles=['eslint.config.js','eslint.config.cjs','eslint.config.mjs','eslint.config.ts','.eslintrc','.eslintrc.js','.eslintrc.cjs','.eslintrc.json','.eslintrc.yaml','.eslintrc.yml']; const pkg=fs.existsSync(pkgPath)?JSON.parse(fs.readFileSync(pkgPath,'utf8')):{}; const deps={...(pkg.dependencies||{}),...(pkg.devDependencies||{})}; const hasConfig=candidateFiles.some((file)=>fs.existsSync(file))||Boolean(pkg.eslintConfig); process.exit(hasConfig||Boolean(deps.eslint)?0:1);"; }
+run_eslint_repo_check() { mkdir -p "$repo_root/node_modules/.cache/eslint"
+  if [ -x "$repo_root/node_modules/.bin/eslint" ]; then "$repo_root/node_modules/.bin/eslint" --cache --cache-location "$repo_root/node_modules/.cache/eslint/.eslintcache" .; return; fi
+  if [ -x "$repo_root/node_modules/.bin/eslint.cmd" ]; then "$repo_root/node_modules/.bin/eslint.cmd" --cache --cache-location "$repo_root/node_modules/.cache/eslint/.eslintcache" .; return; fi
+  npx --no-install eslint --cache --cache-location "$repo_root/node_modules/.cache/eslint/.eslintcache" .
+}
+if has_eslint_repo_check; then
+  echo "pre-commit: running repo ESLint check"
+  run_eslint_repo_check
+fi

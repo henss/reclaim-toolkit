@@ -4,9 +4,17 @@
 
 This file is a self-contained shared standard for agents working directly in this repo. Keep repo-specific additions in the local block so sync can refresh the managed guidance safely.
 
+## Coding Standard
+
+- Prefer named exports and type-only imports.
+- Keep files small, explicit, and easy to grep.
+- Before non-trivial TypeScript edits, run `pnpm check:agent-surface:preedit -- <candidate files>` when available.
+- Run the narrowest repo-local validation command before stopping, usually `pnpm verify:session` when present.
+
 ## Catalog-Managed Rules
 
 - Promote repeated workflows into reusable skills, scripts, or local automation; promote repeated mistakes or ambiguity into evals or the appropriate durable guidance surface.
+- Treat recoverable venture, creative, quality-of-life, public, distribution, tool, or small ad tests as normal work when a scoped autonomy envelope records the cap, stop condition, measurement, and readout. Stop for life-changing or hard-to-recover downside.
 - Keep files small and single-purpose. Prefer explicit data shapes, boundary-local normalization, narrow helpers, and focused tests. If a touched file is already structurally busy, extract a clearer seam before adding feature weight.
 - Prefer repo-local current state, generated status, or live tool output before older notes or historical ledgers when deciding what is true now.
 - Record unresolved design questions, repeated confusion, token waste, compatibility ambiguity, or follow-up work in the repo's canonical tracker, decision log, evals, or outcome artifact instead of leaving it only in chat.

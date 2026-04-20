@@ -1,0 +1,9 @@
+{
+  "defaults": {
+    "sourceMaxLines": 550,
+    "testMaxLines": 1000,
+    "softSourceLines": 400,
+    "softTestLines": 800
+  },
+  "overrides": {}
+}

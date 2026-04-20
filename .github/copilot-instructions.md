@@ -4,6 +4,8 @@
 
 - Follow this repo's checked-in guidance and conventions. These instructions are intentionally self-contained for direct repo-started agents.
 - Read `AGENTS.md` and `.codex/portfolio-guidance.md` before implementation.
+- Prefer named exports, type-only imports, small files, and repo-local verification before completion.
+- Do not suppress bounded experiments solely because they may fail; use caps, stop conditions, and audit trails to keep recoverable risks manageable.
 - Keep generated or agent-created code small, typed, and easy to verify; split busy files before adding more feature weight.
 - Prefer repo-local current state, generated status, or live tool output before older notes when deciding what is true now.
 - Work on this repo's current default/shared branch unless local instructions explicitly request another flow; do not create branches or worktrees for routine work.

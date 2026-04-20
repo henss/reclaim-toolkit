@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+if upstream_ref="$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null)"; then surface_base_ref="$upstream_ref"; else surface_base_ref="HEAD~1"; fi
+if git diff --name-only "$surface_base_ref"..HEAD | grep -Eq '\.(ts|js|mjs|cjs)$'; then
+  echo "pre-push: running changed-file agent-surface guard"
+  npm run --if-present check:agent-surface -- --changed-against "$surface_base_ref"
+fi
+echo "pre-push: running typecheck when present"
+npm run --if-present typecheck

@@ -53,7 +53,17 @@
     "reclaim:tasks:cleanup-duplicates": "tsx src/cli.ts reclaim:tasks:cleanup-duplicates",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint:public-boundary": "tsx scripts/lint-public-boundary.ts",
+    "git-hooks:install": "powershell -ExecutionPolicy Bypass -File .\\scripts\\install-git-hooks.ps1",
+    "check:agent-surface": "tsx scripts/check-agent-surface.ts",
+    "check:agent-surface:preedit": "tsx scripts/check-agent-surface.ts",
+    "check:agent-surface:staged": "tsx scripts/check-agent-surface.ts --staged",
+    "refactor:extract-exports": "tsx scripts/refactor-extract-exports.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:typechecked": "eslint . --config eslint.typechecked.config.mjs",
+    "verify:session": "npm run lint && npm run typecheck && npm run test && npm run check:agent-surface"
   },
   "dependencies": {
     "zod": "^4.3.6"
@@ -62,6 +72,11 @@
     "@types/node": "^20.19.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.2"
+    "vitest": "^4.1.2",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "globals": "^16.5.0",
+    "ts-morph": "^27.0.2",
+    "typescript-eslint": "^8.50.0"
   }
 }
