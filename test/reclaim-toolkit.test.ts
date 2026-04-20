@@ -112,6 +112,31 @@ function runNpmCliAsync(args: string[]): Promise<{ status: number | null; stdout
 }
 
 describe("agent-safe CLI JSON profile", () => {
+  test("passes the public-boundary lint for committed example fixtures", () => {
+    const result = runNpmCli(["lint:public-boundary"]);
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    expect(result.stdout.trim()).toBe("Public-boundary lint passed for 7 file(s).");
+  });
+
+  test("public-boundary lint rejects private workspace markers in examples", () => {
+    const repoPath = makeTempDir();
+    const examplePath = path.join(repoPath, "leaky.example.json");
+    fs.writeFileSync(
+      examplePath,
+      JSON.stringify({ tasks: [{ title: "Copy from D:\\workspace\\llm-orchestrator" }] }),
+      "utf8"
+    );
+
+    const result = runNpmCli(["lint:public-boundary", "--", examplePath]);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("private-workspace-path");
+    expect(result.stderr).toContain("private-orchestrator-surface");
+  });
+
   test("emits parseable JSON on stdout for successful npm-silent commands", () => {
     const result = runNpmCli([
       "reclaim:tasks:preview-create",

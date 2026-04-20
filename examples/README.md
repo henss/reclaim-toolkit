@@ -17,6 +17,12 @@ Rules:
 - `focus-and-buffers.example.json`: preview-only Focus and Buffer fixture with synthetic focus windows and transition buffers.
 - `meetings-and-hours.example.json`: synthetic Meetings and Hours inspector fixture with placeholder meeting and time-policy summaries.
 
+Run the public-boundary lint before committing example changes:
+
+```bash
+npm run lint:public-boundary
+```
+
 The recipe pack is still a task input file, so it can be previewed with:
 
 ```bash
