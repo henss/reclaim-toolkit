@@ -90,6 +90,7 @@ Wave 1 includes config, client, health, task utilities, preview-only Habit, Focu
 See [docs/habits.md](docs/habits.md) for the public-safe Habit input shape.
 See [docs/focus-and-buffers.md](docs/focus-and-buffers.md) for the public-safe Focus and Buffer input shapes.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
+See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 
 ## Related Work
 

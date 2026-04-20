@@ -11,3 +11,5 @@ Future modules can cover:
 - Higher-level task search and completion helpers.
 
 New modules should ship only when they have a tested implementation and synthetic examples.
+
+See [write expansion routing](write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
