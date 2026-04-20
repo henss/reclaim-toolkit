@@ -1,5 +1,6 @@
-import { spawnSync, type SpawnSyncReturns } from "node:child_process";
+import { spawn, spawnSync, type SpawnSyncReturns } from "node:child_process";
 import fs from "node:fs";
+import { createServer, type Server } from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
@@ -45,6 +46,23 @@ function writeConfig(repoPath: string): void {
   );
 }
 
+function writeConfigFile(configPath: string, config: Record<string, unknown>): void {
+  fs.mkdirSync(path.dirname(configPath), { recursive: true });
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
+}
+
+function listen(server: Server): Promise<number> {
+  return new Promise((resolve) => {
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        throw new Error("Expected test server to listen on a TCP port.");
+      }
+      resolve(address.port);
+    });
+  });
+}
+
 function npmCommand(): string {
   return process.platform === "win32" ? "npm.cmd" : "npm";
 }
@@ -64,6 +82,32 @@ function runNpmCli(args: string[]): SpawnSyncReturns<string> {
   return spawnSync(npmCommand(), ["run", "--silent", ...args], {
     cwd: process.cwd(),
     encoding: "utf8"
+  });
+}
+
+function runNpmCliAsync(args: string[]): Promise<{ status: number | null; stdout: string; stderr: string }> {
+  const child = process.platform === "win32"
+    ? spawn(process.env.ComSpec ?? "cmd.exe", ["/d", "/s", "/c", ["npm", "run", "--silent", ...args].join(" ")], {
+      cwd: process.cwd()
+    })
+    : spawn(npmCommand(), ["run", "--silent", ...args], { cwd: process.cwd() });
+
+  let stdout = "";
+  let stderr = "";
+  child.stdout.setEncoding("utf8");
+  child.stderr.setEncoding("utf8");
+  child.stdout.on("data", (chunk: string) => {
+    stdout += chunk;
+  });
+  child.stderr.on("data", (chunk: string) => {
+    stderr += chunk;
+  });
+
+  return new Promise((resolve, reject) => {
+    child.on("error", reject);
+    child.on("close", (status) => {
+      resolve({ status, stdout, stderr });
+    });
   });
 }
 
@@ -113,6 +157,67 @@ describe("agent-safe CLI JSON profile", () => {
     const output = JSON.parse(result.stdout) as { meetingCount: number; readSafety: string };
     expect(output.meetingCount).toBe(2);
     expect(output.readSafety).toBe("read_only");
+  });
+
+  test("emits policy discovery JSON for the authenticated time-policy command", async () => {
+    const server = createServer((request, response) => {
+      if (request.url === "/api/timeschemes") {
+        response.writeHead(200, { "Content-Type": "application/json" });
+        response.end(JSON.stringify([
+          {
+            id: "policy-personal",
+            title: "Personal Hours",
+            taskCategory: "PERSONAL",
+            features: ["TASK_ASSIGNMENT"]
+          },
+          {
+            id: "policy-deep-work",
+            title: "Deep Work",
+            taskCategory: "WORK",
+            description: "Synthetic task-assignment policy for focused work.",
+            features: ["TASK_ASSIGNMENT"]
+          }
+        ]));
+        return;
+      }
+
+      response.writeHead(404);
+      response.end();
+    });
+    const port = await listen(server);
+    const repoPath = makeTempDir();
+    const configPath = path.join(repoPath, "config", "reclaim.local.json");
+    writeConfigFile(configPath, {
+      apiUrl: `http://127.0.0.1:${port}`,
+      apiKey: "synthetic-key",
+      timeoutMs: 1000,
+      defaultTaskEventCategory: "WORK",
+      preferredTimePolicyTitle: "deep"
+    });
+
+    try {
+      const result = await runNpmCliAsync(["reclaim:time-policies:list", "--", "--config", configPath]);
+
+      expect(result.status).toBe(0);
+      expect(result.stderr).toBe("");
+      const output = JSON.parse(result.stdout) as {
+        selectedPolicy?: { id: string; title: string; matchesDefaultEventCategory: boolean };
+        selectionReason: string;
+        policies: Array<{ id: string; matchesDefaultEventCategory: boolean }>;
+      };
+      expect(output.selectedPolicy).toMatchObject({
+        id: "policy-deep-work",
+        title: "Deep Work",
+        matchesDefaultEventCategory: true
+      });
+      expect(output.selectionReason).toBe('Matched preferred Reclaim time policy title "deep".');
+      expect(output.policies).toHaveLength(2);
+      expect(output.policies.find((policy) => policy.id === "policy-personal")?.matchesDefaultEventCategory).toBe(
+        false
+      );
+    } finally {
+      server.close();
+    }
   });
 });
 
