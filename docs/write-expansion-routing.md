@@ -36,4 +36,6 @@ Stop for explicit review before package publication, release automation, license
 
 ## Suggested Next Slice
 
+See [safe write expansion: first proof](write-expansion-first-proof.md) for the current candidate comparison and recommended first slice.
+
 Gather public API-shape evidence for Habit writes and compare it to the existing preview request shape. The value is a clear adopt-or-defer decision before adding code; the downside of waiting is that Habit, Focus, and Buffer work may continue as disconnected preview-only tickets instead of one governed expansion track.
