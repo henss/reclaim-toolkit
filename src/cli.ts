@@ -2,6 +2,10 @@
 
 import fs from "node:fs";
 import {
+  accountAudit,
+  parseReclaimAccountAuditSnapshot
+} from "./account-audit.js";
+import {
   bufferTemplates,
   parseReclaimBufferTemplateInputs
 } from "./buffer-templates.js";
@@ -72,139 +76,115 @@ function loadClient(): ReturnType<typeof createReclaimClient> {
   return createReclaimClient(config);
 }
 
+function printJson(value: unknown): void {
+  console.log(JSON.stringify(value, null, 2));
+}
+
+type CommandHandler = () => Promise<void> | void;
+
+function buildCommandHandlers(): Record<string, CommandHandler> {
+  return {
+    "reclaim:config:status": () => {
+      printJson(getReclaimConfigStatus(parseFlag("--config")));
+    },
+    "reclaim:onboarding": () => {
+      printJson(getReclaimOnboardingWizard(parseFlag("--config")));
+    },
+    "reclaim:health": async () => {
+      printJson(await runReclaimHealthCheck(parseFlag("--config")));
+    },
+    "reclaim:time-policies:list": async () => {
+      const client = loadClient();
+      printJson(tasks.previewTimePolicySelection(await client.listTaskAssignmentTimeSchemes(), {
+        preferredTimePolicyId: client.config.preferredTimePolicyId,
+        preferredTimePolicyTitle: client.config.preferredTimePolicyTitle,
+        eventCategory: client.config.defaultTaskEventCategory
+      }));
+    },
+    "reclaim:time-policies:explain-conflicts": () => {
+      printJson(explainTimePolicyConflicts(parseReclaimTimePolicyExplainerInput(readJsonInput())));
+    },
+    "reclaim:tasks:preview-create": () => {
+      printJson(tasks.previewCreates(parseReclaimTaskInputs(readJsonInput())));
+    },
+    "reclaim:habits:preview-create": () => {
+      printJson(habits.previewCreates(parseReclaimHabitInputs(readJsonInput())));
+    },
+    "reclaim:focus:preview-create": () => {
+      printJson(focus.previewCreates(parseReclaimFocusInputs(readJsonInput())));
+    },
+    "reclaim:buffers:preview-create": () => {
+      printJson(buffers.previewCreates(parseReclaimBufferInputs(readJsonInput())));
+    },
+    "reclaim:buffers:preview-template": () => {
+      printJson(bufferTemplates.preview(parseReclaimBufferTemplateInputs(readJsonInput())));
+    },
+    "reclaim:meetings-hours:preview-inspect": () => {
+      printJson(meetingsHours.inspectSnapshot(parseReclaimMeetingsAndHoursSnapshot(readJsonInput())));
+    },
+    "reclaim:account-audit:preview-inspect": () => {
+      printJson(accountAudit.inspectSnapshot(parseReclaimAccountAuditSnapshot(readJsonInput())));
+    },
+    "reclaim:meetings-hours:inspect": async () => {
+      printJson(await meetingsHours.inspect(loadClient()));
+    },
+    "reclaim:account-audit:inspect": async () => {
+      printJson(await accountAudit.inspect(loadClient()));
+    },
+    "reclaim:demo:mock-api": async () => {
+      printJson(await runMockReclaimApiDemo(parseFlag("--input")));
+    },
+    "reclaim:tasks:create": async () => {
+      printJson(await tasks.create(loadClient(), parseReclaimTaskInputs(readJsonInput()), {
+        confirmWrite: hasFlag("--confirm-write")
+      }));
+    },
+    "reclaim:tasks:list": async () => {
+      const client = loadClient();
+      printJson(tasks.listExistingTasks(await client.listTasks(), parseTaskListFilters()));
+    },
+    "reclaim:tasks:filter": async () => {
+      const filters = parseTaskListFilters();
+      if (!hasAnyTaskListFilter(filters)) {
+        throw new Error("Expected at least one task filter flag.");
+      }
+      const client = loadClient();
+      printJson(tasks.listExistingTasks(await client.listTasks(), filters));
+    },
+    "reclaim:tasks:export": async () => {
+      const client = loadClient();
+      printJson(tasks.exportExistingTasks(await client.listTasks(), {
+        filters: parseTaskListFilters(),
+        format: parseTaskExportFormat()
+      }));
+    },
+    "reclaim:tasks:inspect-duplicates": async () => {
+      const taskInputs = parseReclaimTaskInputs(readJsonInput());
+      const client = loadClient();
+      printJson(tasks.inspectDuplicates(taskInputs, await client.listTasks(), {
+        timeSchemeId: client.config.preferredTimePolicyId,
+        eventCategory: client.config.defaultTaskEventCategory
+      }));
+    },
+    "reclaim:tasks:cleanup-duplicates": async () => {
+      const taskInputs = parseReclaimTaskInputs(readJsonInput());
+      const client = loadClient();
+      const plan = tasks.inspectDuplicates(taskInputs, await client.listTasks(), {
+        timeSchemeId: client.config.preferredTimePolicyId,
+        eventCategory: client.config.defaultTaskEventCategory
+      });
+      printJson(await tasks.cleanupDuplicates(client, plan, {
+        confirmDelete: hasFlag("--confirm-reviewed-delete")
+      }));
+    }
+  };
+}
+
 async function main(): Promise<void> {
   const command = process.argv[2];
-
-  if (command === "reclaim:config:status") {
-    console.log(JSON.stringify(getReclaimConfigStatus(parseFlag("--config")), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:onboarding") {
-    console.log(JSON.stringify(getReclaimOnboardingWizard(parseFlag("--config")), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:health") {
-    console.log(JSON.stringify(await runReclaimHealthCheck(parseFlag("--config")), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:time-policies:list") {
-    const client = loadClient();
-    console.log(JSON.stringify(tasks.previewTimePolicySelection(await client.listTaskAssignmentTimeSchemes(), {
-      preferredTimePolicyId: client.config.preferredTimePolicyId,
-      preferredTimePolicyTitle: client.config.preferredTimePolicyTitle,
-      eventCategory: client.config.defaultTaskEventCategory
-    }), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:time-policies:explain-conflicts") {
-    const input = parseReclaimTimePolicyExplainerInput(readJsonInput());
-    console.log(JSON.stringify(explainTimePolicyConflicts(input), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:tasks:preview-create") {
-    const taskInputs = parseReclaimTaskInputs(readJsonInput());
-    console.log(JSON.stringify(tasks.previewCreates(taskInputs), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:habits:preview-create") {
-    const habitInputs = parseReclaimHabitInputs(readJsonInput());
-    console.log(JSON.stringify(habits.previewCreates(habitInputs), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:focus:preview-create") {
-    const focusInputs = parseReclaimFocusInputs(readJsonInput());
-    console.log(JSON.stringify(focus.previewCreates(focusInputs), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:buffers:preview-create") {
-    const bufferInputs = parseReclaimBufferInputs(readJsonInput());
-    console.log(JSON.stringify(buffers.previewCreates(bufferInputs), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:buffers:preview-template") {
-    const templateInputs = parseReclaimBufferTemplateInputs(readJsonInput());
-    console.log(JSON.stringify(bufferTemplates.preview(templateInputs), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:meetings-hours:preview-inspect") {
-    const snapshot = parseReclaimMeetingsAndHoursSnapshot(readJsonInput());
-    console.log(JSON.stringify(meetingsHours.inspectSnapshot(snapshot), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:meetings-hours:inspect") {
-    console.log(JSON.stringify(await meetingsHours.inspect(loadClient()), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:demo:mock-api") {
-    console.log(JSON.stringify(await runMockReclaimApiDemo(parseFlag("--input")), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:tasks:create") {
-    const taskInputs = parseReclaimTaskInputs(readJsonInput());
-    console.log(JSON.stringify(await tasks.create(loadClient(), taskInputs, {
-      confirmWrite: hasFlag("--confirm-write")
-    }), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:tasks:list") {
-    const client = loadClient();
-    console.log(JSON.stringify(tasks.listExistingTasks(await client.listTasks(), parseTaskListFilters()), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:tasks:filter") {
-    const filters = parseTaskListFilters();
-    if (!hasAnyTaskListFilter(filters)) {
-      throw new Error("Expected at least one task filter flag.");
-    }
-    const client = loadClient();
-    console.log(JSON.stringify(tasks.listExistingTasks(await client.listTasks(), filters), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:tasks:export") {
-    const client = loadClient();
-    console.log(JSON.stringify(tasks.exportExistingTasks(await client.listTasks(), {
-      filters: parseTaskListFilters(),
-      format: parseTaskExportFormat()
-    }), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:tasks:inspect-duplicates") {
-    const taskInputs = parseReclaimTaskInputs(readJsonInput());
-    const client = loadClient();
-    console.log(JSON.stringify(tasks.inspectDuplicates(taskInputs, await client.listTasks(), {
-      timeSchemeId: client.config.preferredTimePolicyId,
-      eventCategory: client.config.defaultTaskEventCategory
-    }), null, 2));
-    return;
-  }
-
-  if (command === "reclaim:tasks:cleanup-duplicates") {
-    const taskInputs = parseReclaimTaskInputs(readJsonInput());
-    const client = loadClient();
-    const plan = tasks.inspectDuplicates(taskInputs, await client.listTasks(), {
-      timeSchemeId: client.config.preferredTimePolicyId,
-      eventCategory: client.config.defaultTaskEventCategory
-    });
-    console.log(JSON.stringify(await tasks.cleanupDuplicates(client, plan, {
-      confirmDelete: hasFlag("--confirm-reviewed-delete")
-    }), null, 2));
+  const handler = command ? buildCommandHandlers()[command] : undefined;
+  if (handler) {
+    await handler();
     return;
   }
 

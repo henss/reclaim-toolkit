@@ -1,0 +1,60 @@
+{
+  "currentUser": {
+    "id": "user-demo-1",
+    "email": "demo.user@example.com",
+    "name": "Demo User"
+  },
+  "tasks": [
+    {
+      "id": 11,
+      "title": "Draft planning notes",
+      "eventCategory": "WORK",
+      "timeSchemeId": "policy-work",
+      "due": "2026-05-06T15:00:00.000Z",
+      "snoozeUntil": "2026-05-06T07:00:00.000Z"
+    },
+    {
+      "id": 12,
+      "title": "Update personal admin notes",
+      "eventCategory": "PERSONAL",
+      "timeSchemeId": "policy-personal"
+    }
+  ],
+  "meetings": [
+    {
+      "id": "meeting-demo-1",
+      "title": "Project sync",
+      "durationMinutes": 30,
+      "attendeeCount": 3
+    },
+    {
+      "id": "meeting-demo-2",
+      "title": "Async planning block",
+      "durationMinutes": 45,
+      "attendeeCount": 0
+    }
+  ],
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Work Hours",
+      "taskCategory": "WORK",
+      "timezone": "Europe/Berlin",
+      "features": ["TASK_ASSIGNMENT", "AVAILABILITY"],
+      "windows": [
+        { "dayOfWeek": "monday", "start": "09:00", "end": "17:00" },
+        { "dayOfWeek": "tuesday", "start": "09:00", "end": "17:00" }
+      ]
+    },
+    {
+      "id": "policy-personal",
+      "title": "Personal Hours",
+      "taskCategory": "PERSONAL",
+      "timezone": "Europe/Berlin",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        { "dayOfWeek": "saturday", "start": "10:00", "end": "14:00" }
+      ]
+    }
+  ]
+}

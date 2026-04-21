@@ -14,14 +14,15 @@ Successful commands write one pretty-printed JSON document to stdout and exit wi
 
 | Class | Commands | Write behavior |
 | --- | --- | --- |
-| Local preview | `reclaim:onboarding`, `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:buffers:preview-template`, `reclaim:meetings-hours:preview-inspect`, `reclaim:time-policies:explain-conflicts`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
-| Authenticated read | `reclaim:health`, `reclaim:time-policies:list`, `reclaim:tasks:list`, `reclaim:tasks:filter`, `reclaim:tasks:export`, `reclaim:tasks:inspect-duplicates`, `reclaim:meetings-hours:inspect` | Reads account data through the configured Reclaim API key. |
+| Local preview | `reclaim:onboarding`, `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:buffers:preview-template`, `reclaim:meetings-hours:preview-inspect`, `reclaim:account-audit:preview-inspect`, `reclaim:time-policies:explain-conflicts`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
+| Authenticated read | `reclaim:health`, `reclaim:time-policies:list`, `reclaim:tasks:list`, `reclaim:tasks:filter`, `reclaim:tasks:export`, `reclaim:tasks:inspect-duplicates`, `reclaim:meetings-hours:inspect`, `reclaim:account-audit:inspect` | Reads account data through the configured Reclaim API key. |
 | Confirmed write | `reclaim:tasks:create`, `reclaim:tasks:cleanup-duplicates` | Requires an explicit confirmation flag before live writes. |
 
 `reclaim:tasks:create` refuses to write unless `--confirm-write` is present. `reclaim:tasks:cleanup-duplicates` refuses to delete unless `--confirm-reviewed-delete` is present. Confirmed write results include `writeReceipts` with the operation, task id, confirmation timestamp, and manual rollback hint for audit.
 
 Preview-only Habit, Focus, and Buffer commands include `writeSafety: "preview_only"` in their JSON result. `reclaim:buffers:preview-template` also includes synthetic `mockResponse` and `previewReceipt` fields so template evaluation can inspect receipt-style output without contacting Reclaim. Task preview commands include the request payloads that would be sent by a later confirmed task create, but they do not contact Reclaim or create tasks.
 The Meetings and Hours inspector includes `readSafety: "read_only"` and does not create meetings, update hours, or recommend availability.
+The account audit snapshot includes only counts and capability coverage, plus `readSafety: "read_only"`, so downstream consumers can audit account shape without relying on task titles, meeting titles, ids, or user identifiers.
 
 ## Parsing Rules
 
@@ -43,5 +44,7 @@ The JSON shapes are intended to be additive. Consumers should tolerate unknown f
 - `reclaim:tasks:export` returns filtered task rows as JSON by default; `--format csv` returns CSV text in the JSON `content` field so stdout still contains one parseable JSON document.
 - `reclaim:meetings-hours:preview-inspect` returns the Meetings and Hours inspector shape from a synthetic local fixture.
 - `reclaim:meetings-hours:inspect` reads existing meetings and time schemes from the configured account and returns a summary.
+- `reclaim:account-audit:preview-inspect` returns the account audit snapshot shape from a synthetic local fixture.
+- `reclaim:account-audit:inspect` reads the current user, tasks, meetings, and time schemes from the configured account and returns summary-only counts.
 - `reclaim:tasks:inspect-duplicates` returns a duplicate plan and does not delete tasks.
 - `reclaim:demo:mock-api` uses only synthetic in-memory data and is suitable for credential-free CLI practice.

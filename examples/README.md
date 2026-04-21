@@ -79,3 +79,9 @@ npm run reclaim:time-policies:list -- --config config/reclaim.local.json
 ```
 
 Do not commit local config files or command output containing account-specific policy ids.
+
+For a summary-only account audit shape that avoids exporting task titles, meeting titles, or user identifiers, use:
+
+```bash
+npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json
+```

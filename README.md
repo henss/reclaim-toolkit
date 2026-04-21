@@ -40,7 +40,9 @@ npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.examp
 npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
 npm run reclaim:buffers:preview-template -- --input examples/buffer-templates.example.json
 npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
+npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json
 npm run reclaim:meetings-hours:inspect -- --config config/reclaim.local.json
+npm run reclaim:account-audit:inspect -- --config config/reclaim.local.json
 npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
 npm run reclaim:tasks:list -- --config config/reclaim.local.json
 npm run reclaim:tasks:filter -- --config config/reclaim.local.json --title-contains notes --event-category WORK
@@ -52,6 +54,7 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 
 `reclaim:onboarding` is a credential-free wizard that reports local config readiness, safe synthetic fixture commands, and write-guard reminders without contacting Reclaim or writing files.
 Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
+`reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
 `reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task and policy inputs.
 Task creation and duplicate deletion require explicit confirmation flags.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
@@ -102,11 +105,12 @@ console.log({ policyPreview, policyConflicts, readOnlyTasks, writeReceipts: resu
 
 ## Modules
 
-Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, and Buffer helpers, a Buffer template preview helper, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
+Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, and Buffer helpers, a Buffer template preview helper, a summary-only Account Audit snapshot, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
 
 See [docs/habits.md](docs/habits.md) for the public-safe Habit input shape.
 See [docs/focus-and-buffers.md](docs/focus-and-buffers.md) for the public-safe Focus and Buffer input shapes.
 See [docs/buffer-templates.md](docs/buffer-templates.md) for the preview-only Buffer template helper.
+See [docs/account-audit.md](docs/account-audit.md) for the summary-only Account Audit snapshot output.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
 See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.
 See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
