@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import fs from "node:fs";
 import { buffers, parseReclaimBufferInputs } from "./buffers.js";
 import { createReclaimClient } from "./client.js";
