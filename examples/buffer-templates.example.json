@@ -1,0 +1,17 @@
+{
+  "templates": [
+    {
+      "template": "meeting_recovery",
+      "anchor": "Weekly project sync",
+      "eventCategory": "WORK"
+    },
+    {
+      "template": "transition_time",
+      "anchor": "Documentation drafting block",
+      "title": "Mode switch buffer",
+      "durationMinutes": 12,
+      "windowStart": "15:00",
+      "windowEnd": "16:00"
+    }
+  ]
+}

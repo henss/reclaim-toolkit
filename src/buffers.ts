@@ -61,7 +61,7 @@ export function parseReclaimBufferInputs(raw: unknown): ReclaimBufferInput[] {
   return ReclaimBufferInputListSchema.parse(raw);
 }
 
-function buildBufferPreviewRequest(
+export function buildBufferPreviewRequest(
   bufferInput: ReclaimBufferInput,
   options: {
     eventCategory?: ReclaimTaskEventCategory;

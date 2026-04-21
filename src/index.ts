@@ -1,5 +1,6 @@
 export * from "./client.js";
 export * from "./config.js";
+export * from "./buffer-templates.js";
 export * from "./buffers.js";
 export * from "./focus.js";
 export * from "./habits.js";

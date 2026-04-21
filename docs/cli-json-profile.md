@@ -14,13 +14,13 @@ Successful commands write one pretty-printed JSON document to stdout and exit wi
 
 | Class | Commands | Write behavior |
 | --- | --- | --- |
-| Local preview | `reclaim:onboarding`, `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:meetings-hours:preview-inspect`, `reclaim:time-policies:explain-conflicts`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
+| Local preview | `reclaim:onboarding`, `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:buffers:preview-template`, `reclaim:meetings-hours:preview-inspect`, `reclaim:time-policies:explain-conflicts`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
 | Authenticated read | `reclaim:health`, `reclaim:time-policies:list`, `reclaim:tasks:list`, `reclaim:tasks:filter`, `reclaim:tasks:export`, `reclaim:tasks:inspect-duplicates`, `reclaim:meetings-hours:inspect` | Reads account data through the configured Reclaim API key. |
 | Confirmed write | `reclaim:tasks:create`, `reclaim:tasks:cleanup-duplicates` | Requires an explicit confirmation flag before live writes. |
 
 `reclaim:tasks:create` refuses to write unless `--confirm-write` is present. `reclaim:tasks:cleanup-duplicates` refuses to delete unless `--confirm-reviewed-delete` is present. Confirmed write results include `writeReceipts` with the operation, task id, confirmation timestamp, and manual rollback hint for audit.
 
-Preview-only Habit, Focus, and Buffer commands include `writeSafety: "preview_only"` in their JSON result. Task preview commands include the request payloads that would be sent by a later confirmed task create, but they do not contact Reclaim or create tasks.
+Preview-only Habit, Focus, and Buffer commands include `writeSafety: "preview_only"` in their JSON result. `reclaim:buffers:preview-template` also includes synthetic `mockResponse` and `previewReceipt` fields so template evaluation can inspect receipt-style output without contacting Reclaim. Task preview commands include the request payloads that would be sent by a later confirmed task create, but they do not contact Reclaim or create tasks.
 The Meetings and Hours inspector includes `readSafety: "read_only"` and does not create meetings, update hours, or recommend availability.
 
 ## Parsing Rules

@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import {
+  bufferTemplates,
+  parseReclaimBufferTemplateInputs
+} from "./buffer-templates.js";
 import { buffers, parseReclaimBufferInputs } from "./buffers.js";
 import { createReclaimClient } from "./client.js";
 import { getReclaimConfigStatus, loadReclaimConfig } from "./config.js";
@@ -123,6 +127,12 @@ async function main(): Promise<void> {
   if (command === "reclaim:buffers:preview-create") {
     const bufferInputs = parseReclaimBufferInputs(readJsonInput());
     console.log(JSON.stringify(buffers.previewCreates(bufferInputs), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:buffers:preview-template") {
+    const templateInputs = parseReclaimBufferTemplateInputs(readJsonInput());
+    console.log(JSON.stringify(bufferTemplates.preview(templateInputs), null, 2));
     return;
   }
 
