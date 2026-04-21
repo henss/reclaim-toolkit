@@ -32,6 +32,7 @@ npm run reclaim:onboarding
 npm run reclaim:config:status -- --config config/reclaim.local.json
 npm run reclaim:health -- --config config/reclaim.local.json
 npm run reclaim:time-policies:list -- --config config/reclaim.local.json
+npm run reclaim:time-policies:explain-conflicts -- --input time-policy-conflicts.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
@@ -50,6 +51,7 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 
 `reclaim:onboarding` is a credential-free wizard that reports local config readiness, safe synthetic fixture commands, and write-guard reminders without contacting Reclaim or writing files.
 Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
+`reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task and policy inputs.
 Task creation and duplicate deletion require explicit confirmation flags.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
 For machine parsing, use the npm scripts with `--silent` and follow the [agent-safe JSON CLI profile](docs/cli-json-profile.md).
@@ -72,7 +74,7 @@ To practice the task flow without Reclaim credentials, run `npm run reclaim:demo
 ## Library
 
 ```ts
-import { createReclaimClient, loadReclaimConfig, tasks } from "reclaim-toolkit";
+import { createReclaimClient, loadReclaimConfig, tasks, timePolicies } from "reclaim-toolkit";
 
 const config = loadReclaimConfig("config/reclaim.local.json");
 if (!config) {
@@ -86,9 +88,15 @@ const policyPreview = tasks.previewTimePolicySelection(await client.listTaskAssi
   preferredTimePolicyTitle: config.preferredTimePolicyTitle,
   eventCategory: config.defaultTaskEventCategory
 });
+const policyConflicts = timePolicies.explainConflicts({
+  tasks: input,
+  timeSchemes: await client.listTaskAssignmentTimeSchemes(),
+  defaultTaskEventCategory: config.defaultTaskEventCategory,
+  preferredTimePolicyTitle: config.preferredTimePolicyTitle
+});
 const readOnlyTasks = tasks.listExistingTasks(await client.listTasks(), { eventCategory: "WORK" });
 const result = await tasks.create(client, input, { confirmWrite: true });
-console.log({ readOnlyTasks, writeReceipts: result.writeReceipts });
+console.log({ policyPreview, policyConflicts, readOnlyTasks, writeReceipts: result.writeReceipts });
 ```
 
 ## Modules
@@ -98,6 +106,7 @@ Wave 1 includes config, client, health, task utilities, preview-only Habit, Focu
 See [docs/habits.md](docs/habits.md) for the public-safe Habit input shape.
 See [docs/focus-and-buffers.md](docs/focus-and-buffers.md) for the public-safe Focus and Buffer input shapes.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
+See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.
 See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 
 ## Related Work

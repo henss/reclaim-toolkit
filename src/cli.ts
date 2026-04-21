@@ -14,6 +14,10 @@ import {
 import { runMockReclaimApiDemo } from "./mock-lab.js";
 import { getReclaimOnboardingWizard } from "./onboarding.js";
 import { parseReclaimTaskInputs, tasks, type TaskListFilters } from "./tasks.js";
+import {
+  explainTimePolicyConflicts,
+  parseReclaimTimePolicyExplainerInput
+} from "./time-policies.js";
 
 function parseFlag(flag: string): string | undefined {
   const index = process.argv.indexOf(flag);
@@ -89,6 +93,12 @@ async function main(): Promise<void> {
       preferredTimePolicyTitle: client.config.preferredTimePolicyTitle,
       eventCategory: client.config.defaultTaskEventCategory
     }), null, 2));
+    return;
+  }
+
+  if (command === "reclaim:time-policies:explain-conflicts") {
+    const input = parseReclaimTimePolicyExplainerInput(readJsonInput());
+    console.log(JSON.stringify(explainTimePolicyConflicts(input), null, 2));
     return;
   }
 

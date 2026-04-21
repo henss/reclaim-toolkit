@@ -42,6 +42,8 @@ The command returns the task-assignment policies exposed by Reclaim, marks which
 
 Use synthetic task input files for previews and keep local config files out of version control.
 
+When a reviewer needs to know why a proposed task fits or conflicts before any live write, use the synthetic explainer described in [time-policy-conflicts.md](time-policy-conflicts.md). It stays read-only and explains policy selection, category mismatches, and bounded window conflicts instead of silently picking a policy.
+
 ## Read-Only Task Listing
 
 List configured-account tasks without writing to Reclaim:
