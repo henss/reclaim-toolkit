@@ -1,0 +1,193 @@
+{
+  "lab": "mock-api-response-matrix",
+  "version": 1,
+  "executionOrderMatters": true,
+  "notes": [
+    "Synthetic ordered response matrix for the in-memory demo lab.",
+    "This fixture documents the narrow mock routes used for credential-free CLI practice.",
+    "It is not a Reclaim API compatibility promise or a complete emulator."
+  ],
+  "responses": [
+    {
+      "name": "getCurrentUser",
+      "request": {
+        "method": "GET",
+        "path": "/users/current"
+      },
+      "expected": {
+        "status": 200,
+        "json": {
+          "id": "user-demo",
+          "email": "demo.user@example.com",
+          "name": "Demo User"
+        }
+      }
+    },
+    {
+      "name": "getTimeSchemes",
+      "request": {
+        "method": "GET",
+        "path": "/timeschemes"
+      },
+      "expected": {
+        "status": 200,
+        "json": [
+          {
+            "id": "policy-work",
+            "title": "Work Hours",
+            "taskCategory": "WORK",
+            "description": "Synthetic weekday task-assignment policy for examples.",
+            "features": [
+              "TASK_ASSIGNMENT"
+            ]
+          },
+          {
+            "id": "policy-personal",
+            "title": "Personal Hours",
+            "taskCategory": "PERSONAL",
+            "description": "Synthetic personal task-assignment policy for examples.",
+            "features": [
+              "TASK_ASSIGNMENT"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "getMeetings",
+      "request": {
+        "method": "GET",
+        "path": "/meetings"
+      },
+      "expected": {
+        "status": 200,
+        "json": [
+          {
+            "id": "meeting-demo-1",
+            "title": "Project sync",
+            "start": "2026-05-06T10:00:00.000Z",
+            "end": "2026-05-06T10:30:00.000Z",
+            "durationMinutes": 30,
+            "attendeeCount": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "listSeedTasks",
+      "request": {
+        "method": "GET",
+        "path": "/tasks"
+      },
+      "expected": {
+        "status": 200,
+        "json": [
+          {
+            "id": 101,
+            "title": "Draft planning notes",
+            "notes": "Capture open questions before the weekly review.",
+            "eventCategory": "WORK",
+            "timeSchemeId": "policy-work",
+            "due": "2026-05-06T15:00:00.000Z",
+            "snoozeUntil": "2026-05-06T07:00:00.000Z"
+          },
+          {
+            "id": 102,
+            "title": "Draft planning notes",
+            "notes": "Capture open questions before the weekly review.",
+            "eventCategory": "WORK",
+            "timeSchemeId": "policy-work",
+            "due": "2026-05-06T15:00:00.000Z",
+            "snoozeUntil": "2026-05-06T07:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "name": "createTask",
+      "request": {
+        "method": "POST",
+        "path": "/tasks",
+        "json": {
+          "title": "Prepare demo outline",
+          "notes": "Use public-safe placeholder material.",
+          "timeSchemeId": "policy-work",
+          "timeChunksRequired": 2,
+          "minChunkSize": 1,
+          "maxChunkSize": 2,
+          "eventCategory": "WORK"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "json": {
+          "id": 200,
+          "title": "Prepare demo outline",
+          "notes": "Use public-safe placeholder material.",
+          "eventCategory": "WORK",
+          "timeSchemeId": "policy-work"
+        }
+      }
+    },
+    {
+      "name": "updateCreatedTask",
+      "request": {
+        "method": "PATCH",
+        "path": "/tasks/200",
+        "json": {
+          "notes": "Keep the demo synthetic."
+        }
+      },
+      "expected": {
+        "status": 200,
+        "json": {
+          "id": 200,
+          "title": "Prepare demo outline",
+          "notes": "Keep the demo synthetic.",
+          "eventCategory": "WORK",
+          "timeSchemeId": "policy-work"
+        }
+      }
+    },
+    {
+      "name": "deleteCreatedTask",
+      "request": {
+        "method": "DELETE",
+        "path": "/tasks/200"
+      },
+      "expected": {
+        "status": 204,
+        "body": ""
+      }
+    },
+    {
+      "name": "updateMissingTask",
+      "request": {
+        "method": "PATCH",
+        "path": "/tasks/999",
+        "json": {
+          "notes": "Missing task path"
+        }
+      },
+      "expected": {
+        "status": 404,
+        "json": {
+          "message": "Task not found."
+        }
+      }
+    },
+    {
+      "name": "unknownRoute",
+      "request": {
+        "method": "GET",
+        "path": "/unknown"
+      },
+      "expected": {
+        "status": 404,
+        "json": {
+          "message": "Unhandled mock route: GET /unknown"
+        }
+      }
+    }
+  ]
+}

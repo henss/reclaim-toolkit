@@ -63,6 +63,8 @@ npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
 
 The mock demo is an in-memory lab for CLI practice. It includes placeholder task-assignment policies, a duplicate synthetic task, and no live credentials or account data. It is intentionally smaller than the Reclaim API and should not be treated as an emulator.
 
+The documented route matrix for that lab lives in `docs/mock-api-response-matrix.example.json`. Keep it synthetic, ordered, and small enough to audit alongside the matching test.
+
 To inspect available task-assignment time policies for a local account, use a private local config file and run:
 
 ```bash
