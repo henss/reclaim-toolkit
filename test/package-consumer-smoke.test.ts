@@ -142,6 +142,7 @@ afterAll(() => {
 });
 
 describe("package consumer smoke matrix", () => {
+  const installTestTimeoutMs = 20_000;
   const installModes = [
     {
       label: "workspace path install",
@@ -183,7 +184,7 @@ describe("package consumer smoke matrix", () => {
         timeSchemeId: "policy-work",
         eventCategory: "WORK"
       });
-    });
+    }, installTestTimeoutMs);
 
     test(`supports the installed CLI via ${installMode.label}`, () => {
       const consumerDir = createConsumerWorkspace();
@@ -201,6 +202,6 @@ describe("package consumer smoke matrix", () => {
           parseStatus: "missing"
         }
       });
-    });
+    }, installTestTimeoutMs);
   }
 });

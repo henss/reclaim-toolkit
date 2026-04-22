@@ -15,6 +15,7 @@ This file is the repo-local agent entrypoint. It is generated from the shared po
 - Before non-trivial code edits, use this repo's agent-surface or size guard when present; if a touched file is near-limit or structurally busy, extract a focused seam before adding feature weight.
 - Prefer repo-local current state, generated status, or live tool output before older notes or historical ledgers when deciding what is true now.
 - Prefer explicit fields, frontmatter, typed records, YAML/JSON blocks, and schema-backed artifacts over parsing free-form prose to infer workflow state. If the needed field does not exist, add or repair the structured source instead of extending regex heuristics.
+- Prefer structural fixes over patch stacks. If repeated exceptions, guards, or caveats exist only to compensate for a bad abstraction or stale authority source, remove or reshape that seam instead of adding one more workaround.
 - Record unresolved design questions, repeated confusion, token waste, compatibility ambiguity, or follow-up work in the repo's canonical tracker, decision log, evals, or outcome artifact instead of leaving it only in chat.
 - At the close of non-trivial work, note concrete efficiency waste when present and fix the root cause in the cheapest safe way, such as a clearer seam, smaller file, focused script, skill, or eval.
 - Stop and surface the blocker when work crosses trust boundaries, requires real-world or external effects, changes authority assumptions, has conflicting goals, or remains low-confidence after limited retries.

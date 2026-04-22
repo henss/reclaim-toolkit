@@ -5,6 +5,7 @@ import {
   accountAudit,
   parseReclaimAccountAuditSnapshot
 } from "./account-audit.js";
+import { loadReclaimApiCapabilityMatrix } from "./api-capability-matrix.js";
 import {
   bufferRules,
   parseReclaimBufferRulePreviewInput
@@ -96,6 +97,9 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:health": async () => {
       printJson(await runReclaimHealthCheck(parseFlag("--config")));
+    },
+    "reclaim:openapi:capability-matrix": async () => {
+      printJson(await loadReclaimApiCapabilityMatrix({ inputPath: parseFlag("--input") }));
     },
     "reclaim:time-policies:list": async () => {
       const client = loadClient();
