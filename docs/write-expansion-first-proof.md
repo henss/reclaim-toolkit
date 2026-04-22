@@ -58,3 +58,5 @@ A useful follow-up should:
 3. Decide whether Habit can graduate to a confirmed write path or should remain preview-only.
 
 That follow-up keeps the toolkit aligned with the current safety model while avoiding premature public API commitments.
+
+The current evidence review is recorded in [habit write evidence review](habit-write-evidence-review.md).
