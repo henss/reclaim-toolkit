@@ -6,6 +6,10 @@ import {
   parseReclaimAccountAuditSnapshot
 } from "./account-audit.js";
 import {
+  bufferRules,
+  parseReclaimBufferRulePreviewInput
+} from "./buffer-rules.js";
+import {
   bufferTemplates,
   parseReclaimBufferTemplateInputs
 } from "./buffer-templates.js";
@@ -115,6 +119,9 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:buffers:preview-create": () => {
       printJson(buffers.previewCreates(parseReclaimBufferInputs(readJsonInput())));
+    },
+    "reclaim:buffers:preview-rule": () => {
+      printJson(bufferRules.preview(parseReclaimBufferRulePreviewInput(readJsonInput())));
     },
     "reclaim:buffers:preview-template": () => {
       printJson(bufferTemplates.preview(parseReclaimBufferTemplateInputs(readJsonInput())));

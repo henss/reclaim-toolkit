@@ -38,6 +38,7 @@ npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.exam
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
 npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
 npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
+npm run reclaim:buffers:preview-rule -- --input examples/buffer-rules.example.json
 npm run reclaim:buffers:preview-template -- --input examples/buffer-templates.example.json
 npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
 npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json
@@ -105,10 +106,11 @@ console.log({ policyPreview, policyConflicts, readOnlyTasks, writeReceipts: resu
 
 ## Modules
 
-Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, and Buffer helpers, a Buffer template preview helper, a summary-only Account Audit snapshot, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
+Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, and Buffer helpers, a Buffer rule preview helper with diff-style receipts, a Buffer template preview helper, a summary-only Account Audit snapshot, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
 
 See [docs/habits.md](docs/habits.md) for the public-safe Habit input shape.
 See [docs/focus-and-buffers.md](docs/focus-and-buffers.md) for the public-safe Focus and Buffer input shapes.
+See [docs/buffer-rules.md](docs/buffer-rules.md) for the preview-only Buffer rule diff receipt helper.
 See [docs/buffer-templates.md](docs/buffer-templates.md) for the preview-only Buffer template helper.
 See [docs/account-audit.md](docs/account-audit.md) for the summary-only Account Audit snapshot output.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.

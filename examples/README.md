@@ -16,6 +16,7 @@ Rules:
 - `scheduling-recipes.example.json`: synthetic recipe pack for common scheduling shapes such as kickoff prep, review windows, release checklists, personal admin, learning blocks, and weekly planning.
 - `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
 - `focus-and-buffers.example.json`: preview-only Focus and Buffer fixture with synthetic focus windows and transition buffers.
+- `buffer-rules.example.json`: preview-only Buffer rule fixture with a synthetic baseline buffer and diff-style preview receipts.
 - `buffer-templates.example.json`: preview-only Buffer template fixture with generic meeting-recovery and transition-time templates.
 - `meetings-and-hours.example.json`: synthetic Meetings and Hours inspector fixture with placeholder meeting and time-policy summaries.
 
@@ -48,6 +49,12 @@ The Focus and Buffer fixture is preview-only and does not create live focus bloc
 ```bash
 npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
 npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
+```
+
+The Buffer rule fixture is preview-only and returns synthetic diff-style receipts for create/update review:
+
+```bash
+npm run reclaim:buffers:preview-rule -- --input examples/buffer-rules.example.json
 ```
 
 The Buffer template fixture is preview-only and returns synthetic mock responses plus receipt-style metadata:

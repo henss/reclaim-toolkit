@@ -1,0 +1,38 @@
+{
+  "currentBuffers": [
+    {
+      "title": "Weekly project sync recovery",
+      "notes": "Capture follow-up actions after a generic sync.",
+      "durationMinutes": 10,
+      "eventCategory": "WORK",
+      "placement": "after",
+      "anchor": "Weekly project sync",
+      "windowStart": "11:30",
+      "windowEnd": "12:00"
+    }
+  ],
+  "rules": [
+    {
+      "ruleId": "meeting-recovery-default",
+      "title": "Weekly project sync recovery",
+      "notes": "Capture actions and owner notes after a generic sync.",
+      "durationMinutes": 15,
+      "eventCategory": "WORK",
+      "placement": "after",
+      "anchor": "Weekly project sync",
+      "windowStart": "11:30",
+      "windowEnd": "12:00"
+    },
+    {
+      "ruleId": "deep-work-transition",
+      "title": "Design review transition",
+      "notes": "Protect a short reset before the next generic work block.",
+      "durationMinutes": 12,
+      "eventCategory": "WORK",
+      "placement": "between",
+      "anchor": "Design review block",
+      "windowStart": "14:00",
+      "windowEnd": "14:30"
+    }
+  ]
+}
