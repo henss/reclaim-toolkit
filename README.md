@@ -31,6 +31,8 @@ Set either `preferredTimePolicyId` or `preferredTimePolicyTitle` when task creat
 npm run reclaim:onboarding
 npm run reclaim:config:status -- --config config/reclaim.local.json
 npm run reclaim:health -- --config config/reclaim.local.json
+npm run reclaim:openapi:capability-matrix
+npm run reclaim:openapi:capability-matrix -- --input generated/reclaim-openapi/reclaim-api-0.1.raw.yml
 npm run reclaim:time-policies:list -- --config config/reclaim.local.json
 npm run reclaim:time-policies:explain-conflicts -- --input time-policy-conflicts.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
@@ -54,6 +56,7 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 ```
 
 `reclaim:onboarding` is a credential-free wizard that reports local config readiness, safe synthetic fixture commands, and write-guard reminders without contacting Reclaim or writing files.
+`reclaim:openapi:capability-matrix` is a credential-free public-metadata command that compares the published Reclaim API document with the toolkit's shipped and roadmap surfaces so future module bets can start from auditable contract evidence.
 Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
 `reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
 `reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task and policy inputs.
@@ -117,6 +120,26 @@ See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only M
 See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.
 See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 See [docs/write-expansion-first-proof.md](docs/write-expansion-first-proof.md) for the current public-safe candidate ranking and next proof slice for expanding writes beyond tasks.
+See [docs/openapi-client-generation.md](docs/openapi-client-generation.md) for the published Reclaim OpenAPI surface, the local spec-sanitizing step, and the generator commands future client work should start from.
+
+## OpenAPI Client
+
+The repo also exposes a thin typed OpenAPI client wrapper:
+
+```ts
+import { createReclaimOpenApiClient, loadReclaimConfig } from "reclaim-toolkit";
+
+const config = loadReclaimConfig("config/reclaim.local.json");
+if (!config) {
+  throw new Error("Missing Reclaim config.");
+}
+
+const client = createReclaimOpenApiClient(config);
+const currentUser = await client.GET("/api/users/current");
+console.log(currentUser.data);
+```
+
+This wrapper uses the generated `paths` contract from the published Reclaim OpenAPI document and applies the existing auth and timeout defaults. Run `npm run reclaim:openapi:generate` when refreshing the underlying contract.
 
 ## Related Work
 

@@ -3,6 +3,10 @@ dist/
 coverage/
 data/
 backups/
+generated/*
+!generated/reclaim-openapi/
+generated/reclaim-openapi/*
+!generated/reclaim-openapi/reclaim-openapi.d.ts
 .runtime/
 config/*.local.json
 package-lock.json

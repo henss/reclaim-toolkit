@@ -40,10 +40,12 @@ Focus is still viable, but its cadence variants increase the number of validatio
 
 Do not add Habit live writes until the following evidence exists in public-safe form:
 
-- request-field evidence for the actual Reclaim Habit create endpoint
-- response-shape evidence showing the identifier and fields needed for a write receipt
+- generated request-field evidence for the actual Reclaim Habit create endpoint
+- generated response-shape evidence showing the identifier and fields needed for a write receipt
 - proof that the current preview payload is either already aligned or can be translated without hidden account-specific assumptions
 - a synthetic success fixture and at least one synthetic refusal or validation fixture for the planned CLI/test flow
+
+The repo now has an OpenAPI-backed generation path recorded in [openapi client generation](openapi-client-generation.md). The remaining blocker is safe write integration, not lack of any documented API surface.
 
 Without those artifacts, the safe result is to keep Habit preview-only.
 

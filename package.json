@@ -28,6 +28,7 @@
   },
   "files": [
     "dist",
+    "generated/reclaim-openapi/reclaim-openapi.d.ts",
     "README.md",
     "LICENSE",
     "docs",
@@ -37,6 +38,7 @@
     "reclaim:onboarding": "tsx src/cli.ts reclaim:onboarding",
     "reclaim:config:status": "tsx src/cli.ts reclaim:config:status",
     "reclaim:health": "tsx src/cli.ts reclaim:health",
+    "reclaim:openapi:capability-matrix": "tsx src/cli.ts reclaim:openapi:capability-matrix",
     "reclaim:time-policies:list": "tsx src/cli.ts reclaim:time-policies:list",
     "reclaim:time-policies:explain-conflicts": "tsx src/cli.ts reclaim:time-policies:explain-conflicts",
     "reclaim:tasks:preview-create": "tsx src/cli.ts reclaim:tasks:preview-create",
@@ -56,6 +58,8 @@
     "reclaim:tasks:create": "tsx src/cli.ts reclaim:tasks:create",
     "reclaim:tasks:inspect-duplicates": "tsx src/cli.ts reclaim:tasks:inspect-duplicates",
     "reclaim:tasks:cleanup-duplicates": "tsx src/cli.ts reclaim:tasks:cleanup-duplicates",
+    "reclaim:openapi:prepare-spec": "tsx scripts/generate-openapi-client.ts --prepare-only",
+    "reclaim:openapi:generate": "npm run reclaim:openapi:prepare-spec && openapi-typescript generated/reclaim-openapi/reclaim-api-0.1.sanitized.yml -o generated/reclaim-openapi/reclaim-openapi.d.ts",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -71,17 +75,19 @@
     "verify:session": "npm run lint && npm run typecheck && npm run test && npm run check:agent-surface"
   },
   "dependencies": {
+    "openapi-fetch": "^0.17.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^20.19.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.2",
     "@eslint/js": "^10.0.1",
+    "@types/node": "^20.19.0",
     "eslint": "^10.2.0",
     "globals": "^16.5.0",
+    "openapi-typescript": "7.13.0",
     "ts-morph": "^27.0.2",
-    "typescript-eslint": "^8.50.0"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.0",
+    "vitest": "^4.1.2"
   }
 }
