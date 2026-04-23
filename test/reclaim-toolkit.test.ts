@@ -50,7 +50,7 @@ describe("agent-safe CLI JSON profile", () => {
 
     expect(result.status).toBe(0);
     expect(result.stderr).toBe("");
-    expect(result.stdout.trim()).toBe("Public-boundary lint passed for 11 file(s).");
+    expect(result.stdout.trim()).toMatch(/^Public-boundary lint passed for \d+ file\(s\)\.$/);
   });
 
   test("public-boundary lint rejects private workspace markers in examples", () => {

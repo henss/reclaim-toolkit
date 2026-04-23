@@ -122,6 +122,7 @@ See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only M
 See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.
 See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 See [docs/write-expansion-first-proof.md](docs/write-expansion-first-proof.md) for the current public-safe candidate ranking and next proof slice for expanding writes beyond tasks.
+See [docs/freshness-signals-spike.md](docs/freshness-signals-spike.md) for the public-safe webhook-versus-snapshot freshness spike and synthetic scenario matrix for `OPS-1743`.
 See [docs/openapi-client-generation.md](docs/openapi-client-generation.md) for the published Reclaim OpenAPI surface, the local spec-sanitizing step, and the generator commands future client work should start from.
 
 ## OpenAPI Client

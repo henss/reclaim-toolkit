@@ -1,0 +1,135 @@
+{
+  "matrix": "reclaim-freshness-scenarios",
+  "readSafety": "synthetic_fixture",
+  "generatedFor": "OPS-1743",
+  "scenarios": [
+    {
+      "id": "moment-no-change",
+      "source": "moment_poll",
+      "previous": {
+        "now": "2026-04-23T09:00:00.000Z",
+        "event": {
+          "id": "evt-focus-1",
+          "title": "Focus block",
+          "start": "2026-04-23T08:30:00.000Z",
+          "end": "2026-04-23T09:30:00.000Z"
+        },
+        "additionalEvents": []
+      },
+      "current": {
+        "now": "2026-04-23T09:05:00.000Z",
+        "event": {
+          "id": "evt-focus-1",
+          "title": "Focus block",
+          "start": "2026-04-23T08:30:00.000Z",
+          "end": "2026-04-23T09:30:00.000Z"
+        },
+        "additionalEvents": []
+      },
+      "expected": {
+        "kind": "no_change",
+        "subjectKey": "evt-focus-1"
+      }
+    },
+    {
+      "id": "moment-primary-transition",
+      "source": "moment_poll",
+      "previous": {
+        "now": "2026-04-23T09:25:00.000Z",
+        "event": {
+          "id": "evt-focus-1",
+          "title": "Focus block",
+          "start": "2026-04-23T08:30:00.000Z",
+          "end": "2026-04-23T09:30:00.000Z"
+        },
+        "additionalEvents": []
+      },
+      "current": {
+        "now": "2026-04-23T09:35:00.000Z",
+        "event": {
+          "id": "evt-meeting-1",
+          "title": "Planning sync",
+          "start": "2026-04-23T09:30:00.000Z",
+          "end": "2026-04-23T10:00:00.000Z"
+        },
+        "additionalEvents": []
+      },
+      "expected": {
+        "kind": "primary_changed",
+        "subjectKey": "evt-meeting-1"
+      }
+    },
+    {
+      "id": "moment-overlap-change",
+      "source": "moment_poll",
+      "previous": {
+        "now": "2026-04-23T10:00:00.000Z",
+        "event": {
+          "id": "evt-meeting-1",
+          "title": "Planning sync",
+          "start": "2026-04-23T09:30:00.000Z",
+          "end": "2026-04-23T10:30:00.000Z"
+        },
+        "additionalEvents": []
+      },
+      "current": {
+        "now": "2026-04-23T10:05:00.000Z",
+        "event": {
+          "id": "evt-meeting-1",
+          "title": "Planning sync",
+          "start": "2026-04-23T09:30:00.000Z",
+          "end": "2026-04-23T10:30:00.000Z"
+        },
+        "additionalEvents": [
+          {
+            "id": "evt-quick-check-1",
+            "title": "Quick check-in",
+            "start": "2026-04-23T10:00:00.000Z",
+            "end": "2026-04-23T10:15:00.000Z"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "overlap_changed",
+        "subjectKey": "evt-meeting-1"
+      }
+    },
+    {
+      "id": "event-detail-enrichment",
+      "source": "event_snapshot",
+      "trigger": {
+        "kind": "primary_changed",
+        "subjectKey": "evt-meeting-1"
+      },
+      "eventSnapshot": {
+        "id": "evt-meeting-1",
+        "title": "Planning sync",
+        "eventCategory": "WORK",
+        "location": "Synthetic room",
+        "attendeeCount": 3
+      },
+      "expected": {
+        "kind": "detail_enriched",
+        "subjectKey": "evt-meeting-1"
+      }
+    },
+    {
+      "id": "webhook-out-of-order",
+      "source": "webhook_history",
+      "latestSnapshot": {
+        "observedAt": "2026-04-23T10:10:00.000Z",
+        "subjectKey": "evt-meeting-1"
+      },
+      "webhookMessage": {
+        "eventType": "SCHEDULING_LINK_MEETING_UPDATED",
+        "eventTs": "2026-04-23T10:00:00.000Z",
+        "webhookSentAt": "2026-04-23T10:01:00.000Z",
+        "subjectKey": "evt-meeting-1"
+      },
+      "expected": {
+        "kind": "out_of_order",
+        "subjectKey": "evt-meeting-1"
+      }
+    }
+  ]
+}
