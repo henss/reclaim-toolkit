@@ -61,7 +61,7 @@ Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, 
 `reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
 `reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task and policy inputs.
 Read collectors follow common paginated Reclaim response envelopes for tasks, meetings, and time schemes, and they retry bounded `429 Too Many Requests` responses when `Retry-After` is present.
-Task creation and duplicate deletion require explicit confirmation flags.
+Task creation and duplicate deletion require explicit confirmation flags. `reclaim:tasks:create` also returns a warning-only `duplicatePlan` when it sees exact existing duplicates before attempting new task writes.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
 For machine parsing, use the npm scripts with `--silent` and follow the [agent-safe JSON CLI profile](docs/cli-json-profile.md).
 

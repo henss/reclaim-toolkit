@@ -108,7 +108,9 @@ Design note: the lab stays inside this repository as a small in-memory test doub
 
 ## Write Receipts
 
-Confirmed task creation and duplicate cleanup return a `writeReceipts` array alongside the existing result fields. Each receipt includes:
+Confirmed task creation and duplicate cleanup return a `writeReceipts` array alongside the existing result fields. Confirmed task creation also returns `duplicatePlan`, a warning-only snapshot of any exact existing duplicates found before the toolkit attempted new task writes. The toolkit does not delete those duplicates during `reclaim:tasks:create`; use `reclaim:tasks:inspect-duplicates` and `reclaim:tasks:cleanup-duplicates` when duplicate cleanup is explicitly intended.
+
+Each receipt includes:
 
 - `operation`: `task.create` or `task.delete`.
 - `taskId`: the Reclaim task id that was written.

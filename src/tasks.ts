@@ -43,6 +43,7 @@ export interface TaskCreatePreview {
 }
 
 export interface TaskCreateResult {
+  duplicatePlan: DuplicateTaskPlan;
   createdTasks: Array<{ title: string; taskId: number }>;
   skippedTasks: Array<{ title: string; taskId: number; reason: "already_exists" }>;
   writeReceipts: TaskWriteReceipt[];
@@ -372,6 +373,7 @@ export async function create(
       eventCategory
     }).id;
   const existingTasks = await client.listTasks();
+  const duplicatePlan = inspectDuplicates(taskInputs, existingTasks, { timeSchemeId, eventCategory });
   const createdTasks: TaskCreateResult["createdTasks"] = [];
   const skippedTasks: TaskCreateResult["skippedTasks"] = [];
   const writeReceipts: TaskWriteReceipt[] = [];
@@ -390,7 +392,7 @@ export async function create(
     writeReceipts.push(createdTaskReceipt(createdTask.id, task.title));
   }
 
-  return { createdTasks, skippedTasks, writeReceipts };
+  return { duplicatePlan, createdTasks, skippedTasks, writeReceipts };
 }
 
 export function inspectDuplicates(
