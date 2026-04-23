@@ -19,6 +19,7 @@ Rules:
 - `buffer-rules.example.json`: preview-only Buffer rule fixture with a synthetic baseline buffer and diff-style preview receipts.
 - `buffer-templates.example.json`: preview-only Buffer template fixture with generic meeting-recovery and transition-time templates.
 - `meetings-and-hours.example.json`: synthetic Meetings and Hours inspector fixture with placeholder meeting and time-policy summaries.
+- `task-write-receipts.example.json`: synthetic task write-receipt fixture for read-only remote-state validation.
 
 Run the public-boundary lint before committing example changes:
 
@@ -67,6 +68,12 @@ The Meetings and Hours fixture is read-only and does not create meetings or upda
 
 ```bash
 npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
+```
+
+The task write-receipt fixture is also read-only. Pair it with a private local config when comparing saved receipts against the current remote task list:
+
+```bash
+npm run reclaim:tasks:validate-write-receipts -- --config config/reclaim.local.json --input examples/task-write-receipts.example.json
 ```
 
 To run the same task flow against a local synthetic mock instead of a Reclaim account, use:

@@ -26,7 +26,12 @@ import {
 } from "./meetings-hours.js";
 import { runMockReclaimApiDemo } from "./mock-lab.js";
 import { getReclaimOnboardingWizard } from "./onboarding.js";
-import { parseReclaimTaskInputs, tasks, type TaskListFilters } from "./tasks.js";
+import {
+  parseReclaimTaskInputs,
+  parseTaskWriteReceipts,
+  tasks,
+  type TaskListFilters
+} from "./tasks.js";
 import {
   explainTimePolicyConflicts,
   parseReclaimTimePolicyExplainerInput
@@ -168,6 +173,10 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
         filters: parseTaskListFilters(),
         format: parseTaskExportFormat()
       }));
+    },
+    "reclaim:tasks:validate-write-receipts": async () => {
+      const client = loadClient();
+      printJson(await tasks.validateWriteReceipts(client, parseTaskWriteReceipts(readJsonInput())));
     },
     "reclaim:tasks:inspect-duplicates": async () => {
       const taskInputs = parseReclaimTaskInputs(readJsonInput());

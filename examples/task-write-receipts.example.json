@@ -1,0 +1,18 @@
+{
+  "writeReceipts": [
+    {
+      "operation": "task.create",
+      "taskId": 41,
+      "title": "Review pull request",
+      "confirmedAt": "2026-05-06T08:15:00.000Z",
+      "rollbackHint": "Delete Reclaim task 41 if this confirmed create should be undone."
+    },
+    {
+      "operation": "task.delete",
+      "taskId": 43,
+      "title": "Lingering duplicate",
+      "confirmedAt": "2026-05-06T08:18:00.000Z",
+      "rollbackHint": "Recreate the task from the reviewed input or audit source if deleting Reclaim task 43 was unintended."
+    }
+  ]
+}

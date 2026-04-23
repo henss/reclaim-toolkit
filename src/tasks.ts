@@ -1,6 +1,13 @@
 import { z } from "zod";
 import type { ReclaimClient } from "./client.js";
 import {
+  createdTaskReceipt,
+  deletedTaskReceipt,
+  validateTaskWriteReceipts,
+  type TaskWriteReceipt,
+  type TaskWriteReceiptValidationResult
+} from "./task-write-receipts.js";
+import {
   previewTimePolicySelection,
   selectTimeScheme
 } from "./time-policies.js";
@@ -9,6 +16,15 @@ import type {
   ReclaimTaskEventCategory,
   ReclaimTaskRecord
 } from "./types.js";
+
+export {
+  parseTaskWriteReceipts,
+  type TaskReceiptRemoteTask,
+  type TaskWriteReceipt,
+  type TaskWriteReceiptValidationIssue,
+  type TaskWriteReceiptValidationItem,
+  type TaskWriteReceiptValidationResult
+} from "./task-write-receipts.js";
 
 const RECLAIM_TIME_BLOCK_MINUTES = 15;
 const REQUIRED_TIME_SCHEME_ID = "TASK_ASSIGNMENT_TIME_SCHEME_ID_REQUIRED";
@@ -102,14 +118,6 @@ export interface TaskExportResult {
   content?: string;
 }
 
-export interface TaskWriteReceipt {
-  operation: "task.create" | "task.delete";
-  taskId: number;
-  title?: string;
-  confirmedAt: string;
-  rollbackHint: string;
-}
-
 export function parseReclaimTaskInputs(raw: unknown): ReclaimTaskInput[] {
   return ReclaimTaskInputListSchema.parse(raw);
 }
@@ -185,30 +193,6 @@ function taskMatchesRequest(task: ReclaimTaskRecord, request: ReclaimCreateTaskI
     normalizeDateTime(task.due) === normalizeDateTime(request.due) &&
     normalizeDateTime(task.snoozeUntil) === normalizeDateTime(request.snoozeUntil)
   );
-}
-
-function nowIso(): string {
-  return new Date().toISOString();
-}
-
-function createdTaskReceipt(taskId: number, title: string): TaskWriteReceipt {
-  return {
-    operation: "task.create",
-    taskId,
-    title,
-    confirmedAt: nowIso(),
-    rollbackHint: `Delete Reclaim task ${taskId} if this confirmed create should be undone.`
-  };
-}
-
-function deletedTaskReceipt(taskId: number, title: string): TaskWriteReceipt {
-  return {
-    operation: "task.delete",
-    taskId,
-    title,
-    confirmedAt: nowIso(),
-    rollbackHint: `Recreate the task from the reviewed input or audit source if deleting Reclaim task ${taskId} was unintended.`
-  };
 }
 
 function normalizeFilters(filters: TaskListFilters = {}): TaskListFilters {
@@ -452,6 +436,13 @@ export async function cleanupDuplicates(
   };
 }
 
+export async function validateWriteReceipts(
+  client: ReclaimClient,
+  receipts: TaskWriteReceipt[]
+): Promise<TaskWriteReceiptValidationResult> {
+  return validateTaskWriteReceipts(client, receipts);
+}
+
 export const tasks = {
   previewCreates,
   previewTimePolicySelection,
@@ -459,5 +450,6 @@ export const tasks = {
   exportExistingTasks,
   create,
   inspectDuplicates,
-  cleanupDuplicates
+  cleanupDuplicates,
+  validateWriteReceipts
 };

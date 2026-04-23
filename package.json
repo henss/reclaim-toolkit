@@ -55,6 +55,7 @@
     "reclaim:tasks:list": "tsx src/cli.ts reclaim:tasks:list",
     "reclaim:tasks:filter": "tsx src/cli.ts reclaim:tasks:filter",
     "reclaim:tasks:export": "tsx src/cli.ts reclaim:tasks:export",
+    "reclaim:tasks:validate-write-receipts": "tsx src/cli.ts reclaim:tasks:validate-write-receipts",
     "reclaim:tasks:create": "tsx src/cli.ts reclaim:tasks:create",
     "reclaim:tasks:inspect-duplicates": "tsx src/cli.ts reclaim:tasks:inspect-duplicates",
     "reclaim:tasks:cleanup-duplicates": "tsx src/cli.ts reclaim:tasks:cleanup-duplicates",

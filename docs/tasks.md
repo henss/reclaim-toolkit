@@ -120,6 +120,27 @@ Each receipt includes:
 
 The toolkit records rollback hints for auditability only. It does not automatically roll back confirmed creates or deletions.
 
+## Read-Only Receipt Validation
+
+To compare saved task write receipts against the current remote task state without writing to Reclaim, run:
+
+```bash
+npm run reclaim:tasks:validate-write-receipts -- --config config/reclaim.local.json --input examples/task-write-receipts.example.json
+```
+
+The validator accepts either a top-level receipt array or an object with a `writeReceipts` array, so it can read a saved slice of prior command output directly.
+
+Validation is read-only and returns:
+
+- `readSafety: "read_only"`.
+- `receiptCount`, `validReceiptCount`, and `invalidReceiptCount`.
+- A `receipts` array with one validation item per receipt.
+- `status: "valid"` when the remote task state still matches the receipt expectation.
+- `issues` describing `remote_task_missing`, `remote_title_mismatch`, or `remote_task_still_present` mismatches.
+- `remoteTask` details when the current Reclaim task still exists and helps explain the result.
+
+For `task.create` receipts, the validator expects the task id to still exist and, when a receipt title is present, the current title to still match. For `task.delete` receipts, the validator expects the task id to be absent from the current remote task list.
+
 ## Synthetic Scheduling Recipes
 
 `examples/scheduling-recipes.example.json` contains a public-safe recipe pack for common task shapes:
