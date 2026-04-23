@@ -153,3 +153,21 @@ For `task.create` receipts, the validator expects the task id to still exist and
 - Weekly planning review with a bounded morning window.
 
 The recipes use invented titles, generic notes, placeholder project language, and conventional `WORK` or `PERSONAL` categories. They are intended for local preview and schema regression tests, not as a recommendation for any private scheduling workflow.
+
+## Integration Starter Packs
+
+The repo also includes three public-safe starter packs that model already-transformed upstream work from common tools:
+
+- `examples/todoist-starter-pack.example.json`
+- `examples/linear-starter-pack.example.json`
+- `examples/github-starter-pack.example.json`
+
+Each starter pack is still just a task input file, so it previews through the normal task command:
+
+```bash
+npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.example.json
+npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
+npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
+```
+
+These files prototype the transform handoff only. They do not imply direct Todoist, Linear, or GitHub connector support inside this toolkit. Keep source-specific extraction, approvals, and private-boundary reasoning outside this public repo.

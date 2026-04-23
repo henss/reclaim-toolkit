@@ -1,0 +1,29 @@
+{
+  "tasks": [
+    {
+      "title": "Prototype dashboard summary panel",
+      "notes": "Synthetic Linear issue transformed into Reclaim input. Team: Product Platform. Estimate: 3 points. State: In Progress.",
+      "durationMinutes": 90,
+      "due": "2026-05-22T17:00:00+02:00",
+      "startAfter": "2026-05-22T10:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    },
+    {
+      "title": "Write QA handoff notes for preview flow",
+      "notes": "Synthetic Linear issue transformed into Reclaim input. Team: Product Platform. Estimate: 2 points. State: Todo.",
+      "durationMinutes": 45,
+      "due": "2026-05-23T15:30:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": false
+    },
+    {
+      "title": "Triage onboarding copy polish follow-ups",
+      "notes": "Synthetic Linear issue transformed into Reclaim input. Team: Growth. Estimate: 1 point. State: Backlog.",
+      "durationMinutes": 30,
+      "due": "2026-05-26T12:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    }
+  ]
+}

@@ -38,6 +38,9 @@ npm run reclaim:time-policies:list -- --config config/reclaim.local.json
 npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-conflicts.example.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
+npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.example.json
+npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
+npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
 npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
 npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
@@ -127,6 +130,7 @@ See [docs/meeting-availability.md](docs/meeting-availability.md) for the preview
 See [docs/account-audit.md](docs/account-audit.md) for the summary-only Account Audit snapshot output.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
 See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.
+See [docs/integration-starter-packs.md](docs/integration-starter-packs.md) for the Todoist, Linear, and GitHub starter packs that already fit the task preview contract.
 See [docs/support-bundles.md](docs/support-bundles.md) for the redacted support-bundle generator used for preview and config incidents.
 See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 See [docs/write-expansion-first-proof.md](docs/write-expansion-first-proof.md) for the current public-safe candidate ranking and next proof slice for expanding writes beyond tasks.

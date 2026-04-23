@@ -1,0 +1,29 @@
+{
+  "tasks": [
+    {
+      "title": "Review preview contract pull request",
+      "notes": "Synthetic GitHub pull request transformed into Reclaim input. Repository: acme/reclaim-toolkit-demo. Labels: review, cli. Requested reviewers: 2.",
+      "durationMinutes": 40,
+      "due": "2026-05-19T13:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": false
+    },
+    {
+      "title": "Investigate failing export smoke test",
+      "notes": "Synthetic GitHub issue transformed into Reclaim input. Repository: acme/reclaim-toolkit-demo. Labels: bug, tests. Priority: medium.",
+      "durationMinutes": 60,
+      "due": "2026-05-20T17:30:00+02:00",
+      "startAfter": "2026-05-20T08:30:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    },
+    {
+      "title": "Draft release note summary from merged changes",
+      "notes": "Synthetic GitHub release-prep task transformed into Reclaim input. Repository: acme/reclaim-toolkit-demo. Labels: docs, release.",
+      "durationMinutes": 35,
+      "due": "2026-05-21T16:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": false
+    }
+  ]
+}
