@@ -10,6 +10,7 @@ export * from "./health.js";
 export * from "./meeting-availability.js";
 export * from "./meetings-hours.js";
 export * from "./openapi-client.js";
+export * from "./support-bundle.js";
 export * from "./time-policies.js";
 export * from "./tasks.js";
 export * from "./types.js";

@@ -41,6 +41,7 @@ import {
   explainTimePolicyConflicts,
   parseReclaimTimePolicyExplainerInput
 } from "./time-policies.js";
+import { parseReclaimSupportBundleRequest, supportBundle } from "./support-bundle.js";
 
 function parseFlag(flag: string): string | undefined {
   const index = process.argv.indexOf(flag);
@@ -121,6 +122,9 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:time-policies:explain-conflicts": () => {
       printJson(explainTimePolicyConflicts(parseReclaimTimePolicyExplainerInput(readJsonInput())));
+    },
+    "reclaim:support:bundle": async () => {
+      printJson(await supportBundle.generate(parseReclaimSupportBundleRequest(readJsonInput())));
     },
     "reclaim:tasks:preview-create": () => {
       printJson(tasks.previewCreates(parseReclaimTaskInputs(readJsonInput())));

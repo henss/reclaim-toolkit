@@ -1,0 +1,43 @@
+{
+  "incidentType": "preview",
+  "command": "reclaim:meetings:preview-availability",
+  "notes": "Investigating a local preview incident copied from a private planning run.",
+  "input": {
+    "request": {
+      "title": "Quarterly planning sync",
+      "durationMinutes": 45,
+      "eventCategory": "WORK",
+      "dateRangeStart": "2026-05-11",
+      "dateRangeEnd": "2026-05-15",
+      "preferredTimePolicyTitle": "Work Hours"
+    },
+    "timeSchemes": [
+      {
+        "id": "policy-work",
+        "title": "Work Hours",
+        "taskCategory": "WORK",
+        "features": ["TASK_ASSIGNMENT", "AVAILABILITY"],
+        "windows": [
+          { "dayOfWeek": "monday", "start": "09:00", "end": "12:00" },
+          { "dayOfWeek": "wednesday", "start": "10:00", "end": "16:00" }
+        ]
+      }
+    ],
+    "busyMeetings": [
+      {
+        "id": "meeting-private-1",
+        "title": "Household coordination block",
+        "date": "2026-05-11",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      },
+      {
+        "id": "meeting-private-2",
+        "title": "Config review",
+        "date": "2026-05-14",
+        "startTime": "13:00",
+        "endTime": "14:00"
+      }
+    ]
+  }
+}

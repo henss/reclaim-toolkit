@@ -14,7 +14,7 @@ Successful commands write one pretty-printed JSON document to stdout and exit wi
 
 | Class | Commands | Write behavior |
 | --- | --- | --- |
-| Local preview | `reclaim:onboarding`, `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:buffers:preview-template`, `reclaim:meetings-hours:preview-inspect`, `reclaim:meetings-hours:preview-switch`, `reclaim:account-audit:preview-inspect`, `reclaim:time-policies:explain-conflicts`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
+| Local preview | `reclaim:onboarding`, `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:buffers:preview-template`, `reclaim:meetings-hours:preview-inspect`, `reclaim:meetings-hours:preview-switch`, `reclaim:account-audit:preview-inspect`, `reclaim:time-policies:explain-conflicts`, `reclaim:support:bundle`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
 | Authenticated read | `reclaim:health`, `reclaim:time-policies:list`, `reclaim:tasks:list`, `reclaim:tasks:filter`, `reclaim:tasks:export`, `reclaim:tasks:validate-write-receipts`, `reclaim:tasks:inspect-duplicates`, `reclaim:meetings-hours:inspect`, `reclaim:account-audit:inspect` | Reads account data through the configured Reclaim API key. |
 | Confirmed write | `reclaim:tasks:create`, `reclaim:tasks:cleanup-duplicates` | Requires an explicit confirmation flag before live writes. |
 
@@ -36,6 +36,7 @@ The JSON shapes are intended to be additive. Consumers should tolerate unknown f
 
 - `reclaim:onboarding` reports local config readiness, safe synthetic fixture commands, and confirmed-write review reminders without contacting Reclaim or writing files.
 - `reclaim:config:status` reports config-file presence and parse status without validating credentials.
+- `reclaim:support:bundle` creates a redacted incident bundle for local preview or config troubleshooting and can optionally attach a sanitized health-check summary.
 - `reclaim:health` validates authenticated reachability and may include the configured API URL, user email, task-assignment policy count, and task count.
 - `reclaim:time-policies:list` returns policy-discovery JSON and the selected policy reasoning for the current config.
 - `reclaim:time-policies:explain-conflicts` reads a synthetic local JSON fixture and returns fit or conflict explanations for proposed tasks, focus blocks, and buffers against known time-policy inputs.

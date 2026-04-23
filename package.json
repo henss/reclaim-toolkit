@@ -37,6 +37,7 @@
   "scripts": {
     "reclaim:onboarding": "tsx src/cli.ts reclaim:onboarding",
     "reclaim:config:status": "tsx src/cli.ts reclaim:config:status",
+    "reclaim:support:bundle": "tsx src/cli.ts reclaim:support:bundle",
     "reclaim:health": "tsx src/cli.ts reclaim:health",
     "reclaim:openapi:capability-matrix": "tsx src/cli.ts reclaim:openapi:capability-matrix",
     "reclaim:time-policies:list": "tsx src/cli.ts reclaim:time-policies:list",

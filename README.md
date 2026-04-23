@@ -30,6 +30,7 @@ Set either `preferredTimePolicyId` or `preferredTimePolicyTitle` when task creat
 ```bash
 npm run reclaim:onboarding
 npm run reclaim:config:status -- --config config/reclaim.local.json
+npm run reclaim:support:bundle -- --input examples/support-bundle-preview.example.json
 npm run reclaim:health -- --config config/reclaim.local.json
 npm run reclaim:openapi:capability-matrix
 npm run reclaim:openapi:capability-matrix -- --input generated/reclaim-openapi/reclaim-api-0.1.raw.yml
@@ -58,6 +59,7 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 
 `reclaim:onboarding` is a credential-free wizard that reports local config readiness, safe synthetic fixture commands, and write-guard reminders without contacting Reclaim or writing files.
 `reclaim:openapi:capability-matrix` is a credential-free public-metadata command that compares the published Reclaim API document with the toolkit's shipped and roadmap surfaces so future module bets can start from auditable contract evidence.
+`reclaim:support:bundle` is a redacted troubleshooting command for preview or config incidents. It preserves structural JSON signals, dates, times, and safety enums while redacting task titles, ids, emails, secrets, free-text notes, and absolute paths.
 Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
 `reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
 `reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task, focus, buffer, and policy inputs.
@@ -125,6 +127,7 @@ See [docs/meeting-availability.md](docs/meeting-availability.md) for the preview
 See [docs/account-audit.md](docs/account-audit.md) for the summary-only Account Audit snapshot output.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
 See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.
+See [docs/support-bundles.md](docs/support-bundles.md) for the redacted support-bundle generator used for preview and config incidents.
 See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 See [docs/write-expansion-first-proof.md](docs/write-expansion-first-proof.md) for the current public-safe candidate ranking and next proof slice for expanding writes beyond tasks.
 See [docs/freshness-signals-spike.md](docs/freshness-signals-spike.md) for the public-safe webhook-versus-snapshot freshness spike and synthetic scenario matrix for `OPS-1743`.
