@@ -49,6 +49,7 @@
     "reclaim:buffers:preview-template": "tsx src/cli.ts reclaim:buffers:preview-template",
     "reclaim:meetings:preview-availability": "tsx src/cli.ts reclaim:meetings:preview-availability",
     "reclaim:meetings-hours:preview-inspect": "tsx src/cli.ts reclaim:meetings-hours:preview-inspect",
+    "reclaim:meetings-hours:preview-switch": "tsx src/cli.ts reclaim:meetings-hours:preview-switch",
     "reclaim:account-audit:preview-inspect": "tsx src/cli.ts reclaim:account-audit:preview-inspect",
     "reclaim:meetings-hours:inspect": "tsx src/cli.ts reclaim:meetings-hours:inspect",
     "reclaim:account-audit:inspect": "tsx src/cli.ts reclaim:account-audit:inspect",

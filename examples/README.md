@@ -84,6 +84,12 @@ The Meetings and Hours fixture is read-only and does not create meetings or upda
 npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
 ```
 
+For a synthetic profile-switch preview that compares how named local presets would resolve Reclaim hours policies:
+
+```bash
+npm run reclaim:meetings-hours:preview-switch -- --input examples/meetings-hours-profile-switch.example.json
+```
+
 The task write-receipt fixture is also read-only. Pair it with a private local config when comparing saved receipts against the current remote task list:
 
 ```bash

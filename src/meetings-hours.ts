@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { ReclaimClient } from "./client.js";
+import { previewHoursPresetSwitches } from "./meetings-hours-profile-switch.js";
 import type { ReclaimMeetingRecord, ReclaimTimeSchemeRecord } from "./types.js";
 
 const ReclaimMeetingSnapshotSchema = z.object({
@@ -105,5 +106,14 @@ export async function inspectMeetingsAndHours(
 
 export const meetingsHours = {
   inspect: inspectMeetingsAndHours,
-  inspectSnapshot: inspectMeetingsAndHoursSnapshot
+  inspectSnapshot: inspectMeetingsAndHoursSnapshot,
+  previewPresetSwitches: previewHoursPresetSwitches
 };
+
+export {
+  parseReclaimHoursPresetSwitchPreviewInput,
+  previewHoursPresetSwitches,
+  type HoursPresetSwitchPreview,
+  type HoursPresetSwitchPreviewTarget,
+  type HoursProfilePreview
+} from "./meetings-hours-profile-switch.js";

@@ -1,0 +1,72 @@
+{
+  "currentProfileId": "profile-workweek",
+  "profiles": [
+    {
+      "id": "profile-workweek",
+      "title": "Workweek",
+      "eventCategory": "WORK",
+      "preferredTimePolicyTitle": "Work Hours"
+    },
+    {
+      "id": "profile-deep-work",
+      "title": "Deep Work Sprint",
+      "eventCategory": "WORK",
+      "preferredTimePolicyTitle": "Deep Work"
+    },
+    {
+      "id": "profile-weekend-personal",
+      "title": "Weekend Personal",
+      "eventCategory": "PERSONAL",
+      "preferredTimePolicyTitle": "Personal Hours"
+    }
+  ],
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Work Hours",
+      "taskCategory": "WORK",
+      "timezone": "Europe/Berlin",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        {
+          "dayOfWeek": "monday",
+          "start": "09:00",
+          "end": "17:00"
+        },
+        {
+          "dayOfWeek": "tuesday",
+          "start": "09:00",
+          "end": "17:00"
+        }
+      ]
+    },
+    {
+      "id": "policy-deep-work",
+      "title": "Deep Work",
+      "taskCategory": "WORK",
+      "timezone": "Europe/Berlin",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        {
+          "dayOfWeek": "monday",
+          "start": "08:00",
+          "end": "12:00"
+        }
+      ]
+    },
+    {
+      "id": "policy-personal",
+      "title": "Personal Hours",
+      "taskCategory": "PERSONAL",
+      "timezone": "Europe/Berlin",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        {
+          "dayOfWeek": "saturday",
+          "start": "10:00",
+          "end": "14:00"
+        }
+      ]
+    }
+  ]
+}

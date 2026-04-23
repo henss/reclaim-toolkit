@@ -14,7 +14,7 @@ Successful commands write one pretty-printed JSON document to stdout and exit wi
 
 | Class | Commands | Write behavior |
 | --- | --- | --- |
-| Local preview | `reclaim:onboarding`, `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:buffers:preview-template`, `reclaim:meetings-hours:preview-inspect`, `reclaim:account-audit:preview-inspect`, `reclaim:time-policies:explain-conflicts`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
+| Local preview | `reclaim:onboarding`, `reclaim:tasks:preview-create`, `reclaim:habits:preview-create`, `reclaim:focus:preview-create`, `reclaim:buffers:preview-create`, `reclaim:buffers:preview-template`, `reclaim:meetings-hours:preview-inspect`, `reclaim:meetings-hours:preview-switch`, `reclaim:account-audit:preview-inspect`, `reclaim:time-policies:explain-conflicts`, `reclaim:demo:mock-api`, `reclaim:config:status` | No live Reclaim writes. |
 | Authenticated read | `reclaim:health`, `reclaim:time-policies:list`, `reclaim:tasks:list`, `reclaim:tasks:filter`, `reclaim:tasks:export`, `reclaim:tasks:validate-write-receipts`, `reclaim:tasks:inspect-duplicates`, `reclaim:meetings-hours:inspect`, `reclaim:account-audit:inspect` | Reads account data through the configured Reclaim API key. |
 | Confirmed write | `reclaim:tasks:create`, `reclaim:tasks:cleanup-duplicates` | Requires an explicit confirmation flag before live writes. |
 
@@ -44,6 +44,7 @@ The JSON shapes are intended to be additive. Consumers should tolerate unknown f
 - `reclaim:tasks:export` returns filtered task rows as JSON by default; `--format csv` returns CSV text in the JSON `content` field so stdout still contains one parseable JSON document.
 - `reclaim:tasks:validate-write-receipts` reads the current task list, compares it against a receipt array or `{ "writeReceipts": [...] }` input document, and returns read-only validation JSON with per-receipt status and mismatch details.
 - `reclaim:meetings-hours:preview-inspect` returns the Meetings and Hours inspector shape from a synthetic local fixture.
+- `reclaim:meetings-hours:preview-switch` returns read-only profile-switch comparisons for synthetic hours presets and local profile hints.
 - `reclaim:meetings-hours:inspect` reads existing meetings and time schemes from the configured account and returns a summary.
 - `reclaim:account-audit:preview-inspect` returns the account audit snapshot shape from a synthetic local fixture.
 - `reclaim:account-audit:inspect` reads the current user, tasks, meetings, and time schemes from the configured account and returns summary-only counts.

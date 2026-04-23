@@ -10,6 +10,12 @@ Preview the output shape with the synthetic fixture:
 npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
 ```
 
+Preview how named local profiles would switch between known hours presets:
+
+```bash
+npm run reclaim:meetings-hours:preview-switch -- --input examples/meetings-hours-profile-switch.example.json
+```
+
 Inspect a configured Reclaim account:
 
 ```bash
@@ -51,3 +57,44 @@ The command returns one JSON document:
 ```
 
 The shape is intentionally summary-oriented. It keeps hour windows as counts and attendee details as counts so downstream scripts can audit scheduling shape without copying participant lists or private ledger details.
+
+The profile-switch preview also returns one JSON document:
+
+```json
+{
+  "profileCount": 3,
+  "currentProfileId": "profile-workweek",
+  "profiles": [
+    {
+      "id": "profile-workweek",
+      "title": "Workweek",
+      "eventCategory": "WORK",
+      "preferredTimePolicyTitle": "Work Hours",
+      "selectedPolicy": {
+        "id": "policy-work",
+        "title": "Work Hours",
+        "taskCategory": "WORK",
+        "features": ["TASK_ASSIGNMENT"],
+        "matchesDefaultEventCategory": true
+      },
+      "selectionReason": "Matched preferred Reclaim time policy title \"Work Hours\".",
+      "isCurrentProfile": true
+    }
+  ],
+  "switchPreviews": [
+    {
+      "targetProfileId": "profile-deep-work",
+      "targetProfileTitle": "Deep Work Sprint",
+      "outcome": "different_policy",
+      "currentPolicyId": "policy-work",
+      "currentPolicyTitle": "Work Hours",
+      "targetPolicyId": "policy-deep-work",
+      "targetPolicyTitle": "Deep Work",
+      "summary": "Switching to Deep Work Sprint changes the hours preset from Work Hours to Deep Work."
+    }
+  ],
+  "readSafety": "read_only"
+}
+```
+
+Use the switch preview when a local workflow keeps multiple synthetic profile presets and needs to compare which Reclaim hours preset each profile would select before touching any live config. The preview remains local-only and read-only: it evaluates profile hints against provided time-scheme inputs and does not inspect calendars, write hours, or switch any account setting.

@@ -26,6 +26,7 @@ import {
 } from "./meeting-availability.js";
 import {
   meetingsHours,
+  parseReclaimHoursPresetSwitchPreviewInput,
   parseReclaimMeetingsAndHoursSnapshot
 } from "./meetings-hours.js";
 import { runMockReclaimApiDemo } from "./mock-lab.js";
@@ -144,6 +145,9 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:meetings-hours:preview-inspect": () => {
       printJson(meetingsHours.inspectSnapshot(parseReclaimMeetingsAndHoursSnapshot(readJsonInput())));
+    },
+    "reclaim:meetings-hours:preview-switch": () => {
+      printJson(meetingsHours.previewPresetSwitches(parseReclaimHoursPresetSwitchPreviewInput(readJsonInput())));
     },
     "reclaim:account-audit:preview-inspect": () => {
       printJson(accountAudit.inspectSnapshot(parseReclaimAccountAuditSnapshot(readJsonInput())));
