@@ -1,6 +1,6 @@
 # Meeting Availability Preview Helper
 
-The Meeting Availability helper is preview-only. It expands a synthetic meeting request into candidate local slots using synthetic time-policy windows and synthetic busy meetings. It does not call a live calendar, inspect a Reclaim account, or apply private fallback rules.
+The Meeting Availability helper is preview-only. It expands a synthetic meeting request into viable local availability windows, candidate slots inside those windows, and explicit exclusion reasons using synthetic time-policy windows and synthetic busy meetings. It does not call a live calendar, inspect a Reclaim account, or apply private fallback rules.
 
 ```json
 {
@@ -68,8 +68,10 @@ npm run reclaim:meetings:preview-availability -- --input examples/meeting-availa
 The command returns JSON with:
 
 - `selectedPolicy` and `selectionReason`: the chosen policy using the toolkit's existing public-safe selector.
+- `candidateWindows`: contiguous synthetic-free windows that fit the requested duration.
+- `excludedWindows`: overlapping policy windows or leftover gaps that did not fit the requested duration, plus explicit exclusion reasons.
 - `candidateSlots`: synthetic local slots that fit within the chosen policy window and do not overlap synthetic busy meetings.
-- `daySummaries`: per-day slot counts plus concise notes when a day has no matching policy window or all candidate slots were blocked.
+- `daySummaries`: per-day window and slot counts plus concise notes when a day has no matching policy window or all candidate windows were blocked.
 - `writeSafety: "preview_only"` to keep the no-write boundary explicit.
 
 ## Public-Safe Fixture

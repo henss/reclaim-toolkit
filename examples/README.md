@@ -72,7 +72,7 @@ The Buffer template fixture is preview-only and returns synthetic mock responses
 npm run reclaim:buffers:preview-template -- --input examples/buffer-templates.example.json
 ```
 
-The Meeting Availability fixture is preview-only and returns synthetic candidate slots plus day-by-day fit summaries:
+The Meeting Availability fixture is preview-only and returns synthetic availability windows, candidate slots, exclusion reasons, and day-by-day fit summaries:
 
 ```bash
 npm run reclaim:meetings:preview-availability -- --input examples/meeting-availability.example.json
