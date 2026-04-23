@@ -15,7 +15,6 @@ const DAY_NAMES = [
 
 type DayName = (typeof DAY_NAMES)[number];
 
-const DayOfWeekSchema = z.enum(DAY_NAMES);
 const DateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected date in YYYY-MM-DD format.");
 const TimeSchema = z.string().regex(/^\d{2}:\d{2}$/, "Expected time in HH:MM format.");
 
@@ -206,6 +205,121 @@ function buildSelectedPolicy(
   };
 }
 
+function buildNoPolicyPreview(
+  parsed: ReclaimMeetingAvailabilityPreviewInput,
+  requestSummary: MeetingAvailabilityRequestSummary,
+  selection: { selectedPolicy?: TimePolicyDiscoveryItem; selectionReason: string }
+): MeetingAvailabilityPreview {
+  return {
+    request: requestSummary,
+    busyMeetingCount: parsed.busyMeetings.length,
+    selectedPolicy: selection.selectedPolicy,
+    selectionReason: selection.selectionReason,
+    totalCandidateCount: 0,
+    returnedCandidateCount: 0,
+    candidateSlots: [],
+    daySummaries: listDatesInclusive(parsed.request.dateRangeStart, parsed.request.dateRangeEnd).map((date) => ({
+      date,
+      dayOfWeek: getDayName(date),
+      policyWindowCount: 0,
+      candidateSlotCount: 0,
+      blockedSlotCount: 0,
+      notes: ["No matching time policy was selected for this preview request."]
+    })),
+    writeSafety: "preview_only"
+  };
+}
+
+function buildDayPreview(
+  date: string,
+  selectedScheme: ReclaimTimeSchemeRecord,
+  parsed: ReclaimMeetingAvailabilityPreviewInput,
+  requestWindowStart?: number,
+  requestWindowEnd?: number
+): { candidateSlots: MeetingAvailabilityCandidateSlot[]; daySummary: MeetingAvailabilityDaySummary } {
+  const dayOfWeek = getDayName(date);
+  const matchingWindows = (selectedScheme.windows ?? []).filter((window) => {
+    if (!window.start || !window.end) {
+      return false;
+    }
+    return !window.dayOfWeek || window.dayOfWeek.toLowerCase() === dayOfWeek;
+  });
+
+  const busyMeetings = parsed.busyMeetings.filter((meeting) => meeting.date === date);
+  let blockedSlotCount = 0;
+  const notes: string[] = [];
+  const candidateSlots: MeetingAvailabilityCandidateSlot[] = [];
+
+  if (matchingWindows.length === 0) {
+    notes.push("The selected time policy does not expose a matching window for this day.");
+  }
+
+  for (const window of matchingWindows) {
+    const windowStartMinutes = parseClockMinutes(window.start!);
+    const windowEndMinutes = parseClockMinutes(window.end!);
+    const effectiveStart = requestWindowStart === undefined
+      ? windowStartMinutes
+      : Math.max(windowStartMinutes, requestWindowStart);
+    const effectiveEnd = requestWindowEnd === undefined
+      ? windowEndMinutes
+      : Math.min(windowEndMinutes, requestWindowEnd);
+
+    if ((effectiveEnd - effectiveStart) < parsed.request.durationMinutes) {
+      blockedSlotCount += 1;
+      notes.push("The requested preview window is shorter than the selected policy window on this day.");
+      continue;
+    }
+
+    for (
+      let slotStart = effectiveStart;
+      slotStart + parsed.request.durationMinutes <= effectiveEnd;
+      slotStart += parsed.request.slotIntervalMinutes
+    ) {
+      const slotEnd = slotStart + parsed.request.durationMinutes;
+      const blocked = busyMeetings.some((meeting) => overlaps(
+        slotStart,
+        slotEnd,
+        parseClockMinutes(meeting.startTime),
+        parseClockMinutes(meeting.endTime)
+      ));
+
+      if (blocked) {
+        blockedSlotCount += 1;
+        continue;
+      }
+
+      candidateSlots.push({
+        date,
+        dayOfWeek,
+        startTime: formatClockMinutes(slotStart),
+        endTime: formatClockMinutes(slotEnd),
+        durationMinutes: parsed.request.durationMinutes,
+        policyId: selectedScheme.id,
+        policyTitle: selectedScheme.title,
+        timezone: selectedScheme.timezone,
+        policyWindowStart: window.start!,
+        policyWindowEnd: window.end!
+      });
+    }
+  }
+
+  if (candidateSlots.length === 0 && blockedSlotCount > 0 && matchingWindows.length > 0) {
+    notes.push("Candidate slots were blocked by synthetic busy meetings or by the requested preview window.");
+  }
+
+  return {
+    candidateSlots,
+    daySummary: {
+      date,
+      dayOfWeek,
+      policyWindowCount: matchingWindows.length,
+      candidateSlotCount: candidateSlots.length,
+      blockedSlotCount,
+      notes
+    }
+  };
+}
+
 export function parseReclaimMeetingAvailabilityPreviewInput(raw: unknown): ReclaimMeetingAvailabilityPreviewInput {
   return ReclaimMeetingAvailabilityPreviewInputSchema.parse(raw);
 }
@@ -218,24 +332,7 @@ export function previewMeetingAvailability(
   const selection = buildSelectedPolicy(parsed.timeSchemes, parsed.request);
 
   if (!selection.selectedScheme) {
-    return {
-      request: requestSummary,
-      busyMeetingCount: parsed.busyMeetings.length,
-      selectedPolicy: selection.selectedPolicy,
-      selectionReason: selection.selectionReason,
-      totalCandidateCount: 0,
-      returnedCandidateCount: 0,
-      candidateSlots: [],
-      daySummaries: listDatesInclusive(parsed.request.dateRangeStart, parsed.request.dateRangeEnd).map((date) => ({
-        date,
-        dayOfWeek: getDayName(date),
-        policyWindowCount: 0,
-        candidateSlotCount: 0,
-        blockedSlotCount: 0,
-        notes: ["No matching time policy was selected for this preview request."]
-      })),
-      writeSafety: "preview_only"
-    };
+    return buildNoPolicyPreview(parsed, requestSummary, selection);
   }
 
   const requestWindowStart = parsed.request.windowStart ? parseClockMinutes(parsed.request.windowStart) : undefined;
@@ -244,85 +341,15 @@ export function previewMeetingAvailability(
   const daySummaries: MeetingAvailabilityDaySummary[] = [];
 
   for (const date of listDatesInclusive(parsed.request.dateRangeStart, parsed.request.dateRangeEnd)) {
-    const dayOfWeek = getDayName(date);
-    const matchingWindows = (selection.selectedScheme.windows ?? []).filter((window) => {
-      if (!window.start || !window.end) {
-        return false;
-      }
-      return !window.dayOfWeek || window.dayOfWeek.toLowerCase() === dayOfWeek;
-    });
-
-    const busyMeetings = parsed.busyMeetings.filter((meeting) => meeting.date === date);
-    let candidateSlotCount = 0;
-    let blockedSlotCount = 0;
-    const notes: string[] = [];
-
-    if (matchingWindows.length === 0) {
-      notes.push("The selected time policy does not expose a matching window for this day.");
-    }
-
-    for (const window of matchingWindows) {
-      const windowStartMinutes = parseClockMinutes(window.start!);
-      const windowEndMinutes = parseClockMinutes(window.end!);
-      const effectiveStart = requestWindowStart === undefined
-        ? windowStartMinutes
-        : Math.max(windowStartMinutes, requestWindowStart);
-      const effectiveEnd = requestWindowEnd === undefined
-        ? windowEndMinutes
-        : Math.min(windowEndMinutes, requestWindowEnd);
-
-      if ((effectiveEnd - effectiveStart) < parsed.request.durationMinutes) {
-        blockedSlotCount += 1;
-        notes.push("The requested preview window is shorter than the selected policy window on this day.");
-        continue;
-      }
-
-      for (
-        let slotStart = effectiveStart;
-        slotStart + parsed.request.durationMinutes <= effectiveEnd;
-        slotStart += parsed.request.slotIntervalMinutes
-      ) {
-        const slotEnd = slotStart + parsed.request.durationMinutes;
-        const blocked = busyMeetings.some((meeting) => overlaps(
-          slotStart,
-          slotEnd,
-          parseClockMinutes(meeting.startTime),
-          parseClockMinutes(meeting.endTime)
-        ));
-
-        if (blocked) {
-          blockedSlotCount += 1;
-          continue;
-        }
-
-        candidateSlotCount += 1;
-        candidateSlots.push({
-          date,
-          dayOfWeek,
-          startTime: formatClockMinutes(slotStart),
-          endTime: formatClockMinutes(slotEnd),
-          durationMinutes: parsed.request.durationMinutes,
-          policyId: selection.selectedScheme.id,
-          policyTitle: selection.selectedScheme.title,
-          timezone: selection.selectedScheme.timezone,
-          policyWindowStart: window.start!,
-          policyWindowEnd: window.end!
-        });
-      }
-    }
-
-    if (candidateSlotCount === 0 && blockedSlotCount > 0 && matchingWindows.length > 0) {
-      notes.push("Candidate slots were blocked by synthetic busy meetings or by the requested preview window.");
-    }
-
-    daySummaries.push({
+    const dayPreview = buildDayPreview(
       date,
-      dayOfWeek,
-      policyWindowCount: matchingWindows.length,
-      candidateSlotCount,
-      blockedSlotCount,
-      notes
-    });
+      selection.selectedScheme,
+      parsed,
+      requestWindowStart,
+      requestWindowEnd
+    );
+    candidateSlots.push(...dayPreview.candidateSlots);
+    daySummaries.push(dayPreview.daySummary);
   }
 
   return {
