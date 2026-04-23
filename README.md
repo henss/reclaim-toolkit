@@ -137,6 +137,7 @@ See [docs/integration-starter-packs.md](docs/integration-starter-packs.md) for t
 See [docs/support-bundles.md](docs/support-bundles.md) for the redacted support-bundle generator used for preview and config incidents.
 See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 See [docs/write-expansion-first-proof.md](docs/write-expansion-first-proof.md) for the current public-safe candidate ranking and next proof slice for expanding writes beyond tasks.
+See [docs/scheduling-surface-first-proof.md](docs/scheduling-surface-first-proof.md) for the current public-safe judgment on why scheduling helpers stay preview-only or read-only.
 See [docs/freshness-signals-spike.md](docs/freshness-signals-spike.md) for the public-safe webhook-versus-snapshot freshness spike and synthetic scenario matrix for `OPS-1743`.
 See [docs/openapi-client-generation.md](docs/openapi-client-generation.md) for the published Reclaim OpenAPI surface, the local spec-sanitizing step, and the generator commands future client work should start from.
 

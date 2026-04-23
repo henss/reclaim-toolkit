@@ -13,3 +13,4 @@ Future modules can cover:
 New modules should ship only when they have a tested implementation and synthetic examples.
 
 See [write expansion routing](write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
+See [scheduling surface expansion: first proof](scheduling-surface-first-proof.md) for the current public-safe judgment on why scheduling helpers stay preview-only or read-only.

@@ -46,6 +46,8 @@ Scheduling helpers need a stricter route than self-contained object writes.
 
 The public toolkit can keep preview and audit-style scheduling helpers because they use synthetic fixtures and bounded summaries. It should not imply that live meeting writes, hours switching, or fallback routing are already on an approved implementation track.
 
+See [scheduling surface expansion: first proof](scheduling-surface-first-proof.md) for the current public-safe scheduling judgment and the recommended next slice.
+
 ## Suggested Next Slice
 
 See [safe write expansion: first proof](write-expansion-first-proof.md) for the current candidate comparison and recommended first slice.
