@@ -21,6 +21,10 @@ import { focus, parseReclaimFocusInputs } from "./focus.js";
 import { habits, parseReclaimHabitInputs } from "./habits.js";
 import { runReclaimHealthCheck } from "./health.js";
 import {
+  meetingAvailability,
+  parseReclaimMeetingAvailabilityPreviewInput
+} from "./meeting-availability.js";
+import {
   meetingsHours,
   parseReclaimMeetingsAndHoursSnapshot
 } from "./meetings-hours.js";
@@ -134,6 +138,9 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:buffers:preview-template": () => {
       printJson(bufferTemplates.preview(parseReclaimBufferTemplateInputs(readJsonInput())));
+    },
+    "reclaim:meetings:preview-availability": () => {
+      printJson(meetingAvailability.preview(parseReclaimMeetingAvailabilityPreviewInput(readJsonInput())));
     },
     "reclaim:meetings-hours:preview-inspect": () => {
       printJson(meetingsHours.inspectSnapshot(parseReclaimMeetingsAndHoursSnapshot(readJsonInput())));

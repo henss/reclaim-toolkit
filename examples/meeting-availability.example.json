@@ -1,0 +1,78 @@
+{
+  "request": {
+    "title": "Prototype planning sync",
+    "durationMinutes": 45,
+    "eventCategory": "WORK",
+    "dateRangeStart": "2026-05-11",
+    "dateRangeEnd": "2026-05-13",
+    "windowStart": "09:00",
+    "windowEnd": "15:00",
+    "slotIntervalMinutes": 30,
+    "maxSuggestions": 6,
+    "preferredTimePolicyTitle": "Work Hours"
+  },
+  "busyMeetings": [
+    {
+      "title": "Existing project sync",
+      "date": "2026-05-11",
+      "startTime": "09:30",
+      "endTime": "10:00"
+    },
+    {
+      "title": "Design review",
+      "date": "2026-05-11",
+      "startTime": "11:00",
+      "endTime": "12:00"
+    },
+    {
+      "title": "Stakeholder notes review",
+      "date": "2026-05-13",
+      "startTime": "13:00",
+      "endTime": "14:00"
+    }
+  ],
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Work Hours",
+      "taskCategory": "WORK",
+      "timezone": "Europe/Berlin",
+      "features": [
+        "TASK_ASSIGNMENT"
+      ],
+      "windows": [
+        {
+          "dayOfWeek": "monday",
+          "start": "09:00",
+          "end": "15:00"
+        },
+        {
+          "dayOfWeek": "tuesday",
+          "start": "09:00",
+          "end": "15:00"
+        },
+        {
+          "dayOfWeek": "wednesday",
+          "start": "09:00",
+          "end": "15:00"
+        }
+      ]
+    },
+    {
+      "id": "policy-personal",
+      "title": "Personal Hours",
+      "taskCategory": "PERSONAL",
+      "timezone": "Europe/Berlin",
+      "features": [
+        "TASK_ASSIGNMENT"
+      ],
+      "windows": [
+        {
+          "dayOfWeek": "saturday",
+          "start": "10:00",
+          "end": "12:00"
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,7 @@ export * from "./buffers.js";
 export * from "./focus.js";
 export * from "./habits.js";
 export * from "./health.js";
+export * from "./meeting-availability.js";
 export * from "./meetings-hours.js";
 export * from "./openapi-client.js";
 export * from "./time-policies.js";

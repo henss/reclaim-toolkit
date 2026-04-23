@@ -19,6 +19,7 @@ Rules:
 - `time-policy-conflicts.example.json`: synthetic task, focus, and buffer conflict fixture for the read-only time-policy explainer.
 - `buffer-rules.example.json`: preview-only Buffer rule fixture with a synthetic baseline buffer and diff-style preview receipts.
 - `buffer-templates.example.json`: preview-only Buffer template fixture with generic meeting-recovery and transition-time templates.
+- `meeting-availability.example.json`: preview-only Meeting Availability fixture with synthetic busy meetings and generic policy windows.
 - `meetings-and-hours.example.json`: synthetic Meetings and Hours inspector fixture with placeholder meeting and time-policy summaries.
 - `task-write-receipts.example.json`: synthetic task write-receipt fixture for read-only remote-state validation.
 
@@ -69,6 +70,12 @@ The Buffer template fixture is preview-only and returns synthetic mock responses
 
 ```bash
 npm run reclaim:buffers:preview-template -- --input examples/buffer-templates.example.json
+```
+
+The Meeting Availability fixture is preview-only and returns synthetic candidate slots plus day-by-day fit summaries:
+
+```bash
+npm run reclaim:meetings:preview-availability -- --input examples/meeting-availability.example.json
 ```
 
 The Meetings and Hours fixture is read-only and does not create meetings or update hours:
