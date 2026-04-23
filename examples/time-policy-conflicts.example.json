@@ -1,0 +1,45 @@
+{
+  "defaultTaskEventCategory": "WORK",
+  "preferredTimePolicyTitle": "Deep Work",
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Deep Work",
+      "taskCategory": "WORK",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        { "dayOfWeek": "monday", "start": "09:00", "end": "12:00" },
+        { "dayOfWeek": "tuesday", "start": "09:00", "end": "12:00" },
+        { "dayOfWeek": "thursday", "start": "12:00", "end": "13:00" }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "title": "Draft launch checklist",
+      "durationMinutes": 90,
+      "startAfter": "2026-05-11T09:00:00.000Z",
+      "due": "2026-05-11T12:00:00.000Z"
+    }
+  ],
+  "focusBlocks": [
+    {
+      "title": "Weekly writing block",
+      "durationMinutes": 60,
+      "cadence": "weekly",
+      "daysOfWeek": ["monday", "wednesday"],
+      "windowStart": "09:00",
+      "windowEnd": "10:00"
+    }
+  ],
+  "buffers": [
+    {
+      "title": "Post-review notes buffer",
+      "durationMinutes": 15,
+      "placement": "after",
+      "anchor": "Prototype review block",
+      "windowStart": "12:00",
+      "windowEnd": "12:30"
+    }
+  ]
+}

@@ -1,14 +1,16 @@
 # Time-Policy Conflict Explainer
 
-Use the synthetic explainer when a proposed task shape needs a read-only explanation before any live Reclaim write.
+Use the synthetic explainer when proposed task, focus-block, or buffer shapes need a read-only explanation before any live Reclaim write.
 
 ```bash
-npm run reclaim:time-policies:explain-conflicts -- --input time-policy-conflicts.json
+npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-conflicts.example.json
 ```
 
 The input file is a synthetic JSON fixture with:
 
 - `tasks`: proposed task previews with `title`, `durationMinutes`, and optional `startAfter`, `due`, `timeSchemeId`, or `eventCategory`.
+- `focusBlocks`: optional proposed focus previews with `title`, `durationMinutes`, optional `eventCategory`, `cadence`, `daysOfWeek`, `date`, `windowStart`, and `windowEnd`.
+- `buffers`: optional proposed buffer previews with `title`, `durationMinutes`, optional `eventCategory`, `placement`, `anchor`, `windowStart`, and `windowEnd`.
 - `timeSchemes`: known Reclaim time-policy or hours inputs, including `id`, `title`, `taskCategory`, `features`, and optional `windows`.
 - `defaultTaskEventCategory`: fallback task category when a task does not set `eventCategory`.
 - `preferredTimePolicyId` or `preferredTimePolicyTitle`: optional default policy-selection hints.
@@ -37,16 +39,40 @@ Example:
       "startAfter": "2026-05-11T09:00:00.000Z",
       "due": "2026-05-11T12:00:00.000Z"
     }
+  ],
+  "focusBlocks": [
+    {
+      "title": "Weekly writing block",
+      "durationMinutes": 60,
+      "cadence": "weekly",
+      "daysOfWeek": ["monday", "wednesday"],
+      "windowStart": "09:00",
+      "windowEnd": "10:00"
+    }
+  ],
+  "buffers": [
+    {
+      "title": "Post-review notes buffer",
+      "durationMinutes": 15,
+      "placement": "after",
+      "anchor": "Prototype review block",
+      "windowStart": "12:00",
+      "windowEnd": "12:30"
+    }
   ]
 }
 ```
 
-The command returns parseable JSON with `readSafety: "read_only"` and one explanation per task. Each explanation includes the selected policy, why that policy was chosen, whether the task is a `fit` or `conflict`, and any concrete conflict reasons such as:
+The command returns parseable JSON with `readSafety: "read_only"` plus `tasks`, `focusBlocks`, and `buffers` result arrays. Each explanation includes the selected policy, why that policy was chosen, whether the proposal is a `fit` or `conflict`, and any concrete conflict reasons such as:
 
 - no matching policy
 - task category mismatch
 - missing `TASK_ASSIGNMENT` policy feature
 - `due` earlier than `startAfter`
 - insufficient policy-window minutes between `startAfter` and `due`
+- insufficient overlap between a focus preview window and one or more requested weekdays
+- insufficient overlap between a buffer preview window and all configured policy days
 
-This explainer is intentionally narrow. It does not reschedule tasks, inspect live calendar fallback behavior, or model private personal policy.
+Task results keep the existing bounded-window check between `startAfter` and `due`. Focus results check the requested preview window against the selected policy on the requested cadence days when that information is available. Buffer results check whether the preview window fits on at least one configured policy day.
+
+This explainer is intentionally narrow. It does not reschedule proposals, inspect live calendar fallback behavior, or model private personal policy.

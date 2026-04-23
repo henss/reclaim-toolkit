@@ -38,7 +38,7 @@ The JSON shapes are intended to be additive. Consumers should tolerate unknown f
 - `reclaim:config:status` reports config-file presence and parse status without validating credentials.
 - `reclaim:health` validates authenticated reachability and may include the configured API URL, user email, task-assignment policy count, and task count.
 - `reclaim:time-policies:list` returns policy-discovery JSON and the selected policy reasoning for the current config.
-- `reclaim:time-policies:explain-conflicts` reads a synthetic local JSON fixture and returns fit or conflict explanations for proposed tasks against known time-policy inputs.
+- `reclaim:time-policies:explain-conflicts` reads a synthetic local JSON fixture and returns fit or conflict explanations for proposed tasks, focus blocks, and buffers against known time-policy inputs.
 - `reclaim:tasks:list` reads existing tasks and returns normalized task rows with `readSafety: "read_only"`.
 - `reclaim:tasks:filter` requires at least one filter flag and returns the same normalized read-only task rows plus the applied filters.
 - `reclaim:tasks:export` returns filtered task rows as JSON by default; `--format csv` returns CSV text in the JSON `content` field so stdout still contains one parseable JSON document.

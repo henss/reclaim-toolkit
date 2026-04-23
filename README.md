@@ -34,7 +34,7 @@ npm run reclaim:health -- --config config/reclaim.local.json
 npm run reclaim:openapi:capability-matrix
 npm run reclaim:openapi:capability-matrix -- --input generated/reclaim-openapi/reclaim-api-0.1.raw.yml
 npm run reclaim:time-policies:list -- --config config/reclaim.local.json
-npm run reclaim:time-policies:explain-conflicts -- --input time-policy-conflicts.json
+npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-conflicts.example.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
@@ -59,7 +59,7 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 `reclaim:openapi:capability-matrix` is a credential-free public-metadata command that compares the published Reclaim API document with the toolkit's shipped and roadmap surfaces so future module bets can start from auditable contract evidence.
 Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
 `reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
-`reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task and policy inputs.
+`reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task, focus, buffer, and policy inputs.
 Read collectors follow common paginated Reclaim response envelopes for tasks, meetings, and time schemes, and they retry bounded `429 Too Many Requests` responses when `Retry-After` is present.
 Task creation and duplicate deletion require explicit confirmation flags. `reclaim:tasks:create` also returns a warning-only `duplicatePlan` when it sees exact existing duplicates before attempting new task writes.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
@@ -100,6 +100,8 @@ const policyPreview = tasks.previewTimePolicySelection(await client.listTaskAssi
 });
 const policyConflicts = timePolicies.explainConflicts({
   tasks: input,
+  focusBlocks: [],
+  buffers: [],
   timeSchemes: await client.listTaskAssignmentTimeSchemes(),
   defaultTaskEventCategory: config.defaultTaskEventCategory,
   preferredTimePolicyTitle: config.preferredTimePolicyTitle
