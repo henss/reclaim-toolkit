@@ -7,6 +7,7 @@ This document records the public routing proposal for expanding live Reclaim wri
 - Tasks are the only live-write surface. They require explicit confirmation flags and return write receipts for confirmed creates and duplicate cleanup.
 - Habit, Focus, and Buffer helpers remain preview-only until each object type has direct API-shape evidence and reviewed write fixtures.
 - Meetings and Hours remain read-only. They should not gain write helpers until the toolkit has stronger evidence that their write APIs are stable, narrow, and safe to model publicly.
+- Meeting Availability and Recurring Meeting Reschedule remain preview-only. They should not be treated as a bridge to live calendar or meeting automation until the toolkit has an explicit public-boundary review for scheduling writes and fallback behavior.
 
 ## Expansion Gates
 
@@ -33,6 +34,17 @@ Do not combine multiple new live-write object types in one increment. A module t
 ## Review Points
 
 Stop for explicit review before package publication, release automation, license changes, or any broader public API commitment. Also stop if the next write surface requires account-specific examples, private workflow assumptions, Calendar fallback behavior, or a policy decision about whether the workflow belongs outside this public toolkit.
+
+## Scheduling Surface Routing
+
+Scheduling helpers need a stricter route than self-contained object writes.
+
+- Keep Meeting Availability and Recurring Meeting Reschedule preview-only unless there is public API-shape evidence for the exact write or reschedule operation and the helper can stay independent from private fallback rules.
+- Keep Meetings and Hours read-only unless the toolkit can prove that a write surface is stable, receipt-friendly, and does not imply account-specific hours switching policy.
+- Treat any move from preview/read-only scheduling helpers to confirmed writes as a separate review slice from Habit, Focus, or Buffer expansion.
+- Stop for review if the proposed scheduling surface would require real schedule examples, private ledgers, household routines, health-support policies, or Stefan-specific operating rules to explain safe defaults.
+
+The public toolkit can keep preview and audit-style scheduling helpers because they use synthetic fixtures and bounded summaries. It should not imply that live meeting writes, hours switching, or fallback routing are already on an approved implementation track.
 
 ## Suggested Next Slice
 
