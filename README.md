@@ -47,6 +47,7 @@ npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.exa
 npm run reclaim:buffers:preview-rule -- --input examples/buffer-rules.example.json
 npm run reclaim:buffers:preview-template -- --input examples/buffer-templates.example.json
 npm run reclaim:meetings:preview-availability -- --input examples/meeting-availability.example.json
+npm run reclaim:meetings:preview-recurring-reschedule -- --input examples/recurring-meeting-reschedule.example.json
 npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
 npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json
 npm run reclaim:meetings-hours:inspect -- --config config/reclaim.local.json
@@ -67,6 +68,7 @@ Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, 
 `reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
 `reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task, focus, buffer, and policy inputs.
 `reclaim:meetings:preview-availability` is a synthetic local preview command that derives public-safe availability windows, candidate meeting slots, and exclusion reasons from synthetic time-policy windows and synthetic busy meetings.
+`reclaim:meetings:preview-recurring-reschedule` is a synthetic local preview command that classifies recurring occurrences as keep, move, or blocked and suggests bounded alternative slots without touching a live calendar.
 Read collectors follow common paginated Reclaim response envelopes for tasks, meetings, and time schemes, and they retry bounded `429 Too Many Requests` responses when `Retry-After` is present.
 Task creation and duplicate deletion require explicit confirmation flags. `reclaim:tasks:create` also returns a warning-only `duplicatePlan` when it sees exact existing duplicates before attempting new task writes.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
@@ -120,13 +122,14 @@ console.log({ policyPreview, policyConflicts, readOnlyTasks, writeReceipts: resu
 
 ## Modules
 
-Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, Buffer, and Meeting Availability helpers, a Buffer rule preview helper with diff-style receipts, a Buffer template preview helper, a summary-only Account Audit snapshot, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
+Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, Buffer, Meeting Availability, and recurring meeting reschedule helpers, a Buffer rule preview helper with diff-style receipts, a Buffer template preview helper, a summary-only Account Audit snapshot, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
 
 See [docs/habits.md](docs/habits.md) for the public-safe Habit input shape.
 See [docs/focus-and-buffers.md](docs/focus-and-buffers.md) for the public-safe Focus and Buffer input shapes.
 See [docs/buffer-rules.md](docs/buffer-rules.md) for the preview-only Buffer rule diff receipt helper.
 See [docs/buffer-templates.md](docs/buffer-templates.md) for the preview-only Buffer template helper.
 See [docs/meeting-availability.md](docs/meeting-availability.md) for the preview-only Meeting Availability helper.
+See [docs/recurring-meeting-reschedule.md](docs/recurring-meeting-reschedule.md) for the preview-only recurring meeting reschedule simulator.
 See [docs/account-audit.md](docs/account-audit.md) for the summary-only Account Audit snapshot output.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
 See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.

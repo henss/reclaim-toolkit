@@ -23,6 +23,7 @@ Rules:
 - `buffer-rules.example.json`: preview-only Buffer rule fixture with a synthetic baseline buffer and diff-style preview receipts.
 - `buffer-templates.example.json`: preview-only Buffer template fixture with generic meeting-recovery and transition-time templates.
 - `meeting-availability.example.json`: preview-only Meeting Availability fixture with synthetic busy meetings and generic policy windows.
+- `recurring-meeting-reschedule.example.json`: preview-only recurring series fixture with synthetic keep, move, and blocked outcomes.
 - `meetings-and-hours.example.json`: synthetic Meetings and Hours inspector fixture with placeholder meeting and time-policy summaries.
 - `task-write-receipts.example.json`: synthetic task write-receipt fixture for read-only remote-state validation.
 
@@ -87,6 +88,12 @@ The Meeting Availability fixture is preview-only and returns synthetic availabil
 
 ```bash
 npm run reclaim:meetings:preview-availability -- --input examples/meeting-availability.example.json
+```
+
+The recurring meeting reschedule fixture is preview-only and classifies synthetic occurrences as keep, move, or blocked:
+
+```bash
+npm run reclaim:meetings:preview-recurring-reschedule -- --input examples/recurring-meeting-reschedule.example.json
 ```
 
 The Meetings and Hours fixture is read-only and does not create meetings or update hours:

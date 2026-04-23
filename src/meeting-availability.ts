@@ -30,6 +30,8 @@ const BusyMeetingSchema = z.object({
   }
 });
 
+export { BusyMeetingSchema };
+
 const MeetingAvailabilityRequestSchema = z.object({
   title: z.string().min(1),
   durationMinutes: z.number().int().positive(),

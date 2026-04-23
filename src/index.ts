@@ -8,6 +8,7 @@ export * from "./focus.js";
 export * from "./habits.js";
 export * from "./health.js";
 export * from "./meeting-availability.js";
+export * from "./meeting-recurring-reschedule.js";
 export * from "./meetings-hours.js";
 export * from "./openapi-client.js";
 export * from "./support-bundle.js";

@@ -1,0 +1,72 @@
+{
+  "series": {
+    "title": "Weekly product sync",
+    "durationMinutes": 45,
+    "eventCategory": "WORK",
+    "searchDaysBefore": 0,
+    "searchDaysAfter": 1,
+    "slotIntervalMinutes": 30,
+    "maxSuggestionsPerOccurrence": 2,
+    "preferredTimePolicyTitle": "Work Hours"
+  },
+  "occurrences": [
+    {
+      "date": "2026-06-01",
+      "startTime": "10:00",
+      "endTime": "10:45"
+    },
+    {
+      "date": "2026-06-08",
+      "startTime": "10:00",
+      "endTime": "10:45"
+    },
+    {
+      "date": "2026-06-15",
+      "startTime": "10:00",
+      "endTime": "10:45"
+    }
+  ],
+  "busyMeetings": [
+    {
+      "title": "Quarterly planning block",
+      "date": "2026-06-08",
+      "startTime": "09:00",
+      "endTime": "17:00"
+    },
+    {
+      "title": "Launch rehearsal",
+      "date": "2026-06-15",
+      "startTime": "09:00",
+      "endTime": "17:00"
+    },
+    {
+      "title": "Cross-team offsite prep",
+      "date": "2026-06-16",
+      "startTime": "09:00",
+      "endTime": "17:00"
+    }
+  ],
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Work Hours",
+      "taskCategory": "WORK",
+      "timezone": "Europe/Berlin",
+      "features": [
+        "TASK_ASSIGNMENT"
+      ],
+      "windows": [
+        {
+          "dayOfWeek": "monday",
+          "start": "09:00",
+          "end": "17:00"
+        },
+        {
+          "dayOfWeek": "tuesday",
+          "start": "09:00",
+          "end": "17:00"
+        }
+      ]
+    }
+  ]
+}

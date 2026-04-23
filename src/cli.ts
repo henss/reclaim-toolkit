@@ -25,6 +25,10 @@ import {
   parseReclaimMeetingAvailabilityPreviewInput
 } from "./meeting-availability.js";
 import {
+  parseReclaimRecurringMeetingReschedulePreviewInput,
+  recurringMeetingReschedule
+} from "./meeting-recurring-reschedule.js";
+import {
   meetingsHours,
   parseReclaimHoursPresetSwitchPreviewInput,
   parseReclaimMeetingsAndHoursSnapshot
@@ -146,6 +150,9 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:meetings:preview-availability": () => {
       printJson(meetingAvailability.preview(parseReclaimMeetingAvailabilityPreviewInput(readJsonInput())));
+    },
+    "reclaim:meetings:preview-recurring-reschedule": () => {
+      printJson(recurringMeetingReschedule.preview(parseReclaimRecurringMeetingReschedulePreviewInput(readJsonInput())));
     },
     "reclaim:meetings-hours:preview-inspect": () => {
       printJson(meetingsHours.inspectSnapshot(parseReclaimMeetingsAndHoursSnapshot(readJsonInput())));
