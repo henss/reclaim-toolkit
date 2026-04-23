@@ -16,7 +16,7 @@ Inspect a configured Reclaim account:
 npm run reclaim:meetings-hours:inspect -- --config config/reclaim.local.json
 ```
 
-The live command reads `/meetings` and `/timeschemes` through the configured API key. Keep command output local because account meeting titles, policy ids, and hour names can be private.
+The live command reads `/meetings` and `/timeschemes` through the configured API key. The read collector follows common paginated response envelopes and retries bounded `429` responses when `Retry-After` is present. Keep command output local because account meeting titles, policy ids, and hour names can be private.
 
 ## Output
 

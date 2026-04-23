@@ -8,6 +8,7 @@ import type {
   ReclaimTimeSchemeRecord,
   ReclaimUpdateTaskInput
 } from "./types.js";
+import { collectReclaimJson, fetchReclaimJson, performReclaimRequest } from "./client-read-collector.js";
 
 export interface ReclaimClient {
   readonly config: ReclaimConfig;
@@ -21,53 +22,12 @@ export interface ReclaimClient {
   deleteTask(taskId: number): Promise<void>;
 }
 
-function createAbortSignal(timeoutMs: number): AbortSignal {
-  const controller = new AbortController();
-  setTimeout(() => controller.abort(), timeoutMs).unref?.();
-  return controller.signal;
-}
-
-async function fetchReclaimJson<T>(
-  config: ReclaimConfig,
-  relativePath: string,
-  fetchImpl: typeof fetch,
-  options?: {
-    method?: "GET" | "POST" | "PATCH" | "DELETE";
-    body?: unknown;
-  }
-): Promise<T> {
-  const response = await fetchImpl(`${config.apiUrl}${relativePath}`, {
-    method: options?.method ?? "GET",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    body: options?.body === undefined ? undefined : JSON.stringify(options.body),
-    signal: createAbortSignal(config.timeoutMs)
-  });
-
-  if (!response.ok) {
-    throw new Error(`Reclaim request failed: ${response.status} ${response.statusText} for ${relativePath}`);
-  }
-
-  return (await response.json()) as T;
-}
-
 async function fetchReclaimNoContent(
   config: ReclaimConfig,
   relativePath: string,
   fetchImpl: typeof fetch
 ): Promise<void> {
-  const response = await fetchImpl(`${config.apiUrl}${relativePath}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    signal: createAbortSignal(config.timeoutMs)
-  });
+  const response = await performReclaimRequest(config, relativePath, fetchImpl, { method: "DELETE" });
 
   if (!response.ok) {
     throw new Error(`Reclaim request failed: ${response.status} ${response.statusText} for ${relativePath}`);
@@ -167,15 +127,15 @@ export function createReclaimClient(config: ReclaimConfig, fetchImpl: typeof fet
       return mapCurrentUser(await fetchReclaimJson<unknown>(config, "/users/current", fetchImpl));
     },
     async listMeetings(): Promise<ReclaimMeetingRecord[]> {
-      const response = await fetchReclaimJson<unknown[]>(config, "/meetings", fetchImpl);
+      const response = await collectReclaimJson<unknown>(config, "/meetings", fetchImpl, ["meetings"]);
       return response.map(mapMeetingRecord);
     },
     async listTasks(): Promise<ReclaimTaskRecord[]> {
-      const response = await fetchReclaimJson<unknown[]>(config, "/tasks", fetchImpl);
+      const response = await collectReclaimJson<unknown>(config, "/tasks", fetchImpl, ["tasks"]);
       return response.map(mapTaskRecord);
     },
     async listTimeSchemes(): Promise<ReclaimTimeSchemeRecord[]> {
-      const response = await fetchReclaimJson<unknown[]>(config, "/timeschemes", fetchImpl);
+      const response = await collectReclaimJson<unknown>(config, "/timeschemes", fetchImpl, ["timeSchemes"]);
       return response.map(mapTimeScheme);
     },
     async listTaskAssignmentTimeSchemes(): Promise<ReclaimTaskAssignmentTimeScheme[]> {

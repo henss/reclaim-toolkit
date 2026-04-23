@@ -24,6 +24,18 @@ export interface MockReclaimApiState {
   nextTaskId: number;
 }
 
+export interface MockReclaimReadFixture {
+  pageSize?: number;
+  rateLimitResponses?: number;
+  retryAfterSeconds?: number;
+}
+
+export interface MockReclaimApiFixtures {
+  meetings?: MockReclaimReadFixture;
+  tasks?: MockReclaimReadFixture;
+  timeSchemes?: MockReclaimReadFixture;
+}
+
 export interface MockReclaimApiDemoResult {
   health: Awaited<ReturnType<typeof runReclaimHealthCheck>>;
   timePolicies: ReturnType<typeof tasks.previewTimePolicySelection>;
@@ -121,7 +133,51 @@ function readBody<T>(init?: RequestInit): T {
   return JSON.parse(typeof init?.body === "string" ? init.body : "{}") as T;
 }
 
-export function createMockReclaimApiFetch(state: MockReclaimApiState = createSeedState()): typeof fetch {
+function consumeRateLimit(fixture?: MockReclaimReadFixture): Response | undefined {
+  if (!fixture || (fixture.rateLimitResponses ?? 0) <= 0) {
+    return undefined;
+  }
+
+  fixture.rateLimitResponses = (fixture.rateLimitResponses ?? 0) - 1;
+  return new Response(JSON.stringify({ message: "Synthetic rate limit" }), {
+    status: 429,
+    statusText: "Too Many Requests",
+    headers: {
+      "Content-Type": "application/json",
+      "Retry-After": String(fixture.retryAfterSeconds ?? 0)
+    }
+  });
+}
+
+function paginateCollection<T>(
+  items: T[],
+  key: "meetings" | "tasks" | "timeSchemes",
+  url: URL,
+  fixture?: MockReclaimReadFixture
+): unknown {
+  const pageSize = fixture?.pageSize;
+  if (!pageSize || pageSize < 1) {
+    return items;
+  }
+
+  const page = Number(url.searchParams.get("page") ?? "1");
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const start = Math.max(0, (page - 1) * pageSize);
+  const slice = items.slice(start, start + pageSize);
+
+  return {
+    [key]: slice,
+    page,
+    totalPages,
+    hasMore: page < totalPages,
+    nextPage: page < totalPages ? page + 1 : undefined
+  };
+}
+
+export function createMockReclaimApiFetch(
+  state: MockReclaimApiState = createSeedState(),
+  fixtures: MockReclaimApiFixtures = {}
+): typeof fetch {
   return (async (input: string | URL | Request, init?: RequestInit) => {
     const url = getRequestUrl(input);
     const method = getRequestMethod(init);
@@ -132,15 +188,27 @@ export function createMockReclaimApiFetch(state: MockReclaimApiState = createSee
     }
 
     if (method === "GET" && pathname === "/timeschemes") {
-      return jsonResponse(state.timeSchemes);
+      const rateLimited = consumeRateLimit(fixtures.timeSchemes);
+      if (rateLimited) {
+        return rateLimited;
+      }
+      return jsonResponse(paginateCollection(state.timeSchemes, "timeSchemes", url, fixtures.timeSchemes));
     }
 
     if (method === "GET" && pathname === "/meetings") {
-      return jsonResponse(state.meetings);
+      const rateLimited = consumeRateLimit(fixtures.meetings);
+      if (rateLimited) {
+        return rateLimited;
+      }
+      return jsonResponse(paginateCollection(state.meetings, "meetings", url, fixtures.meetings));
     }
 
     if (method === "GET" && pathname === "/tasks") {
-      return jsonResponse(state.tasks);
+      const rateLimited = consumeRateLimit(fixtures.tasks);
+      if (rateLimited) {
+        return rateLimited;
+      }
+      return jsonResponse(paginateCollection(state.tasks, "tasks", url, fixtures.tasks));
     }
 
     if (method === "POST" && pathname === "/tasks") {

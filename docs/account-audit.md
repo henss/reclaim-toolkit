@@ -16,7 +16,7 @@ Inspect a configured Reclaim account:
 npm run reclaim:account-audit:inspect -- --config config/reclaim.local.json
 ```
 
-The live command reads `/users/current`, `/tasks`, `/meetings`, and `/timeschemes` through the configured API key. Keep command output local because even a summary run is derived from account data.
+The live command reads `/users/current`, `/tasks`, `/meetings`, and `/timeschemes` through the configured API key. The read collectors follow common paginated response envelopes and retry bounded `429` responses when `Retry-After` is present. Keep command output local because even a summary run is derived from account data.
 
 ## Output
 

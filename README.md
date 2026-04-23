@@ -60,6 +60,7 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
 `reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
 `reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task and policy inputs.
+Read collectors follow common paginated Reclaim response envelopes for tasks, meetings, and time schemes, and they retry bounded `429 Too Many Requests` responses when `Retry-After` is present.
 Task creation and duplicate deletion require explicit confirmation flags.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
 For machine parsing, use the npm scripts with `--silent` and follow the [agent-safe JSON CLI profile](docs/cli-json-profile.md).
@@ -78,6 +79,7 @@ On success, commands emit one pretty-printed JSON document to stdout, write no n
 Local preview commands are safe for credential-free practice when paired with synthetic fixtures. Authenticated read commands require a local config and may return account-specific values. Confirmed write commands require their explicit confirmation flags and should be reviewed before use.
 
 To practice the task flow without Reclaim credentials, run `npm run reclaim:demo:mock-api -- --input examples/tasks.example.json`. The demo uses an in-memory synthetic API surface with placeholder policies and tasks, then prints health, time-policy, preview, duplicate-cleanup, and create results. It is not a complete Reclaim emulator.
+`createMockReclaimApiFetch` also accepts synthetic pagination and rate-limit fixtures for test-only read-collector coverage.
 
 ## Library
 
