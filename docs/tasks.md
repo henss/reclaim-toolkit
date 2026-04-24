@@ -161,6 +161,7 @@ The repo also includes three public-safe starter packs that model already-transf
 - `examples/todoist-starter-pack.example.json`
 - `examples/linear-starter-pack.example.json`
 - `examples/github-starter-pack.example.json`
+- `examples/agent-ops-week-scenario-pack.example.json`
 
 Each starter pack is still just a task input file, so it previews through the normal task command:
 
@@ -168,6 +169,7 @@ Each starter pack is still just a task input file, so it previews through the no
 npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
+npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json
 ```
 
-These files prototype the transform handoff only. They do not imply direct Todoist, Linear, or GitHub connector support inside this toolkit. Keep source-specific extraction, approvals, and private-boundary reasoning outside this public repo.
+These files prototype the transform handoff only. They do not imply direct Todoist, Linear, GitHub, CRM, or workflow-runner support inside this toolkit. Keep source-specific extraction, approvals, and private-boundary reasoning outside this public repo.

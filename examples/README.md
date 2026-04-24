@@ -17,6 +17,7 @@ Rules:
 - `todoist-starter-pack.example.json`: transformed Todoist-style starter pack for Reclaim task previews.
 - `linear-starter-pack.example.json`: transformed Linear-style starter pack for Reclaim task previews.
 - `github-starter-pack.example.json`: transformed GitHub-style starter pack for Reclaim task previews.
+- `agent-ops-week-scenario-pack.example.json`: transformed synthetic agent-ops week pack for a bounded Monday-through-Friday preview scenario.
 - `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
 - `focus-and-buffers.example.json`: preview-only Focus and Buffer fixture with synthetic focus windows and transition buffers.
 - `time-policy-conflicts.example.json`: synthetic task, focus, and buffer conflict fixture for the read-only time-policy explainer.
@@ -51,6 +52,7 @@ The integration starter packs use the same Reclaim task preview surface after an
 npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
+npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json
 ```
 
 The Habit fixture is preview-only and does not create live habits:

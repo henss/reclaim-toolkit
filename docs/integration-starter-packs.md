@@ -5,6 +5,7 @@ These starter packs are public-safe transformed task fixtures for common upstrea
 - `examples/todoist-starter-pack.example.json`
 - `examples/linear-starter-pack.example.json`
 - `examples/github-starter-pack.example.json`
+- `examples/agent-ops-week-scenario-pack.example.json`
 
 Each file already matches the existing Reclaim task preview input contract, so the same preview command works for all three:
 
@@ -12,13 +13,16 @@ Each file already matches the existing Reclaim task preview input contract, so t
 npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
+npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json
 ```
 
 The prototype boundary is intentionally narrow:
 
 - The toolkit does not ingest Todoist, Linear, or GitHub payloads directly.
-- The files model the transformed handoff into `tasks.previewCreates`, not connector clients or sync automation.
+- The files model the transformed handoff into `tasks.previewCreates`, not connector clients, workflow runners, or sync automation.
 - The examples stay synthetic and omit real Reclaim tasks, private schedules, household details, account data, and personal operating policy.
+
+The agent-ops week pack follows the same rule set. It models a week-shaped transformed backlog for public-safe previews and docs, not live lead routing, checkout automation, or private operating policy. See [agent-ops-week-scenario-pack.md](agent-ops-week-scenario-pack.md) for the focused boundary notes.
 
 ## Expected Transform Shape
 

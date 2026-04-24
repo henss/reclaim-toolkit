@@ -35,6 +35,16 @@ const starterPackCases: readonly StarterPackCase[] = [
       "Investigate failing export smoke test",
       "Draft release note summary from merged changes"
     ]
+  },
+  {
+    fileName: "agent-ops-week-scenario-pack.example.json",
+    expectedTitles: [
+      "Triage synthetic inbound opportunity queue",
+      "Draft agent-first pricing experiment brief",
+      "Prepare concierge workflow dry run",
+      "Review onboarding FAQ gaps for public toolkit",
+      "Write weekly synthetic agent-ops readout"
+    ]
   }
 ] as const;
 
@@ -47,24 +57,24 @@ describe("integration starter packs", () => {
 
       const parsedTasks = parseReclaimTaskInputs(raw);
       const preview = tasks.previewCreates(parsedTasks, {
-      timeSchemeId: "policy-work",
-      eventCategory: "WORK"
-    });
+        timeSchemeId: "policy-work",
+        eventCategory: "WORK"
+      });
 
-    expect(parsedTasks).toHaveLength(3);
-    expect(preview.taskCount).toBe(3);
-    expect(preview.tasks.map((task) => task.title)).toEqual(expectedTitles);
-    expect(preview.tasks.every((task) => task.request.alwaysPrivate)).toBe(true);
+      expect(parsedTasks).toHaveLength(expectedTitles.length);
+      expect(preview.taskCount).toBe(expectedTitles.length);
+      expect(preview.tasks.map((task) => task.title)).toEqual(expectedTitles);
+      expect(preview.tasks.every((task) => task.request.alwaysPrivate)).toBe(true);
 
-    if (personalTitle) {
-      expect(preview.tasks.find((task) => task.title === personalTitle)?.request.eventCategory).toBe("PERSONAL");
-    }
+      if (personalTitle) {
+        expect(preview.tasks.find((task) => task.title === personalTitle)?.request.eventCategory).toBe("PERSONAL");
+      }
     }
   );
 
   test.each(starterPackCases)(
     "supports CLI preview for $fileName",
-    ({ fileName }) => {
+    ({ fileName, expectedTitles }) => {
       const result = runNpmCli([
         "reclaim:tasks:preview-create",
         "--",
@@ -78,8 +88,8 @@ describe("integration starter packs", () => {
         taskCount: number;
         tasks: Array<{ title: string; request: { timeSchemeId: string } }>;
       };
-      expect(output.taskCount).toBe(3);
-      expect(output.tasks).toHaveLength(3);
+      expect(output.taskCount).toBe(expectedTitles.length);
+      expect(output.tasks).toHaveLength(expectedTitles.length);
       expect(output.tasks.every((task) => task.request.timeSchemeId === "TASK_ASSIGNMENT_TIME_SCHEME_ID_REQUIRED")).toBe(
         true
       );
