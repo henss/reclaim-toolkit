@@ -11,6 +11,7 @@ import {
   previewTimePolicySelection,
   selectTimeScheme
 } from "./time-policies.js";
+import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
 import type {
   ReclaimCreateTaskInput,
   ReclaimTaskEventCategory,
@@ -56,6 +57,7 @@ export interface PreviewTaskCreate {
 export interface TaskCreatePreview {
   taskCount: number;
   tasks: PreviewTaskCreate[];
+  previewReceipt: PreviewReceipt;
 }
 
 export interface TaskCreateResult {
@@ -162,7 +164,13 @@ export function previewCreates(
     tasks: taskInputs.map((task) => ({
       title: task.title,
       request: buildCreateInput(task, options)
-    }))
+    })),
+    previewReceipt: createPreviewReceipt({
+      operation: "task.preview",
+      readinessStatus: "ready_for_confirmed_write",
+      readinessGate:
+        "Review the previewed task payloads, then run reclaim:tasks:create with --confirm-write to apply them."
+    })
   };
 }
 

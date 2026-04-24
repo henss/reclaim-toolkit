@@ -63,7 +63,7 @@ npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.examp
 npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
 ```
 
-Both commands return JSON with `writeSafety: "preview_only"` to make the no-write boundary explicit.
+Both commands return JSON with `writeSafety: "preview_only"` plus a top-level `previewReceipt` that records when the preview was generated and why the helper remains preview-only.
 
 ## Public-Safe Fixtures
 

@@ -23,8 +23,13 @@ describe("meetings-hours profile switch preview", () => {
     expect(preview).toMatchObject({
       profileCount: 3,
       currentProfileId: "profile-workweek",
-      readSafety: "read_only"
+      readSafety: "read_only",
+      previewReceipt: {
+        operation: "hours.switch.preview",
+        readinessStatus: "read_only_boundary"
+      }
     });
+    expect(Date.parse(preview.previewReceipt.previewGeneratedAt)).not.toBeNaN();
     expect(preview.profiles.find((profile) => profile.id === "profile-workweek")).toMatchObject({
       isCurrentProfile: true,
       selectedPolicy: {
@@ -73,9 +78,13 @@ describe("meetings-hours profile switch preview", () => {
       profiles: Array<{ id: string; isCurrentProfile: boolean; selectedPolicy?: { id: string } }>;
       switchPreviews: Array<{ targetProfileId: string; outcome: string }>;
       readSafety: string;
+      previewReceipt: { operation: string; readinessStatus: string; previewGeneratedAt: string };
     };
     expect(output.currentProfileId).toBe("profile-workweek");
     expect(output.readSafety).toBe("read_only");
+    expect(output.previewReceipt.operation).toBe("hours.switch.preview");
+    expect(output.previewReceipt.readinessStatus).toBe("read_only_boundary");
+    expect(Date.parse(output.previewReceipt.previewGeneratedAt)).not.toBeNaN();
     expect(output.profiles.find((profile) => profile.id === "profile-workweek")).toMatchObject({
       isCurrentProfile: true,
       selectedPolicy: { id: "policy-work" }

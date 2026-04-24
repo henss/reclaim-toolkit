@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
 import type { ReclaimTaskEventCategory } from "./types.js";
 
 const HOUR_MINUTE_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -100,6 +101,7 @@ export interface FocusCreatePreview {
   focusBlockCount: number;
   focusBlocks: PreviewFocusCreate[];
   writeSafety: "preview_only";
+  previewReceipt: PreviewReceipt;
 }
 
 export function parseReclaimFocusInputs(raw: unknown): ReclaimFocusInput[] {
@@ -139,7 +141,12 @@ export function previewFocusCreates(
       title: focusInput.title,
       request: buildFocusPreviewRequest(focusInput, options)
     })),
-    writeSafety: "preview_only"
+    writeSafety: "preview_only",
+    previewReceipt: createPreviewReceipt({
+      operation: "focus.preview",
+      readinessStatus: "evidence_pending",
+      readinessGate: "No reviewed public API-shape evidence for a Focus create endpoint is recorded."
+    })
   };
 }
 

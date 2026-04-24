@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
 import type { ReclaimTaskEventCategory } from "./types.js";
 
 const HOUR_MINUTE_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -55,6 +56,7 @@ export interface BufferCreatePreview {
   bufferCount: number;
   buffers: PreviewBufferCreate[];
   writeSafety: "preview_only";
+  previewReceipt: PreviewReceipt;
 }
 
 export function parseReclaimBufferInputs(raw: unknown): ReclaimBufferInput[] {
@@ -93,7 +95,13 @@ export function previewBufferCreates(
       title: bufferInput.title,
       request: buildBufferPreviewRequest(bufferInput, options)
     })),
-    writeSafety: "preview_only"
+    writeSafety: "preview_only",
+    previewReceipt: createPreviewReceipt({
+      operation: "buffer.preview",
+      readinessStatus: "evidence_pending",
+      readinessGate:
+        "Anchor semantics are not proven against a reviewed public endpoint, so Buffer writes stay preview-only."
+    })
   };
 }
 

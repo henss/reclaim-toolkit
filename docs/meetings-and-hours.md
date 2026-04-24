@@ -93,8 +93,17 @@ The profile-switch preview also returns one JSON document:
       "summary": "Switching to Deep Work Sprint changes the hours preset from Work Hours to Deep Work."
     }
   ],
-  "readSafety": "read_only"
+  "readSafety": "read_only",
+  "previewReceipt": {
+    "operation": "hours.switch.preview",
+    "previewGeneratedAt": "2026-04-24T08:00:00.000Z",
+    "readinessStatus": "read_only_boundary",
+    "readinessGate": "Hours profile switching remains a local comparison helper and does not change any Reclaim account setting.",
+    "rollbackHint": "No rollback is required because this helper only emits local preview metadata."
+  }
 }
 ```
 
 Use the switch preview when a local workflow keeps multiple synthetic profile presets and needs to compare which Reclaim hours preset each profile would select before touching any live config. The preview remains local-only and read-only: it evaluates profile hints against provided time-scheme inputs and does not inspect calendars, write hours, or switch any account setting.
+
+The local preview commands also include a top-level `previewReceipt` so automated consumers can distinguish preview-generated read summaries from authenticated live reads without inferring it from the command name alone.

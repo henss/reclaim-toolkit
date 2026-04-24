@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { ReclaimClient } from "./client.js";
+import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
 import { previewHoursPresetSwitches } from "./meetings-hours-profile-switch.js";
 import type { ReclaimMeetingRecord, ReclaimTimeSchemeRecord } from "./types.js";
 
@@ -64,6 +65,10 @@ export interface MeetingsAndHoursInspection {
   readSafety: "read_only";
 }
 
+export interface MeetingsAndHoursInspectionPreview extends MeetingsAndHoursInspection {
+  previewReceipt: PreviewReceipt;
+}
+
 export function parseReclaimMeetingsAndHoursSnapshot(raw: unknown): MeetingsAndHoursSnapshot {
   return ReclaimMeetingsAndHoursSnapshotSchema.parse(raw);
 }
@@ -94,6 +99,20 @@ export function inspectMeetingsAndHoursSnapshot(
   };
 }
 
+export function previewMeetingsAndHoursSnapshot(
+  snapshot: MeetingsAndHoursSnapshot
+): MeetingsAndHoursInspectionPreview {
+  return {
+    ...inspectMeetingsAndHoursSnapshot(snapshot),
+    previewReceipt: createPreviewReceipt({
+      operation: "hours.inspect.preview",
+      readinessStatus: "read_only_boundary",
+      readinessGate:
+        "Meetings and hours inspection remains read-only and does not create meetings or update hours."
+    })
+  };
+}
+
 export async function inspectMeetingsAndHours(
   client: ReclaimClient
 ): Promise<MeetingsAndHoursInspection> {
@@ -107,6 +126,7 @@ export async function inspectMeetingsAndHours(
 export const meetingsHours = {
   inspect: inspectMeetingsAndHours,
   inspectSnapshot: inspectMeetingsAndHoursSnapshot,
+  previewInspectSnapshot: previewMeetingsAndHoursSnapshot,
   previewPresetSwitches: previewHoursPresetSwitches
 };
 

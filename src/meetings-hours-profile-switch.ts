@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
 import {
   ReclaimTimeSchemeSnapshotSchema,
   previewTimePolicySelection,
@@ -47,6 +48,7 @@ export interface HoursPresetSwitchPreview {
   profiles: HoursProfilePreview[];
   switchPreviews: HoursPresetSwitchPreviewTarget[];
   readSafety: "read_only";
+  previewReceipt: PreviewReceipt;
 }
 
 export function parseReclaimHoursPresetSwitchPreviewInput(
@@ -142,6 +144,12 @@ export function previewHoursPresetSwitches(
     switchPreviews: profilePreviews
       .filter((profile) => profile.id !== currentProfile.id)
       .map((profile) => describeSwitchPreview(currentProfile, profile)),
-    readSafety: "read_only"
+    readSafety: "read_only",
+    previewReceipt: createPreviewReceipt({
+      operation: "hours.switch.preview",
+      readinessStatus: "read_only_boundary",
+      readinessGate:
+        "Hours profile switching remains a local comparison helper and does not change any Reclaim account setting."
+    })
   };
 }

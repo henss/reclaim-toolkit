@@ -165,7 +165,7 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
       printJson(recurringMeetingReschedule.preview(parseReclaimRecurringMeetingReschedulePreviewInput(readJsonInput())));
     },
     "reclaim:meetings-hours:preview-inspect": () => {
-      printJson(meetingsHours.inspectSnapshot(parseReclaimMeetingsAndHoursSnapshot(readJsonInput())));
+      printJson(meetingsHours.previewInspectSnapshot(parseReclaimMeetingsAndHoursSnapshot(readJsonInput())));
     },
     "reclaim:meetings-hours:preview-switch": () => {
       printJson(meetingsHours.previewPresetSwitches(parseReclaimHoursPresetSwitchPreviewInput(readJsonInput())));

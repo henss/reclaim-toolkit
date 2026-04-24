@@ -48,12 +48,22 @@ describe("focus and buffers", () => {
     expect(parsedBuffers).toHaveLength(2);
     expect(focusPreview).toMatchObject({
       focusBlockCount: 2,
-      writeSafety: "preview_only"
+      writeSafety: "preview_only",
+      previewReceipt: {
+        operation: "focus.preview",
+        readinessStatus: "evidence_pending"
+      }
     });
     expect(bufferPreview).toMatchObject({
       bufferCount: 2,
-      writeSafety: "preview_only"
+      writeSafety: "preview_only",
+      previewReceipt: {
+        operation: "buffer.preview",
+        readinessStatus: "evidence_pending"
+      }
     });
+    expect(Date.parse(focusPreview.previewReceipt.previewGeneratedAt)).not.toBeNaN();
+    expect(Date.parse(bufferPreview.previewReceipt.previewGeneratedAt)).not.toBeNaN();
     expect(focusPreview.focusBlocks[0]?.request).toMatchObject({
       title: "Prototype review block",
       eventCategory: "WORK",
