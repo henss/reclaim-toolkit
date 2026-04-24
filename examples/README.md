@@ -15,6 +15,7 @@ Rules:
 - `tasks.example.json`: minimal task-create fixture for smoke testing task commands.
 - `scheduling-recipes.example.json`: synthetic recipe pack for common scheduling shapes such as kickoff prep, review windows, release checklists, personal admin, learning blocks, and weekly planning.
 - `shopping-errand-windows.example.json`: synthetic personal task pack for bounded shopping-assistance and errand-window previews.
+- `event-prep-block-example-pack.example.json`: synthetic guest-visit preparation pack for placeholder event-prep block previews.
 - `todoist-starter-pack.example.json`: transformed Todoist-style starter pack for Reclaim task previews.
 - `linear-starter-pack.example.json`: transformed Linear-style starter pack for Reclaim task previews.
 - `github-starter-pack.example.json`: transformed GitHub-style starter pack for Reclaim task previews.
@@ -51,6 +52,12 @@ For a public-safe shopping and errand-window variant on the same preview surface
 
 ```bash
 npm run reclaim:tasks:preview-create -- --input examples/shopping-errand-windows.example.json
+```
+
+For a public-safe guest-visit preparation variant with conventional event-prep blocks, use:
+
+```bash
+npm run reclaim:tasks:preview-create -- --input examples/event-prep-block-example-pack.example.json
 ```
 
 The integration starter packs use the same Reclaim task preview surface after an upstream transform has already normalized the data:

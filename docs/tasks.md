@@ -171,6 +171,24 @@ npm run reclaim:tasks:preview-create -- --input examples/shopping-errand-windows
 
 The fixture stays synthetic by using placeholder store language, conventional `PERSONAL` task categories, and bounded `startAfter`/`due` windows only. It is intended for preview examples and regression coverage, not as a recommendation for any private household or calendar workflow.
 
+## Synthetic Event-Prep Blocks
+
+`examples/event-prep-block-example-pack.example.json` adds a public-safe work preview pack for generic guest-visit preparation:
+
+- run-of-show review ahead of the visit;
+- signage and room-readiness checks;
+- demo-environment reset work;
+- host handoff notes for visit day;
+- a post-visit summary shell.
+
+Preview it with the standard task command:
+
+```bash
+npm run reclaim:tasks:preview-create -- --input examples/event-prep-block-example-pack.example.json
+```
+
+The fixture stays synthetic by using placeholder guest language, conventional `WORK` task categories, and bounded `startAfter`/`due` windows only. It is intended for preview examples and regression coverage, not as a recommendation for any private event ledger, household workflow, or calendar-routing policy.
+
 ## Integration Starter Packs
 
 The repo also includes three public-safe starter packs that model already-transformed upstream work from common tools:

@@ -1,0 +1,48 @@
+{
+  "tasks": [
+    {
+      "title": "Finalize placeholder guest visit run-of-show",
+      "notes": "Synthetic event-prep block pack transformed into Reclaim input. Scope: confirm the public agenda, owner handoffs, and a generic arrival sequence for a placeholder guest visit.",
+      "durationMinutes": 50,
+      "due": "2026-05-26T12:00:00+02:00",
+      "startAfter": "2026-05-26T08:30:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": false
+    },
+    {
+      "title": "Prepare venue-ready signage checklist",
+      "notes": "Synthetic event-prep block pack transformed into Reclaim input. Scope: review placeholder signs, room labels, and generic wayfinding material without referring to a real site or household details.",
+      "durationMinutes": 35,
+      "due": "2026-05-26T16:30:00+02:00",
+      "startAfter": "2026-05-26T13:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": false
+    },
+    {
+      "title": "Reset demo environment for guest walkthrough",
+      "notes": "Synthetic event-prep block pack transformed into Reclaim input. Scope: refresh placeholder demo accounts, confirm generic talking points, and keep the walkthrough free of real customer or account data.",
+      "durationMinutes": 75,
+      "due": "2026-05-27T11:30:00+02:00",
+      "startAfter": "2026-05-27T08:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    },
+    {
+      "title": "Draft host handoff notes for visit day",
+      "notes": "Synthetic event-prep block pack transformed into Reclaim input. Scope: capture placeholder introductions, timing reminders, and bounded escalation notes for a conventional office visit.",
+      "durationMinutes": 45,
+      "due": "2026-05-27T15:00:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    },
+    {
+      "title": "Prepare post-visit follow-up summary shell",
+      "notes": "Synthetic event-prep block pack transformed into Reclaim input. Scope: prewrite a generic thank-you and recap outline so the real follow-up can stay fast after the event.",
+      "durationMinutes": 40,
+      "due": "2026-05-28T10:30:00+02:00",
+      "startAfter": "2026-05-28T08:30:00+02:00",
+      "eventCategory": "WORK",
+      "splitAllowed": true
+    }
+  ]
+}

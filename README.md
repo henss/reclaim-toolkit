@@ -41,6 +41,7 @@ npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
 npm run reclaim:tasks:preview-create -- --input examples/shopping-errand-windows.example.json
+npm run reclaim:tasks:preview-create -- --input examples/event-prep-block-example-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
@@ -138,6 +139,7 @@ See [docs/recurring-meeting-reschedule.md](docs/recurring-meeting-reschedule.md)
 See [docs/account-audit.md](docs/account-audit.md) for the summary-only Account Audit snapshot output.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
 See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.
+See [docs/event-prep-block-example-pack.md](docs/event-prep-block-example-pack.md) for a synthetic guest-visit preparation pack that stays on the same preview-only task surface.
 See [docs/integration-starter-packs.md](docs/integration-starter-packs.md) for the Todoist, Linear, and GitHub starter packs that already fit the task preview contract.
 See [docs/agent-ops-week-scenario-pack.md](docs/agent-ops-week-scenario-pack.md) for a synthetic Monday-through-Friday agent-ops pack that stays on the same preview-only task surface.
 See [docs/support-bundles.md](docs/support-bundles.md) for the redacted support-bundle generator used for preview and config incidents.
