@@ -35,6 +35,7 @@
     "examples"
   ],
   "scripts": {
+    "reclaim:help": "tsx src/cli.ts reclaim:help",
     "reclaim:onboarding": "tsx src/cli.ts reclaim:onboarding",
     "reclaim:config:status": "tsx src/cli.ts reclaim:config:status",
     "reclaim:support:bundle": "tsx src/cli.ts reclaim:support:bundle",

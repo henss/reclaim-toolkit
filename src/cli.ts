@@ -16,6 +16,7 @@ import {
 } from "./buffer-templates.js";
 import { buffers, parseReclaimBufferInputs } from "./buffers.js";
 import { createReclaimClient } from "./client.js";
+import { getReclaimCliHelp } from "./cli-help.js";
 import { getReclaimConfigStatus, loadReclaimConfig } from "./config.js";
 import { focus, parseReclaimFocusInputs } from "./focus.js";
 import { habits, parseReclaimHabitInputs } from "./habits.js";
@@ -100,6 +101,14 @@ function printJson(value: unknown): void {
   console.log(JSON.stringify(value, null, 2));
 }
 
+function printHelp(): void {
+  printJson(getReclaimCliHelp({ includeOptional: hasFlag("--include-optional") }));
+}
+
+function isHelpRequest(command: string | undefined): boolean {
+  return !command || command === "--help" || command === "help";
+}
+
 type CommandHandler = () => Promise<void> | void;
 
 function buildCommandHandlers(): Record<string, CommandHandler> {
@@ -107,6 +116,7 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     "reclaim:config:status": () => {
       printJson(getReclaimConfigStatus(parseFlag("--config")));
     },
+    "reclaim:help": printHelp,
     "reclaim:onboarding": () => {
       printJson(getReclaimOnboardingWizard(parseFlag("--config")));
     },
@@ -224,6 +234,10 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
 
 async function main(): Promise<void> {
   const command = process.argv[2];
+  if (isHelpRequest(command)) {
+    printHelp();
+    return;
+  }
   const handler = command ? buildCommandHandlers()[command] : undefined;
   if (handler) {
     await handler();

@@ -28,6 +28,8 @@ Set either `preferredTimePolicyId` or `preferredTimePolicyTitle` when task creat
 ## CLI
 
 ```bash
+npm run reclaim:help
+npm run reclaim:help -- --include-optional
 npm run reclaim:onboarding
 npm run reclaim:config:status -- --config config/reclaim.local.json
 npm run reclaim:support:bundle -- --input examples/support-bundle-preview.example.json
@@ -61,6 +63,7 @@ npm run reclaim:tasks:inspect-duplicates -- --config config/reclaim.local.json -
 npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-reviewed-delete
 ```
 
+`reclaim:help` prints a parseable npm-first command index. By default it stays focused on the conventional public baseline, and `--include-optional` reveals preview-only and read-only optional surfaces with explicit readiness gates.
 `reclaim:onboarding` is a credential-free wizard that reports local config readiness, safe synthetic fixture commands, and write-guard reminders without contacting Reclaim or writing files.
 `reclaim:openapi:capability-matrix` is a credential-free public-metadata command that compares the published Reclaim API document with the toolkit's shipped and roadmap surfaces so future module bets can start from auditable contract evidence.
 `reclaim:support:bundle` is a redacted troubleshooting command for preview or config incidents. It preserves structural JSON signals, dates, times, and safety enums while redacting task titles, ids, emails, secrets, free-text notes, and absolute paths.
