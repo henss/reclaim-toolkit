@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
 import type { ReclaimTaskEventCategory } from "./types.js";
 
 const HOUR_MINUTE_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -86,6 +87,7 @@ export interface HabitCreatePreview {
   habitCount: number;
   habits: PreviewHabitCreate[];
   writeSafety: "preview_only";
+  previewReceipt: PreviewReceipt;
 }
 
 export function parseReclaimHabitInputs(raw: unknown): ReclaimHabitInput[] {
@@ -126,7 +128,13 @@ export function previewHabitCreates(
       title: habit.title,
       request: buildHabitPreviewRequest(habit, options)
     })),
-    writeSafety: "preview_only"
+    writeSafety: "preview_only",
+    previewReceipt: createPreviewReceipt({
+      operation: "habit.preview",
+      readinessStatus: "evidence_pending",
+      readinessGate:
+        "Habit field mapping still needs a bounded review against the generated OpenAPI contract before any live write helper."
+    })
   };
 }
 

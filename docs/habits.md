@@ -38,7 +38,11 @@ Preview a synthetic habit file with:
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
 ```
 
-The command returns JSON with `writeSafety: "preview_only"` to make the no-write boundary explicit.
+The command returns JSON with:
+
+- `writeSafety: "preview_only"` to make the no-write boundary explicit
+- `previewReceipt.operation: "habit.preview"` so callers can treat Habit previews like the other receipt-style preview surfaces
+- `previewReceipt.readinessStatus: "evidence_pending"` and the matching readiness gate so downstream tooling can keep Habit work on the synthetic side until a bounded write review lands
 
 ## Public-Safe Fixtures
 
