@@ -1,6 +1,7 @@
 export * from "./account-audit.js";
 export * from "./buffer-rules.js";
 export * from "./client.js";
+export * from "./command-safety-manifest.js";
 export * from "./config.js";
 export * from "./buffer-templates.js";
 export * from "./buffers.js";

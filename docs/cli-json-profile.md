@@ -2,6 +2,8 @@
 
 This profile defines the machine-facing command behavior for agents and scripts that call `reclaim-toolkit` through the public CLI.
 
+The committed [command safety manifest](command-safety-manifest.json) is the canonical machine-readable inventory for command-level safety classes, confirmation flags, default visibility, and readiness gates.
+
 Use the npm script surface with `--silent` when another program needs to parse command output:
 
 ```bash

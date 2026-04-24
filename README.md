@@ -79,6 +79,7 @@ Read collectors follow common paginated Reclaim response envelopes for tasks, me
 Task creation and duplicate deletion require explicit confirmation flags. `reclaim:tasks:create` also returns a warning-only `duplicatePlan` when it sees exact existing duplicates before attempting new task writes.
 Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
 For machine parsing, use the npm scripts with `--silent` and follow the [agent-safe JSON CLI profile](docs/cli-json-profile.md).
+For a committed machine-readable inventory of command safety classes, confirmation flags, default visibility, and readiness gates, use [docs/command-safety-manifest.json](docs/command-safety-manifest.json).
 
 ## Agent-Safe JSON CLI Profile
 
