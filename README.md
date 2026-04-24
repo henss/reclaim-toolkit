@@ -40,6 +40,7 @@ npm run reclaim:time-policies:list -- --config config/reclaim.local.json
 npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-conflicts.example.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
+npm run reclaim:tasks:preview-create -- --input examples/shopping-errand-windows.example.json
 npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json

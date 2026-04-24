@@ -14,6 +14,7 @@ Rules:
 - `reclaim.config.example.json`: synthetic config shape reference for a private local config file.
 - `tasks.example.json`: minimal task-create fixture for smoke testing task commands.
 - `scheduling-recipes.example.json`: synthetic recipe pack for common scheduling shapes such as kickoff prep, review windows, release checklists, personal admin, learning blocks, and weekly planning.
+- `shopping-errand-windows.example.json`: synthetic personal task pack for bounded shopping-assistance and errand-window previews.
 - `todoist-starter-pack.example.json`: transformed Todoist-style starter pack for Reclaim task previews.
 - `linear-starter-pack.example.json`: transformed Linear-style starter pack for Reclaim task previews.
 - `github-starter-pack.example.json`: transformed GitHub-style starter pack for Reclaim task previews.
@@ -44,6 +45,12 @@ The recipe pack is still a task input file, so it can be previewed with:
 
 ```bash
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
+```
+
+For a public-safe shopping and errand-window variant on the same preview surface, use:
+
+```bash
+npm run reclaim:tasks:preview-create -- --input examples/shopping-errand-windows.example.json
 ```
 
 The integration starter packs use the same Reclaim task preview surface after an upstream transform has already normalized the data:

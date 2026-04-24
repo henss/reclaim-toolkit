@@ -1,0 +1,40 @@
+{
+  "tasks": [
+    {
+      "title": "Review synthetic shopping options",
+      "notes": "Compare placeholder pickup choices before the midday errand window opens.",
+      "durationMinutes": 20,
+      "due": "2026-05-18T11:30:00+02:00",
+      "startAfter": "2026-05-18T10:30:00+02:00",
+      "eventCategory": "PERSONAL",
+      "splitAllowed": false
+    },
+    {
+      "title": "Complete placeholder pickup errand",
+      "notes": "Use a bounded lunch-hour window to collect a generic order from a synthetic local store.",
+      "durationMinutes": 35,
+      "due": "2026-05-18T14:00:00+02:00",
+      "startAfter": "2026-05-18T12:15:00+02:00",
+      "eventCategory": "PERSONAL",
+      "splitAllowed": false
+    },
+    {
+      "title": "Return a generic item",
+      "notes": "Reserve a late-afternoon errand block for a synthetic exchange or return.",
+      "durationMinutes": 30,
+      "due": "2026-05-19T17:30:00+02:00",
+      "startAfter": "2026-05-19T15:30:00+02:00",
+      "eventCategory": "PERSONAL",
+      "splitAllowed": false
+    },
+    {
+      "title": "Restock planning follow-up",
+      "notes": "Capture any remaining placeholder items before the evening planning window closes.",
+      "durationMinutes": 25,
+      "due": "2026-05-19T19:00:00+02:00",
+      "startAfter": "2026-05-19T17:45:00+02:00",
+      "eventCategory": "PERSONAL",
+      "splitAllowed": true
+    }
+  ]
+}

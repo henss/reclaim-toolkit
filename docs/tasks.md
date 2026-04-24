@@ -154,6 +154,23 @@ For `task.create` receipts, the validator expects the task id to still exist and
 
 The recipes use invented titles, generic notes, placeholder project language, and conventional `WORK` or `PERSONAL` categories. They are intended for local preview and schema regression tests, not as a recommendation for any private scheduling workflow.
 
+## Synthetic Shopping Errand Windows
+
+`examples/shopping-errand-windows.example.json` adds a public-safe personal preview pack for shopping-assistance and errand-window scenarios:
+
+- A short comparison step before a midday pickup window.
+- A lunch-hour pickup errand that should stay in one block.
+- A late-afternoon generic return window.
+- A short follow-up planning task after the errand block.
+
+Preview it with the standard task command:
+
+```bash
+npm run reclaim:tasks:preview-create -- --input examples/shopping-errand-windows.example.json
+```
+
+The fixture stays synthetic by using placeholder store language, conventional `PERSONAL` task categories, and bounded `startAfter`/`due` windows only. It is intended for preview examples and regression coverage, not as a recommendation for any private household or calendar workflow.
+
 ## Integration Starter Packs
 
 The repo also includes three public-safe starter packs that model already-transformed upstream work from common tools:
