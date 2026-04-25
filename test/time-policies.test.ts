@@ -48,7 +48,7 @@ describe("time policy conflict explainer", () => {
           title: "Personal Hours",
           taskCategory: "PERSONAL",
           features: ["TASK_ASSIGNMENT"],
-          windows: [{ dayOfWeek: "monday", start: "13:00", end: "16:00" }]
+          windows: []
         }
       ],
       tasks: [
@@ -66,11 +66,26 @@ describe("time policy conflict explainer", () => {
           startAfter: "2026-05-11T13:00:00.000Z",
           due: "2026-05-11T15:00:00.000Z"
         }
+      ],
+      hoursProfiles: [
+        {
+          id: "profile-deep-work",
+          title: "Deep Work Sprint",
+          eventCategory: "WORK",
+          preferredTimePolicyTitle: "Deep Work"
+        },
+        {
+          id: "profile-weekend-personal",
+          title: "Weekend Personal",
+          eventCategory: "PERSONAL",
+          preferredTimePolicyTitle: "Personal Hours"
+        }
       ]
     }));
 
     expect(result).toMatchObject({
       taskCount: 2,
+      hoursProfileCount: 2,
       policyCount: 2,
       readSafety: "read_only"
     });
@@ -89,6 +104,22 @@ describe("time policy conflict explainer", () => {
     });
     expect(result.tasks[1]?.conflicts).toContain(
       "Selected policy category PERSONAL does not match task event category WORK."
+    );
+    expect(result.hoursProfiles[0]).toMatchObject({
+      profileId: "profile-deep-work",
+      title: "Deep Work Sprint",
+      status: "fit",
+      selectionReason: 'Matched preferred Reclaim time policy title "Deep Work".'
+    });
+    expect(result.hoursProfiles[0]?.explanation).toContain("1 configured window");
+    expect(result.hoursProfiles[1]).toMatchObject({
+      profileId: "profile-weekend-personal",
+      title: "Weekend Personal",
+      status: "conflict",
+      selectionReason: 'Matched preferred Reclaim time policy title "Personal Hours".'
+    });
+    expect(result.hoursProfiles[1]?.conflicts).toContain(
+      "Selected policy did not include any hours windows for this profile preview."
     );
   });
 
@@ -138,6 +169,14 @@ describe("time policy conflict explainer", () => {
             startAfter: "2026-05-11T09:00:00.000Z",
             due: "2026-05-11T10:00:00.000Z"
           }
+        ],
+        hoursProfiles: [
+          {
+            id: "profile-workweek",
+            title: "Workweek",
+            eventCategory: "WORK",
+            preferredTimePolicyId: "policy-work"
+          }
         ]
       }, null, 2),
       "utf8"
@@ -154,19 +193,32 @@ describe("time policy conflict explainer", () => {
     expect(result.stderr).toBe("");
     const output = JSON.parse(result.stdout) as {
       readSafety: string;
+      hoursProfileCount: number;
       tasks: Array<{
         title: string;
         status: string;
         availablePolicyMinutes?: number;
         selectionReason: string;
       }>;
+      hoursProfiles: Array<{
+        profileId: string;
+        status: string;
+        selectionReason: string;
+      }>;
     };
     expect(output.readSafety).toBe("read_only");
+    expect(output.hoursProfileCount).toBe(1);
     expect(output.tasks).toHaveLength(1);
+    expect(output.hoursProfiles).toHaveLength(1);
     expect(output.tasks[0]).toMatchObject({
       title: "Short planning pass",
       status: "fit",
       availablePolicyMinutes: 60,
+      selectionReason: "Matched preferred Reclaim time policy id policy-work."
+    });
+    expect(output.hoursProfiles[0]).toMatchObject({
+      profileId: "profile-workweek",
+      status: "fit",
       selectionReason: "Matched preferred Reclaim time policy id policy-work."
     });
   });

@@ -91,7 +91,7 @@
     {
       "command": "reclaim:time-policies:explain-conflicts",
       "invocation": "npm run reclaim:time-policies:explain-conflicts",
-      "summary": "Explain policy fit for synthetic task, focus, and buffer previews.",
+      "summary": "Explain policy fit for synthetic task, focus, buffer, and hours previews.",
       "groupId": "core",
       "includeByDefault": true,
       "safetyClass": "local_preview",

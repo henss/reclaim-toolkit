@@ -118,7 +118,7 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
   },
   {
     command: "reclaim:time-policies:explain-conflicts",
-    summary: "Explain policy fit for synthetic task, focus, and buffer previews.",
+    summary: "Explain policy fit for synthetic task, focus, buffer, and hours previews.",
     safetyClass: "local_preview",
     currentMode: "stable",
     requiresConfig: false,

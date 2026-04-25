@@ -23,7 +23,7 @@ Rules:
 - `compound-weekly-preview.example.json`: synthetic compound weekly pack that combines tasks, habits, focus, buffers, and meeting availability into one preview agenda.
 - `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
 - `focus-and-buffers.example.json`: preview-only Focus and Buffer fixture with synthetic focus windows and transition buffers.
-- `time-policy-conflicts.example.json`: synthetic task, focus, and buffer conflict fixture for the read-only time-policy explainer.
+- `time-policy-conflicts.example.json`: synthetic task, focus, buffer, and hours-profile conflict fixture for the read-only time-policy explainer.
 - `buffer-rules.example.json`: preview-only Buffer rule fixture with a synthetic baseline buffer and diff-style preview receipts.
 - `buffer-templates.example.json`: preview-only Buffer template fixture with generic meeting-recovery and transition-time templates.
 - `meeting-availability.example.json`: preview-only Meeting Availability fixture with synthetic busy meetings and generic policy windows.
@@ -93,7 +93,7 @@ npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.examp
 npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
 ```
 
-The time-policy conflict fixture is read-only and explains fit or conflict reasons for synthetic task, focus, and buffer proposals:
+The time-policy conflict fixture is read-only and explains fit or conflict reasons for synthetic task, focus, buffer, and hours-profile proposals:
 
 ```bash
 npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-conflicts.example.json

@@ -107,3 +107,5 @@ The profile-switch preview also returns one JSON document:
 Use the switch preview when a local workflow keeps multiple synthetic profile presets and needs to compare which Reclaim hours preset each profile would select before touching any live config. The preview remains local-only and read-only: it evaluates profile hints against provided time-scheme inputs and does not inspect calendars, write hours, or switch any account setting.
 
 The local preview commands also include a top-level `previewReceipt` so automated consumers can distinguish preview-generated read summaries from authenticated live reads without inferring it from the command name alone.
+
+When a profile-switch result is ambiguous because a preferred hours policy is missing, mismatched, or has no configured windows, route that synthetic profile data through the dedicated [time-policy conflict explainer](time-policy-conflicts.md). That keeps the selection reasoning aligned with the task, Focus, and Buffer preview surfaces without widening the hours helpers into live scheduling behavior.

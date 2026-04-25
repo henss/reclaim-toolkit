@@ -35,10 +35,19 @@ const ReclaimTimePolicyExplainerTaskSchema = z.object({
   eventCategory: z.enum(["PERSONAL", "WORK"]).optional()
 });
 
+const ReclaimTimePolicyExplainerHoursProfileSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  eventCategory: z.enum(["PERSONAL", "WORK"]),
+  preferredTimePolicyId: z.string().min(1).optional(),
+  preferredTimePolicyTitle: z.string().min(1).optional()
+});
+
 export const ReclaimTimePolicyExplainerInputSchema = z.object({
   tasks: z.array(ReclaimTimePolicyExplainerTaskSchema).default([]),
   focusBlocks: z.array(ReclaimTimePolicyExplainerFocusSchema).default([]),
   buffers: z.array(ReclaimTimePolicyExplainerBufferSchema).default([]),
+  hoursProfiles: z.array(ReclaimTimePolicyExplainerHoursProfileSchema).default([]),
   timeSchemes: z.array(ReclaimTimeSchemeSnapshotSchema).default([]),
   defaultTaskEventCategory: z.enum(["PERSONAL", "WORK"]).default("PERSONAL"),
   preferredTimePolicyId: z.string().min(1).optional(),
@@ -58,8 +67,17 @@ export interface ReclaimTimePolicyExplainerInput {
   tasks: ReclaimTimePolicyExplainerTask[];
   focusBlocks: ReclaimTimePolicyExplainerFocusBlock[];
   buffers: ReclaimTimePolicyExplainerBuffer[];
+  hoursProfiles: ReclaimTimePolicyExplainerHoursProfile[];
   timeSchemes: ReclaimTaskAssignmentTimeScheme[];
   defaultTaskEventCategory: ReclaimTaskEventCategory;
+  preferredTimePolicyId?: string;
+  preferredTimePolicyTitle?: string;
+}
+
+export interface ReclaimTimePolicyExplainerHoursProfile {
+  id: string;
+  title: string;
+  eventCategory: ReclaimTaskEventCategory;
   preferredTimePolicyId?: string;
   preferredTimePolicyTitle?: string;
 }
@@ -80,16 +98,29 @@ export interface TimePolicyConflictTaskExplanation extends TimePolicyConflictExp
   taskEventCategory: ReclaimTaskEventCategory;
 }
 
+export interface TimePolicyConflictHoursProfileExplanation {
+  profileId: string;
+  title: string;
+  status: "fit" | "conflict";
+  eventCategory: ReclaimTaskEventCategory;
+  selectedPolicy?: TimePolicyDiscoveryItem & { windowCount: number };
+  selectionReason: string;
+  explanation: string;
+  conflicts: string[];
+}
+
 export interface TimePolicyConflictExplanation {
   proposalCount: number;
   taskCount: number;
   focusBlockCount: number;
   bufferCount: number;
+  hoursProfileCount: number;
   policyCount: number;
   readSafety: "read_only";
   tasks: TimePolicyConflictTaskExplanation[];
   focusBlocks: TimePolicyConflictFocusExplanation[];
   buffers: TimePolicyConflictBufferExplanation[];
+  hoursProfiles: TimePolicyConflictHoursProfileExplanation[];
 }
 
 function parseIsoDate(value: string | undefined, label: string, conflicts: string[]): Date | undefined {
@@ -225,6 +256,17 @@ function buildTaskExplanation(
   return "The selected policy is available for this task, but no policy windows were supplied for a capacity check.";
 }
 
+function buildHoursProfileExplanation(
+  selectedPolicy: (TimePolicyDiscoveryItem & { windowCount: number }) | undefined,
+  conflicts: string[]
+): string {
+  if (conflicts.length > 0) {
+    return conflicts.join(" ");
+  }
+
+  return `The hours profile resolves to ${selectedPolicy?.title ?? "the selected policy"} with ${selectedPolicy?.windowCount ?? 0} configured window(s).`;
+}
+
 export function parseReclaimTimePolicyExplainerInput(raw: unknown): ReclaimTimePolicyExplainerInput {
   return ReclaimTimePolicyExplainerInputSchema.parse(raw);
 }
@@ -308,16 +350,54 @@ export function explainTimePolicyConflicts(
   });
   const focusBlocks = input.focusBlocks.map((focusBlock) => explainFocusBlockConflict(focusBlock, input));
   const buffers = input.buffers.map((buffer) => explainBufferConflict(buffer, input));
+  const hoursProfiles = input.hoursProfiles.map((profile) => {
+    const selectionPreview = previewTimePolicySelection(input.timeSchemes, {
+      preferredTimePolicyId: profile.preferredTimePolicyId ?? input.preferredTimePolicyId,
+      preferredTimePolicyTitle: profile.preferredTimePolicyTitle ?? input.preferredTimePolicyTitle,
+      eventCategory: profile.eventCategory
+    });
+    const selectedScheme = selectionPreview.selectedPolicy
+      ? input.timeSchemes.find((scheme) => scheme.id === selectionPreview.selectedPolicy?.id)
+      : undefined;
+    const selectedPolicy = selectedPolicyWithWindowCount(selectedScheme, profile.eventCategory);
+    const conflicts: string[] = [];
+
+    if (!selectedScheme) {
+      conflicts.push("No matching Reclaim time policy was available for this hours profile.");
+    } else {
+      if (selectedScheme.taskCategory !== profile.eventCategory) {
+        conflicts.push(
+          `Selected policy category ${selectedScheme.taskCategory} does not match hours profile event category ${profile.eventCategory}.`
+        );
+      }
+      if ((selectedScheme.windows?.length ?? 0) === 0) {
+        conflicts.push("Selected policy did not include any hours windows for this profile preview.");
+      }
+    }
+
+    return {
+      profileId: profile.id,
+      title: profile.title,
+      status: conflicts.length > 0 ? "conflict" : "fit",
+      eventCategory: profile.eventCategory,
+      selectedPolicy,
+      selectionReason: selectionPreview.selectionReason,
+      explanation: buildHoursProfileExplanation(selectedPolicy, conflicts),
+      conflicts
+    } satisfies TimePolicyConflictHoursProfileExplanation;
+  });
 
   return {
-    proposalCount: tasks.length + focusBlocks.length + buffers.length,
+    proposalCount: tasks.length + focusBlocks.length + buffers.length + hoursProfiles.length,
     taskCount: tasks.length,
     focusBlockCount: focusBlocks.length,
     bufferCount: buffers.length,
+    hoursProfileCount: hoursProfiles.length,
     policyCount: input.timeSchemes.length,
     readSafety: "read_only",
     tasks,
     focusBlocks,
-    buffers
+    buffers,
+    hoursProfiles
   };
 }
