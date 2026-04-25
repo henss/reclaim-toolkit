@@ -144,6 +144,18 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
     includeByDefault: true
   },
   {
+    command: "reclaim:scenarios:preview-weekly",
+    summary: "Compose a synthetic weekly agenda from task, habit, focus, buffer, and meeting preview fixtures.",
+    safetyClass: "local_preview",
+    currentMode: "preview_only",
+    requiresConfig: false,
+    groupId: "optional",
+    includeByDefault: false,
+    readinessStatus: "evidence_pending",
+    readinessGate:
+      "This weekly composer intentionally stays local-preview only until a separate public review accepts any broader live scheduling contract."
+  },
+  {
     command: "reclaim:tasks:list",
     summary: "Read tasks from a configured account.",
     safetyClass: "authenticated_read",

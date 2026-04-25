@@ -20,6 +20,7 @@ Rules:
 - `linear-starter-pack.example.json`: transformed Linear-style starter pack for Reclaim task previews.
 - `github-starter-pack.example.json`: transformed GitHub-style starter pack for Reclaim task previews.
 - `agent-ops-week-scenario-pack.example.json`: transformed synthetic agent-ops week pack for a bounded Monday-through-Friday preview scenario.
+- `compound-weekly-preview.example.json`: synthetic compound weekly pack that combines tasks, habits, focus, buffers, and meeting availability into one preview agenda.
 - `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
 - `focus-and-buffers.example.json`: preview-only Focus and Buffer fixture with synthetic focus windows and transition buffers.
 - `time-policy-conflicts.example.json`: synthetic task, focus, and buffer conflict fixture for the read-only time-policy explainer.
@@ -67,6 +68,12 @@ npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.ex
 npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json
+```
+
+To compose a synthetic work week from multiple preview-only surfaces in one pass, use:
+
+```bash
+npm run reclaim:scenarios:preview-weekly -- --input examples/compound-weekly-preview.example.json
 ```
 
 The Habit fixture is preview-only and does not create live habits:

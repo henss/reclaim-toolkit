@@ -119,6 +119,18 @@
       "requiresConfig": false
     },
     {
+      "command": "reclaim:scenarios:preview-weekly",
+      "invocation": "npm run reclaim:scenarios:preview-weekly",
+      "summary": "Compose a synthetic weekly agenda from task, habit, focus, buffer, and meeting preview fixtures.",
+      "groupId": "optional",
+      "includeByDefault": false,
+      "safetyClass": "local_preview",
+      "currentMode": "preview_only",
+      "requiresConfig": false,
+      "readinessStatus": "evidence_pending",
+      "readinessGate": "This weekly composer intentionally stays local-preview only until a separate public review accepts any broader live scheduling contract."
+    },
+    {
       "command": "reclaim:tasks:list",
       "invocation": "npm run reclaim:tasks:list",
       "summary": "Read tasks from a configured account.",

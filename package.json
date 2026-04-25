@@ -44,6 +44,7 @@
     "reclaim:time-policies:list": "tsx src/cli.ts reclaim:time-policies:list",
     "reclaim:time-policies:explain-conflicts": "tsx src/cli.ts reclaim:time-policies:explain-conflicts",
     "reclaim:tasks:preview-create": "tsx src/cli.ts reclaim:tasks:preview-create",
+    "reclaim:scenarios:preview-weekly": "tsx src/cli.ts reclaim:scenarios:preview-weekly",
     "reclaim:habits:preview-create": "tsx src/cli.ts reclaim:habits:preview-create",
     "reclaim:focus:preview-create": "tsx src/cli.ts reclaim:focus:preview-create",
     "reclaim:buffers:preview-create": "tsx src/cli.ts reclaim:buffers:preview-create",

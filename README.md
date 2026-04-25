@@ -46,6 +46,7 @@ npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.ex
 npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json
+npm run reclaim:scenarios:preview-weekly -- --input examples/compound-weekly-preview.example.json
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
 npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
 npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
@@ -74,6 +75,7 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
 `reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
 `reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task, focus, buffer, and policy inputs.
+`reclaim:scenarios:preview-weekly` is a synthetic local preview command that composes task, habit, focus, buffer, and meeting-availability fixtures into one weekly agenda view and preserves each underlying preview payload for review.
 `reclaim:meetings:preview-availability` is a synthetic local preview command that derives public-safe availability windows, candidate meeting slots, and exclusion reasons from synthetic time-policy windows and synthetic busy meetings.
 `reclaim:meetings:preview-recurring-reschedule` is a synthetic local preview command that classifies recurring occurrences as keep, move, or blocked and suggests bounded alternative slots without touching a live calendar.
 Read collectors follow common paginated Reclaim response envelopes for tasks, meetings, and time schemes, and they retry bounded `429 Too Many Requests` responses when `Retry-After` is present.
@@ -147,6 +149,7 @@ See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synth
 See [docs/event-prep-block-example-pack.md](docs/event-prep-block-example-pack.md) for a synthetic guest-visit preparation pack that stays on the same preview-only task surface.
 See [docs/integration-starter-packs.md](docs/integration-starter-packs.md) for the Todoist, Linear, and GitHub starter packs that already fit the task preview contract.
 See [docs/agent-ops-week-scenario-pack.md](docs/agent-ops-week-scenario-pack.md) for a synthetic Monday-through-Friday agent-ops pack that stays on the same preview-only task surface.
+See [docs/weekly-scenario-composer.md](docs/weekly-scenario-composer.md) for the public-safe compound weekly composer that combines multiple preview surfaces into one agenda.
 See [docs/support-bundles.md](docs/support-bundles.md) for the redacted support-bundle generator used for preview and config incidents.
 See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 See [docs/write-expansion-first-proof.md](docs/write-expansion-first-proof.md) for the current public-safe candidate ranking and next proof slice for expanding writes beyond tasks.

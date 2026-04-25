@@ -17,3 +17,4 @@ export * from "./support-bundle.js";
 export * from "./time-policies.js";
 export * from "./tasks.js";
 export * from "./types.js";
+export * from "./weekly-scenario-composer.js";

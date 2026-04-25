@@ -28,6 +28,7 @@ describe("CLI help output", () => {
     const visibleCommands = output.groups.flatMap((group) => group.commands.map((command) => command.command));
     expect(visibleCommands).toContain("reclaim:help");
     expect(visibleCommands).toContain("reclaim:tasks:create");
+    expect(visibleCommands).not.toContain("reclaim:scenarios:preview-weekly");
     expect(visibleCommands).not.toContain("reclaim:habits:preview-create");
     expect(visibleCommands).not.toContain("reclaim:meetings-hours:inspect");
   });
@@ -55,6 +56,11 @@ describe("CLI help output", () => {
     expect(output.optionalSurfaceHint).toBeUndefined();
     const optionalGroup = output.groups.find((group) => group.id === "optional");
     expect(optionalGroup).toBeDefined();
+    expect(optionalGroup?.commands.find((command) => command.command === "reclaim:scenarios:preview-weekly")).toMatchObject({
+      currentMode: "preview_only",
+      readinessStatus: "evidence_pending",
+      readinessGate: expect.stringContaining("live scheduling contract")
+    });
     expect(optionalGroup?.commands.find((command) => command.command === "reclaim:habits:preview-create")).toMatchObject({
       currentMode: "preview_only",
       readinessStatus: "review_pending",

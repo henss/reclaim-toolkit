@@ -47,6 +47,10 @@ import {
   type TaskListFilters
 } from "./tasks.js";
 import {
+  parseReclaimWeeklyScenarioComposerInput,
+  weeklyScenarioComposer
+} from "./weekly-scenario-composer.js";
+import {
   explainTimePolicyConflicts,
   parseReclaimTimePolicyExplainerInput
 } from "./time-policies.js";
@@ -133,7 +137,7 @@ function isHelpRequest(command: string | undefined): boolean {
 
 type CommandHandler = () => Promise<void> | void;
 
-function buildCommandHandlers(): Record<string, CommandHandler> {
+function buildCoreCommandHandlers(): Record<string, CommandHandler> {
   return {
     "reclaim:config:status": () => {
       printJson(getReclaimConfigStatus(parseFlag("--config")));
@@ -161,9 +165,17 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:support:bundle": async () => {
       printJson(await supportBundle.generate(parseReclaimSupportBundleRequest(readJsonInput())));
-    },
+    }
+  };
+}
+
+function buildPreviewCommandHandlers(): Record<string, CommandHandler> {
+  return {
     "reclaim:tasks:preview-create": () => {
       printJson(tasks.previewCreates(parseReclaimTaskInputs(readJsonInput())));
+    },
+    "reclaim:scenarios:preview-weekly": () => {
+      printJson(weeklyScenarioComposer.preview(parseReclaimWeeklyScenarioComposerInput(readJsonInput())));
     },
     "reclaim:habits:preview-create": () => {
       printJson(habits.previewCreates(parseReclaimHabitInputs(readJsonInput())));
@@ -194,7 +206,12 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:account-audit:preview-inspect": () => {
       printJson(accountAudit.inspectSnapshot(parseReclaimAccountAuditSnapshot(readJsonInput())));
-    },
+    }
+  };
+}
+
+function buildAuthenticatedReadCommandHandlers(): Record<string, CommandHandler> {
+  return {
     "reclaim:meetings-hours:inspect": async () => {
       printJson(await meetingsHours.inspect(loadClient()));
     },
@@ -202,11 +219,6 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
       printJson(await accountAudit.inspect(loadClient()));
     },
     "reclaim:demo:mock-api": runMockLabCommand,
-    "reclaim:tasks:create": async () => {
-      printJson(await tasks.create(loadClient(), parseReclaimTaskInputs(readJsonInput()), {
-        confirmWrite: hasFlag("--confirm-write")
-      }));
-    },
     "reclaim:tasks:list": async () => {
       const client = loadClient();
       printJson(tasks.listExistingTasks(await client.listTasks(), parseTaskListFilters()));
@@ -237,6 +249,16 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
         timeSchemeId: client.config.preferredTimePolicyId,
         eventCategory: client.config.defaultTaskEventCategory
       }));
+    }
+  };
+}
+
+function buildTaskWriteCommandHandlers(): Record<string, CommandHandler> {
+  return {
+    "reclaim:tasks:create": async () => {
+      printJson(await tasks.create(loadClient(), parseReclaimTaskInputs(readJsonInput()), {
+        confirmWrite: hasFlag("--confirm-write")
+      }));
     },
     "reclaim:tasks:cleanup-duplicates": async () => {
       const taskInputs = parseReclaimTaskInputs(readJsonInput());
@@ -249,6 +271,15 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
         confirmDelete: hasFlag("--confirm-reviewed-delete")
       }));
     }
+  };
+}
+
+function buildCommandHandlers(): Record<string, CommandHandler> {
+  return {
+    ...buildCoreCommandHandlers(),
+    ...buildPreviewCommandHandlers(),
+    ...buildAuthenticatedReadCommandHandlers(),
+    ...buildTaskWriteCommandHandlers()
   };
 }
 

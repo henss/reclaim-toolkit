@@ -1,0 +1,151 @@
+{
+  "scenario": {
+    "title": "Synthetic compound weekly preview",
+    "weekStartDate": "2026-05-18",
+    "timezone": "Europe/Berlin",
+    "defaultEventCategory": "WORK"
+  },
+  "tasks": [
+    {
+      "title": "Review public weekly preview contract",
+      "notes": "Check the synthetic agenda output against the documented preview boundary.",
+      "durationMinutes": 45,
+      "due": "2026-05-18T11:30:00+02:00",
+      "startAfter": "2026-05-18T09:00:00+02:00",
+      "splitAllowed": false
+    },
+    {
+      "title": "Write Friday synthetic schedule recap",
+      "notes": "Summarize the placeholder scenario, preview gaps, and the next bounded proof.",
+      "durationMinutes": 60,
+      "due": "2026-05-22T15:30:00+02:00",
+      "startAfter": "2026-05-22T13:00:00+02:00",
+      "splitAllowed": true
+    }
+  ],
+  "habits": [
+    {
+      "title": "Daily preview inbox sweep",
+      "notes": "Use placeholder tickets and preview-only backlog notes.",
+      "durationMinutes": 20,
+      "eventCategory": "WORK",
+      "cadence": "daily",
+      "windowStart": "08:30",
+      "windowEnd": "09:00"
+    },
+    {
+      "title": "Friday workspace reset",
+      "notes": "Close the synthetic week with a generic reset checklist.",
+      "durationMinutes": 25,
+      "eventCategory": "PERSONAL",
+      "cadence": "weekly",
+      "daysOfWeek": [
+        "friday"
+      ],
+      "windowStart": "16:00",
+      "windowEnd": "17:00"
+    }
+  ],
+  "focusBlocks": [
+    {
+      "title": "Weekly scenario synthesis block",
+      "notes": "Review the combined preview and capture public-safe follow-ups.",
+      "durationMinutes": 90,
+      "eventCategory": "WORK",
+      "cadence": "weekly",
+      "daysOfWeek": [
+        "tuesday"
+      ],
+      "windowStart": "10:00",
+      "windowEnd": "12:00"
+    },
+    {
+      "title": "Preview metrics writing block",
+      "notes": "Draft one synthetic readout using placeholder data only.",
+      "durationMinutes": 60,
+      "eventCategory": "WORK",
+      "cadence": "once",
+      "date": "2026-05-21",
+      "windowStart": "13:00",
+      "windowEnd": "14:00"
+    }
+  ],
+  "buffers": [
+    {
+      "title": "Post-synthesis notes buffer",
+      "notes": "Capture next-step notes after the weekly scenario synthesis block.",
+      "durationMinutes": 15,
+      "eventCategory": "WORK",
+      "placement": "after",
+      "anchor": "Weekly scenario synthesis block",
+      "windowStart": "12:00",
+      "windowEnd": "12:30"
+    },
+    {
+      "title": "Preview handoff buffer",
+      "notes": "Leave a small transition window before the Friday recap.",
+      "durationMinutes": 15,
+      "eventCategory": "WORK",
+      "placement": "before",
+      "anchor": "Write Friday synthetic schedule recap",
+      "windowStart": "12:30",
+      "windowEnd": "13:00"
+    }
+  ],
+  "meetingAvailability": {
+    "request": {
+      "title": "Synthetic weekly preview sync",
+      "durationMinutes": 30,
+      "eventCategory": "WORK",
+      "dateRangeStart": "2026-05-19",
+      "dateRangeEnd": "2026-05-21",
+      "windowStart": "10:00",
+      "windowEnd": "15:00",
+      "slotIntervalMinutes": 30,
+      "maxSuggestions": 4,
+      "preferredTimePolicyTitle": "Work Hours"
+    },
+    "busyMeetings": [
+      {
+        "title": "Synthetic partner check-in",
+        "date": "2026-05-19",
+        "startTime": "10:30",
+        "endTime": "11:00"
+      },
+      {
+        "title": "Synthetic review panel",
+        "date": "2026-05-21",
+        "startTime": "13:00",
+        "endTime": "14:00"
+      }
+    ],
+    "timeSchemes": [
+      {
+        "id": "policy-work",
+        "title": "Work Hours",
+        "taskCategory": "WORK",
+        "timezone": "Europe/Berlin",
+        "features": [
+          "TASK_ASSIGNMENT"
+        ],
+        "windows": [
+          {
+            "dayOfWeek": "tuesday",
+            "start": "10:00",
+            "end": "15:00"
+          },
+          {
+            "dayOfWeek": "wednesday",
+            "start": "10:00",
+            "end": "15:00"
+          },
+          {
+            "dayOfWeek": "thursday",
+            "start": "10:00",
+            "end": "15:00"
+          }
+        ]
+      }
+    ]
+  }
+}
