@@ -170,6 +170,81 @@ describe("account audit snapshot", () => {
     expect(result.stdout).not.toContain("demo.user@example.com");
   });
 
+  test("drops finance-sensitive snapshot extras from the drift digest", () => {
+    const digest = createAccountAuditDriftDigest(parseReclaimAccountAuditDriftInput({
+      baseline: {
+        handle: "finance-baseline",
+        snapshot: {
+          currentUser: {
+            id: "user-1",
+            email: "person@example.com",
+            name: "Demo User"
+          },
+          tasks: [],
+          meetings: [],
+          timeSchemes: [],
+          balanceCents: 152500,
+          accountIdentifier: "acct-private-1",
+          recentTransactions: [
+            {
+              id: "txn-1",
+              amountCents: -2500,
+              memo: "Card statement"
+            }
+          ]
+        }
+      },
+      current: {
+        handle: "finance-current",
+        snapshot: {
+          currentUser: {
+            id: "user-1",
+            email: "person@example.com",
+            name: "Demo User"
+          },
+          tasks: [
+            {
+              id: 11,
+              title: "Synthetic task",
+              eventCategory: "WORK",
+              timeSchemeId: "policy-work"
+            }
+          ],
+          meetings: [],
+          timeSchemes: [],
+          balanceCents: 98000,
+          accountIdentifier: "acct-private-2",
+          recentTransactions: [
+            {
+              id: "txn-2",
+              amountCents: -54500,
+              memo: "Wire transfer"
+            }
+          ]
+        }
+      }
+    }));
+
+    const output = JSON.stringify(digest);
+
+    expect(digest).toMatchObject({
+      sourceHandles: {
+        baseline: "finance-baseline",
+        current: "finance-current"
+      },
+      overallChangeClass: "activity_drift",
+      changedSignalCount: 2,
+      readSafety: "read_only"
+    });
+    expect(output).not.toContain("balanceCents");
+    expect(output).not.toContain("accountIdentifier");
+    expect(output).not.toContain("recentTransactions");
+    expect(output).not.toContain("txn-1");
+    expect(output).not.toContain("txn-2");
+    expect(output).not.toContain("152500");
+    expect(output).not.toContain("98000");
+  });
+
   test("summarizes authenticated account reads without returning private titles or ids", async () => {
     const server = createServer((request, response) => {
       if (request.url === "/api/users/current") {

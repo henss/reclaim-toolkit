@@ -91,4 +91,4 @@ The preview drift command compares two synthetic account snapshots using source 
 }
 ```
 
-This comparison output stays public-safe because it preserves only source handles, summary counts, and normalized change classes. It does not echo task titles, meeting titles, user identifiers, or time-policy ids from either snapshot.
+This comparison output stays public-safe because it preserves only source handles, summary counts, and normalized change classes. It does not echo task titles, meeting titles, user identifiers, time-policy ids, balances, account identifiers, or transaction details from either snapshot.
