@@ -12,6 +12,15 @@ import {
   selectTimeScheme
 } from "./time-policies.js";
 import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
+import {
+  inspectExistingTaskDuplicates,
+  inspectInputTaskDuplicates,
+  taskMatchesRequest,
+  type DuplicateTaskGroup,
+  type DuplicateTaskPlan,
+  type InputDuplicateTaskGroup,
+  type InputDuplicateTaskPlan
+} from "./task-duplicates.js";
 import type {
   ReclaimCreateTaskInput,
   ReclaimTaskEventCategory,
@@ -26,6 +35,14 @@ export {
   type TaskWriteReceiptValidationItem,
   type TaskWriteReceiptValidationResult
 } from "./task-write-receipts.js";
+export {
+  inspectExistingTaskDuplicates,
+  inspectInputTaskDuplicates,
+  type DuplicateTaskGroup,
+  type DuplicateTaskPlan,
+  type InputDuplicateTaskGroup,
+  type InputDuplicateTaskPlan
+} from "./task-duplicates.js";
 
 const RECLAIM_TIME_BLOCK_MINUTES = 15;
 const REQUIRED_TIME_SCHEME_ID = "TASK_ASSIGNMENT_TIME_SCHEME_ID_REQUIRED";
@@ -57,25 +74,16 @@ export interface PreviewTaskCreate {
 export interface TaskCreatePreview {
   taskCount: number;
   tasks: PreviewTaskCreate[];
+  inputDuplicatePlan: InputDuplicateTaskPlan;
   previewReceipt: PreviewReceipt;
 }
 
 export interface TaskCreateResult {
+  inputDuplicatePlan: InputDuplicateTaskPlan;
   duplicatePlan: DuplicateTaskPlan;
   createdTasks: Array<{ title: string; taskId: number }>;
   skippedTasks: Array<{ title: string; taskId: number; reason: "already_exists" }>;
   writeReceipts: TaskWriteReceipt[];
-}
-
-export interface DuplicateTaskGroup {
-  title: string;
-  keptTaskId: number;
-  duplicateTaskIds: number[];
-}
-
-export interface DuplicateTaskPlan {
-  duplicateGroupCount: number;
-  duplicateGroups: DuplicateTaskGroup[];
 }
 
 export interface DuplicateCleanupResult extends DuplicateTaskPlan {
@@ -159,48 +167,25 @@ export function previewCreates(
     eventCategory?: ReclaimTaskEventCategory;
   } = {}
 ): TaskCreatePreview {
+  const previewTasks = taskInputs.map((task) => ({
+    title: task.title,
+    request: buildCreateInput(task, options)
+  }));
+  const inputDuplicatePlan = inspectInputTaskDuplicates(previewTasks.map((task) => task.request));
+  const hasInputDuplicates = inputDuplicatePlan.duplicateGroupCount > 0;
+
   return {
     taskCount: taskInputs.length,
-    tasks: taskInputs.map((task) => ({
-      title: task.title,
-      request: buildCreateInput(task, options)
-    })),
+    tasks: previewTasks,
+    inputDuplicatePlan,
     previewReceipt: createPreviewReceipt({
       operation: "task.preview",
-      readinessStatus: "ready_for_confirmed_write",
-      readinessGate:
-        "Review the previewed task payloads, then run reclaim:tasks:create with --confirm-write to apply them."
+      readinessStatus: hasInputDuplicates ? "evidence_pending" : "ready_for_confirmed_write",
+      readinessGate: hasInputDuplicates
+        ? `Review ${inputDuplicatePlan.duplicateGroupCount} duplicate input group(s) before any confirmed write.`
+        : "Review the previewed task payloads, then run reclaim:tasks:create with --confirm-write to apply them."
     })
   };
-}
-
-function normalizeOptionalText(value?: string): string {
-  return (value ?? "").trim();
-}
-
-function normalizeDateTime(value?: string): string {
-  const trimmed = normalizeOptionalText(value);
-  if (!trimmed) {
-    return "";
-  }
-
-  const parsed = Date.parse(trimmed);
-  if (Number.isNaN(parsed)) {
-    return trimmed;
-  }
-
-  return new Date(parsed).toISOString();
-}
-
-function taskMatchesRequest(task: ReclaimTaskRecord, request: ReclaimCreateTaskInput): boolean {
-  return (
-    task.title === request.title &&
-    normalizeOptionalText(task.notes) === normalizeOptionalText(request.notes) &&
-    task.eventCategory === request.eventCategory &&
-    task.timeSchemeId === request.timeSchemeId &&
-    normalizeDateTime(task.due) === normalizeDateTime(request.due) &&
-    normalizeDateTime(task.snoozeUntil) === normalizeDateTime(request.snoozeUntil)
-  );
 }
 
 function normalizeFilters(filters: TaskListFilters = {}): TaskListFilters {
@@ -364,14 +349,16 @@ export async function create(
       preferredTimePolicyTitle: client.config.preferredTimePolicyTitle,
       eventCategory
     }).id;
+  const requests = taskInputs.map((task) => buildCreateInput(task, { timeSchemeId, eventCategory }));
+  const inputDuplicatePlan = inspectInputTaskDuplicates(requests);
   const existingTasks = await client.listTasks();
-  const duplicatePlan = inspectDuplicates(taskInputs, existingTasks, { timeSchemeId, eventCategory });
+  const duplicatePlan = inspectExistingTaskDuplicates(requests, existingTasks);
   const createdTasks: TaskCreateResult["createdTasks"] = [];
   const skippedTasks: TaskCreateResult["skippedTasks"] = [];
   const writeReceipts: TaskWriteReceipt[] = [];
 
-  for (const task of taskInputs) {
-    const request = buildCreateInput(task, { timeSchemeId, eventCategory });
+  for (const [index, task] of taskInputs.entries()) {
+    const request = requests[index]!;
     const existingTask = existingTasks.find((candidate) => taskMatchesRequest(candidate, request));
     if (existingTask) {
       skippedTasks.push({ title: task.title, taskId: existingTask.id, reason: "already_exists" });
@@ -384,7 +371,7 @@ export async function create(
     writeReceipts.push(createdTaskReceipt(createdTask.id, task.title));
   }
 
-  return { duplicatePlan, createdTasks, skippedTasks, writeReceipts };
+  return { inputDuplicatePlan, duplicatePlan, createdTasks, skippedTasks, writeReceipts };
 }
 
 export function inspectDuplicates(
@@ -395,27 +382,10 @@ export function inspectDuplicates(
     eventCategory?: ReclaimTaskEventCategory;
   } = {}
 ): DuplicateTaskPlan {
-  const duplicateGroups: DuplicateTaskGroup[] = [];
-
-  for (const task of taskInputs) {
-    const request = buildCreateInput(task, options);
-    const matches = existingTasks
-      .filter((candidate) => taskMatchesRequest(candidate, request))
-      .sort((left, right) => left.id - right.id);
-    if (matches.length <= 1) {
-      continue;
-    }
-    duplicateGroups.push({
-      title: task.title,
-      keptTaskId: matches[0]!.id,
-      duplicateTaskIds: matches.slice(1).map((candidate) => candidate.id)
-    });
-  }
-
-  return {
-    duplicateGroupCount: duplicateGroups.length,
-    duplicateGroups
-  };
+  return inspectExistingTaskDuplicates(
+    taskInputs.map((task) => buildCreateInput(task, options)),
+    existingTasks
+  );
 }
 
 export async function cleanupDuplicates(
@@ -457,6 +427,13 @@ export const tasks = {
   listExistingTasks,
   exportExistingTasks,
   create,
+  inspectInputDuplicates: (
+    taskInputs: ReclaimTaskInput[],
+    options: {
+      timeSchemeId?: string;
+      eventCategory?: ReclaimTaskEventCategory;
+    } = {}
+  ): InputDuplicateTaskPlan => inspectInputTaskDuplicates(taskInputs.map((task) => buildCreateInput(task, options))),
   inspectDuplicates,
   cleanupDuplicates,
   validateWriteReceipts

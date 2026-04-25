@@ -79,6 +79,10 @@ describe("task create duplicate warnings", () => {
       { confirmWrite: true }
     );
 
+    expect(result.inputDuplicatePlan).toEqual({
+      duplicateGroupCount: 0,
+      duplicateGroups: []
+    });
     expect(result.duplicatePlan).toEqual({
       duplicateGroupCount: 1,
       duplicateGroups: [{ title: "Draft planning notes", keptTaskId: 21, duplicateTaskIds: [22] }]

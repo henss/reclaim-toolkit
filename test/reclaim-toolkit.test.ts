@@ -745,6 +745,10 @@ describe("health and tasks", () => {
       duplicateGroupCount: 0,
       duplicateGroups: []
     });
+    expect(result.inputDuplicatePlan).toEqual({
+      duplicateGroupCount: 0,
+      duplicateGroups: []
+    });
     expect(result.skippedTasks).toEqual([
       { title: "Draft planning notes", taskId: 9, reason: "already_exists" }
     ]);
@@ -864,6 +868,10 @@ describe("health and tasks", () => {
       { title: "Draft planning notes", taskId: 101, reason: "already_exists" }
     ]);
     expect(result.createResult.duplicatePlan).toEqual({
+      duplicateGroupCount: 0,
+      duplicateGroups: []
+    });
+    expect(result.createResult.inputDuplicatePlan).toEqual({
       duplicateGroupCount: 0,
       duplicateGroups: []
     });

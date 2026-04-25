@@ -16,6 +16,8 @@ npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.exa
 npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json
 ```
 
+The preview result now includes `inputDuplicatePlan` so imported starter packs can fail preflight review before any confirmed write. The committed starter packs are expected to return `duplicateGroupCount: 0`.
+
 The prototype boundary is intentionally narrow:
 
 - The toolkit does not ingest Todoist, Linear, or GitHub payloads directly.

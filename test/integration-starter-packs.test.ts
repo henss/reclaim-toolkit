@@ -64,6 +64,10 @@ describe("integration starter packs", () => {
       expect(parsedTasks).toHaveLength(expectedTitles.length);
       expect(preview.taskCount).toBe(expectedTitles.length);
       expect(preview.tasks.map((task) => task.title)).toEqual(expectedTitles);
+      expect(preview.inputDuplicatePlan).toEqual({
+        duplicateGroupCount: 0,
+        duplicateGroups: []
+      });
       expect(preview.tasks.every((task) => task.request.alwaysPrivate)).toBe(true);
 
       if (personalTitle) {
@@ -86,10 +90,12 @@ describe("integration starter packs", () => {
       expect(result.stderr).toBe("");
       const output = JSON.parse(result.stdout) as {
         taskCount: number;
+        inputDuplicatePlan: { duplicateGroupCount: number };
         tasks: Array<{ title: string; request: { timeSchemeId: string } }>;
       };
       expect(output.taskCount).toBe(expectedTitles.length);
       expect(output.tasks).toHaveLength(expectedTitles.length);
+      expect(output.inputDuplicatePlan.duplicateGroupCount).toBe(0);
       expect(output.tasks.every((task) => task.request.timeSchemeId === "TASK_ASSIGNMENT_TIME_SCHEME_ID_REQUIRED")).toBe(
         true
       );

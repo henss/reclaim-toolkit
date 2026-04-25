@@ -114,7 +114,9 @@ Design note: the lab stays inside this repository as a small in-memory test doub
 
 ## Write Receipts
 
-Confirmed task creation and duplicate cleanup return a `writeReceipts` array alongside the existing result fields. Confirmed task creation also returns `duplicatePlan`, a warning-only snapshot of any exact existing duplicates found before the toolkit attempted new task writes. The toolkit does not delete those duplicates during `reclaim:tasks:create`; use `reclaim:tasks:inspect-duplicates` and `reclaim:tasks:cleanup-duplicates` when duplicate cleanup is explicitly intended.
+Confirmed task creation and duplicate cleanup return a `writeReceipts` array alongside the existing result fields. Task previews and confirmed task creation now also return `inputDuplicatePlan`, a local preflight snapshot of duplicate inputs inside the imported file. Confirmed task creation separately returns `duplicatePlan`, a warning-only snapshot of any exact existing duplicates found before the toolkit attempted new task writes. The toolkit does not delete either class of duplicates during `reclaim:tasks:create`; use `reclaim:tasks:inspect-duplicates` and `reclaim:tasks:cleanup-duplicates` when duplicate cleanup is explicitly intended.
+
+When `inputDuplicatePlan.duplicateGroupCount` is greater than `0`, the preview receipt shifts to `readinessStatus: "evidence_pending"` so starter-pack imports can be reviewed before any confirmed write.
 
 Each receipt includes:
 
@@ -214,3 +216,5 @@ npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario
 ```
 
 These files prototype the transform handoff only. They do not imply direct Todoist, Linear, GitHub, CRM, or workflow-runner support inside this toolkit. Keep source-specific extraction, approvals, and private-boundary reasoning outside this public repo.
+
+Imported starter-pack previews should also keep `inputDuplicatePlan.duplicateGroupCount` at `0`. Treat any non-zero value as a transform-handoff bug to review before `reclaim:tasks:create`.
