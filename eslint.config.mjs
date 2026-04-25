@@ -5,15 +5,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: [
-      "node_modules/**",
-      "dist/**",
-      "build/**",
-      "coverage/**",
-      "generated/**",
-      ".runtime/**",
-      ".sandbox-tmp/**",
-    ],
+    ignores: ["node_modules/**", "dist/**", "build/**", "coverage/**", "generated/**", ".runtime/**", ".sandbox-tmp/**"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

@@ -78,13 +78,7 @@ function listChangedFiles(args: ParsedArgs): string[] {
 
 function walk(directory: string, output: string[]): void {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-    if (
-      entry.name === "node_modules" ||
-      entry.name === ".git" ||
-      entry.name === ".runtime" ||
-      entry.name === "dist" ||
-      entry.name === "generated"
-    ) {
+    if (entry.name === "node_modules" || entry.name === ".git" || entry.name === ".runtime" || entry.name === "dist" || entry.name === "generated") {
       continue;
     }
     const absolutePath = path.join(directory, entry.name);
@@ -107,9 +101,6 @@ function toAbsolutePath(filePath: string): string {
 }
 
 function isTrackedSurface(relativePath: string): boolean {
-  if (relativePath.startsWith("generated/")) {
-    return false;
-  }
   return /\.(ts|js|mjs|cjs)$/.test(relativePath);
 }
 
