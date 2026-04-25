@@ -78,5 +78,10 @@ describe("CLI help output", () => {
       currentMode: "read_only",
       readinessStatus: "ready"
     });
+    expect(optionalGroup?.commands.find((command) => command.command === "reclaim:account-audit:preview-drift")).toMatchObject({
+      currentMode: "read_only",
+      readinessStatus: "ready",
+      readinessGate: expect.stringContaining("source handles")
+    });
   });
 });

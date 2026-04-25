@@ -123,6 +123,7 @@ describe("public docs CLI snippets", () => {
       "README.md: npm run reclaim:meetings:preview-recurring-reschedule -- --input examples/recurring-meeting-reschedule.example.json",
       "README.md: npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json",
       "README.md: npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json",
+      "README.md: npm run reclaim:account-audit:preview-drift -- --input examples/account-audit-drift.example.json",
       "README.md: npm run reclaim:meetings-hours:inspect -- --config config/reclaim.local.json",
       "README.md: npm run reclaim:account-audit:inspect -- --config config/reclaim.local.json",
       "README.md: npm run reclaim:demo:mock-api -- --input examples/tasks.example.json",
@@ -139,6 +140,7 @@ describe("public docs CLI snippets", () => {
       "README.md: npm run reclaim:demo:mock-api -- --profile failure-modes",
       "README.md: npm run reclaim:openapi:generate",
       "docs/account-audit.md: npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json",
+      "docs/account-audit.md: npm run reclaim:account-audit:preview-drift -- --input examples/account-audit-drift.example.json",
       "docs/account-audit.md: npm run reclaim:account-audit:inspect -- --config config/reclaim.local.json",
       "docs/agent-ops-week-scenario-pack.md: npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json",
       "docs/buffer-rules.md: npm run reclaim:buffers:preview-rule -- --input examples/buffer-rules.example.json",
@@ -202,7 +204,8 @@ describe("public docs CLI snippets", () => {
       "examples/README.md: npm run reclaim:demo:mock-api -- --input examples/tasks.example.json",
       "examples/README.md: npm run reclaim:demo:mock-api -- --profile failure-modes",
       "examples/README.md: npm run reclaim:time-policies:list -- --config config/reclaim.local.json",
-      "examples/README.md: npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json"
+      "examples/README.md: npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json",
+      "examples/README.md: npm run reclaim:account-audit:preview-drift -- --input examples/account-audit-drift.example.json"
     ]);
   });
 

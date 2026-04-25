@@ -4,7 +4,9 @@ import path from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   accountAudit,
+  createAccountAuditDriftDigest,
   createReclaimClient,
+  parseReclaimAccountAuditDriftInput,
   parseReclaimAccountAuditSnapshot
 } from "../src/index.js";
 import {
@@ -77,6 +79,95 @@ describe("account audit snapshot", () => {
     });
     expect(output.tasks).toBeUndefined();
     expect(output.meetings).toBeUndefined();
+  });
+
+  test("classifies drift between two synthetic account audit snapshots using source handles only", () => {
+    const raw = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), "examples", "account-audit-drift.example.json"), "utf8")
+    ) as unknown;
+
+    const digest = createAccountAuditDriftDigest(parseReclaimAccountAuditDriftInput(raw));
+
+    expect(digest).toMatchObject({
+      sourceHandles: {
+        baseline: "account-audit-baseline-v1",
+        current: "account-audit-current-v2"
+      },
+      overallChangeClass: "mixed_drift",
+      changedSignalCount: 12,
+      driftBandCounts: {
+        incremental: 11,
+        material: 1
+      },
+      readSafety: "read_only"
+    });
+    expect(digest.summary).toContain("mixed_drift");
+    expect(digest.metricChanges).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          metric: "taskCount",
+          group: "activity",
+          baseline: 2,
+          current: 3,
+          delta: 1,
+          driftBand: "incremental"
+        }),
+        expect.objectContaining({
+          metric: "totalMeetingDurationMinutes",
+          group: "activity",
+          baseline: 75,
+          current: 120,
+          delta: 45,
+          driftBand: "material"
+        }),
+        expect.objectContaining({
+          metric: "hourPolicyCount",
+          group: "coverage",
+          baseline: 2,
+          current: 3,
+          delta: 1,
+          driftBand: "incremental"
+        }),
+        expect.objectContaining({
+          metric: "timeSchemeFeature:FOCUS_PROTECTION",
+          group: "coverage",
+          baseline: 0,
+          current: 1,
+          delta: 1,
+          driftBand: "incremental"
+        })
+      ])
+    );
+  });
+
+  test("emits parseable JSON for the local preview drift command without leaking snapshot detail", () => {
+    const result = runNpmCli([
+      "reclaim:account-audit:preview-drift",
+      "--",
+      "--input",
+      path.join("examples", "account-audit-drift.example.json")
+    ]);
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    const output = JSON.parse(result.stdout) as {
+      overallChangeClass: string;
+      changedSignalCount: number;
+      sourceHandles: { baseline: string; current: string };
+      summary: string;
+    };
+    expect(output).toMatchObject({
+      overallChangeClass: "mixed_drift",
+      changedSignalCount: 12,
+      sourceHandles: {
+        baseline: "account-audit-baseline-v1",
+        current: "account-audit-current-v2"
+      }
+    });
+    expect(output.summary).toContain("account-audit-baseline-v1");
+    expect(result.stdout).not.toContain("Review budget note");
+    expect(result.stdout).not.toContain("meeting-demo-3");
+    expect(result.stdout).not.toContain("demo.user@example.com");
   });
 
   test("summarizes authenticated account reads without returning private titles or ids", async () => {

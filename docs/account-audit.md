@@ -10,6 +10,12 @@ Preview the output shape with the synthetic fixture:
 npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json
 ```
 
+Preview a drift digest between two synthetic snapshots:
+
+```bash
+npm run reclaim:account-audit:preview-drift -- --input examples/account-audit-drift.example.json
+```
+
 Inspect a configured Reclaim account:
 
 ```bash
@@ -63,3 +69,26 @@ The command returns one JSON document:
 ```
 
 The shape is intentionally summary-oriented. It keeps identity at presence/absence level and collapses tasks, meetings, and time-policy data into counts so downstream scripts can audit account posture without copying private schedule content.
+
+## Drift Digest
+
+The preview drift command compares two synthetic account snapshots using source handles only. It emits the same summary-only inspection shapes for `baseline` and `current`, then adds a normalized `overallChangeClass`, changed-signal counts, and per-metric drift bands.
+
+```json
+{
+  "sourceHandles": {
+    "baseline": "account-audit-baseline-v1",
+    "current": "account-audit-current-v2"
+  },
+  "overallChangeClass": "mixed_drift",
+  "summary": "Detected mixed_drift between account-audit-baseline-v1 and account-audit-current-v2 across 12 numeric or coverage signals and no identity flag changes.",
+  "changedSignalCount": 12,
+  "driftBandCounts": {
+    "incremental": 11,
+    "material": 1
+  },
+  "readSafety": "read_only"
+}
+```
+
+This comparison output stays public-safe because it preserves only source handles, summary counts, and normalized change classes. It does not echo task titles, meeting titles, user identifiers, or time-policy ids from either snapshot.

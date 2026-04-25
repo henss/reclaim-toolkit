@@ -342,6 +342,18 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
     readinessGate: "This summary-only audit surface is already public-safe because it returns counts and capability coverage instead of private object details."
   },
   {
+    command: "reclaim:account-audit:preview-drift",
+    summary: "Compare two synthetic account snapshots and classify summary-only drift.",
+    safetyClass: "local_preview",
+    currentMode: "read_only",
+    requiresConfig: false,
+    groupId: "optional",
+    includeByDefault: false,
+    readinessStatus: "ready",
+    readinessGate:
+      "This drift digest stays public-safe because it compares summary-only snapshot signals and source handles instead of private object details."
+  },
+  {
     command: "reclaim:account-audit:inspect",
     summary: "Read a summary-only account audit from a configured account.",
     safetyClass: "authenticated_read",

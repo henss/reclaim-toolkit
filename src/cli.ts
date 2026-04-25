@@ -3,6 +3,8 @@
 import fs from "node:fs";
 import {
   accountAudit,
+  createAccountAuditDriftDigest,
+  parseReclaimAccountAuditDriftInput,
   parseReclaimAccountAuditSnapshot
 } from "./account-audit.js";
 import { loadReclaimApiCapabilityMatrix } from "./api-capability-matrix.js";
@@ -206,6 +208,9 @@ function buildPreviewCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:account-audit:preview-inspect": () => {
       printJson(accountAudit.inspectSnapshot(parseReclaimAccountAuditSnapshot(readJsonInput())));
+    },
+    "reclaim:account-audit:preview-drift": () => {
+      printJson(createAccountAuditDriftDigest(parseReclaimAccountAuditDriftInput(readJsonInput())));
     }
   };
 }

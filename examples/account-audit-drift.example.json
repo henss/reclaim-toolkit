@@ -1,0 +1,150 @@
+{
+  "baseline": {
+    "handle": "account-audit-baseline-v1",
+    "snapshot": {
+      "currentUser": {
+        "id": "user-demo-1",
+        "email": "demo.user@example.com",
+        "name": "Demo User"
+      },
+      "tasks": [
+        {
+          "id": 11,
+          "title": "Draft planning notes",
+          "eventCategory": "WORK",
+          "timeSchemeId": "policy-work",
+          "due": "2026-05-06T15:00:00.000Z",
+          "snoozeUntil": "2026-05-06T07:00:00.000Z"
+        },
+        {
+          "id": 12,
+          "title": "Update personal admin notes",
+          "eventCategory": "PERSONAL",
+          "timeSchemeId": "policy-personal"
+        }
+      ],
+      "meetings": [
+        {
+          "id": "meeting-demo-1",
+          "title": "Project sync",
+          "durationMinutes": 30,
+          "attendeeCount": 3
+        },
+        {
+          "id": "meeting-demo-2",
+          "title": "Async planning block",
+          "durationMinutes": 45,
+          "attendeeCount": 0
+        }
+      ],
+      "timeSchemes": [
+        {
+          "id": "policy-work",
+          "title": "Work Hours",
+          "taskCategory": "WORK",
+          "timezone": "Europe/Berlin",
+          "features": ["TASK_ASSIGNMENT", "AVAILABILITY"],
+          "windows": [
+            { "dayOfWeek": "monday", "start": "09:00", "end": "17:00" },
+            { "dayOfWeek": "tuesday", "start": "09:00", "end": "17:00" }
+          ]
+        },
+        {
+          "id": "policy-personal",
+          "title": "Personal Hours",
+          "taskCategory": "PERSONAL",
+          "timezone": "Europe/Berlin",
+          "features": ["TASK_ASSIGNMENT"],
+          "windows": [
+            { "dayOfWeek": "saturday", "start": "10:00", "end": "14:00" }
+          ]
+        }
+      ]
+    }
+  },
+  "current": {
+    "handle": "account-audit-current-v2",
+    "snapshot": {
+      "currentUser": {
+        "id": "user-demo-1",
+        "email": "demo.user@example.com",
+        "name": "Demo User"
+      },
+      "tasks": [
+        {
+          "id": 21,
+          "title": "Review budget note",
+          "eventCategory": "WORK",
+          "timeSchemeId": "policy-work",
+          "due": "2026-05-07T15:00:00.000Z"
+        },
+        {
+          "id": 22,
+          "title": "Prepare synthetic checklist",
+          "eventCategory": "WORK",
+          "timeSchemeId": "policy-work-late",
+          "due": "2026-05-07T17:00:00.000Z"
+        },
+        {
+          "id": 23,
+          "title": "Personal errands placeholder",
+          "eventCategory": "PERSONAL",
+          "timeSchemeId": "policy-personal"
+        }
+      ],
+      "meetings": [
+        {
+          "id": "meeting-demo-3",
+          "title": "Daily sync",
+          "durationMinutes": 30,
+          "attendeeCount": 4
+        },
+        {
+          "id": "meeting-demo-4",
+          "title": "Planning review",
+          "durationMinutes": 30,
+          "attendeeCount": 2
+        },
+        {
+          "id": "meeting-demo-5",
+          "title": "Focus protection",
+          "durationMinutes": 60,
+          "attendeeCount": 0
+        }
+      ],
+      "timeSchemes": [
+        {
+          "id": "policy-work",
+          "title": "Work Hours",
+          "taskCategory": "WORK",
+          "timezone": "Europe/Berlin",
+          "features": ["TASK_ASSIGNMENT", "AVAILABILITY"],
+          "windows": [
+            { "dayOfWeek": "monday", "start": "09:00", "end": "17:00" },
+            { "dayOfWeek": "tuesday", "start": "09:00", "end": "17:00" }
+          ]
+        },
+        {
+          "id": "policy-personal",
+          "title": "Personal Hours",
+          "taskCategory": "PERSONAL",
+          "timezone": "Europe/Berlin",
+          "features": ["TASK_ASSIGNMENT"],
+          "windows": [
+            { "dayOfWeek": "saturday", "start": "10:00", "end": "14:00" }
+          ]
+        },
+        {
+          "id": "policy-work-late",
+          "title": "Late Work Window",
+          "taskCategory": "WORK",
+          "timezone": "America/New_York",
+          "features": ["AVAILABILITY", "FOCUS_PROTECTION"],
+          "windows": [
+            { "dayOfWeek": "wednesday", "start": "13:00", "end": "18:00" }
+          ]
+        }
+      ]
+    }
+  }
+}

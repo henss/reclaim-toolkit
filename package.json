@@ -55,6 +55,7 @@
     "reclaim:meetings-hours:preview-inspect": "tsx src/cli.ts reclaim:meetings-hours:preview-inspect",
     "reclaim:meetings-hours:preview-switch": "tsx src/cli.ts reclaim:meetings-hours:preview-switch",
     "reclaim:account-audit:preview-inspect": "tsx src/cli.ts reclaim:account-audit:preview-inspect",
+    "reclaim:account-audit:preview-drift": "tsx src/cli.ts reclaim:account-audit:preview-drift",
     "reclaim:meetings-hours:inspect": "tsx src/cli.ts reclaim:meetings-hours:inspect",
     "reclaim:account-audit:inspect": "tsx src/cli.ts reclaim:account-audit:inspect",
     "reclaim:demo:mock-api": "tsx src/cli.ts reclaim:demo:mock-api",
