@@ -18,7 +18,7 @@ The file models a Monday-through-Friday experiment slice using only the current 
 
 The pack is intentionally narrow:
 
-- It does not include real Reclaim tasks, private scheduling ledgers, household details, health-support policy, Calendar fallback rules, or Stefan-specific operating policy.
+- It does not include real Reclaim tasks, private scheduling ledgers, household details, health-support policy, Calendar fallback rules, or operator-specific operating policy.
 - It does not imply direct CRM, inbox, billing, or workflow-runner integrations.
 - It does not approve package publication, release automation, broader API commitments, or live business actions.
 

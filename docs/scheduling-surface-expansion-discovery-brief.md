@@ -68,7 +68,7 @@ Downside: three separate decisions; possible docs inconsistency between slices; 
 
 ### Option C — Explanation receipts only, defer write expansion
 
-Add the shared explanation receipt fields to all preview-only commands without deciding on any write expansion. Defer the Habit/Focus/Buffer write question until Stefan has attention for the governing choice.
+Add the shared explanation receipt fields to all preview-only commands without deciding on any write expansion. Defer the Habit/Focus/Buffer write question until maintainers have attention for the governing choice.
 
 Upside: lowest risk; immediately improves signal quality for agents; no write gate required.
 Downside: does not advance any candidate toward live writes.
@@ -85,9 +85,9 @@ Specifically:
 4. Keep Buffer deferred until Focus proves cross-object placement safety.
 5. Keep Meetings, Hours, and all scheduling-surface helpers in their current narrow modes. Do not treat this program as approval for scheduling writes.
 
-## Governing Question for Stefan
+## Governing Question for Maintainers
 
-The one decision this brief cannot resolve without Stefan input is:
+The one decision this brief cannot resolve without maintainer input is:
 
 > Is it acceptable to let Habit graduate to a confirmed write surface as a standalone first slice, or should any write expansion require a single joint approval for all three (Habit + Focus + Buffer) together?
 
@@ -101,7 +101,7 @@ Do not add in this discovery slice:
 
 - Habit, Focus, or Buffer live write commands.
 - Meeting booking, reschedule, hours switching, or fallback routing helpers.
-- Real account fixtures, private calendar data, or Stefan-specific scheduling rules.
+- Real account fixtures, private calendar data, or operator-specific scheduling rules.
 - A combined approval that treats Habit and Buffer as equivalent write candidates.
 
 ## Recommended Next Slice

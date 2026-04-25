@@ -24,7 +24,7 @@ The command returns:
 The fixture stays inside the public boundary:
 
 - It uses synthetic titles, notes, and placeholder meeting names only.
-- It does not include real Reclaim tasks, private scheduling ledgers, household details, health-support policy, Calendar fallback rules, or Stefan-specific operating policy.
+- It does not include real Reclaim tasks, private scheduling ledgers, household details, health-support policy, Calendar fallback rules, or operator-specific operating policy.
 - It does not imply live meeting creation, task writes, habit writes, focus writes, or buffer writes.
 
 Use it for:

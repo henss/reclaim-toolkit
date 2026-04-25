@@ -18,7 +18,7 @@ The file models a conventional placeholder visit-prep sequence using only the cu
 
 The pack is intentionally narrow:
 
-- It does not include real Reclaim tasks, private scheduling ledgers, household details, health-support policy, Calendar fallback rules, or Stefan-specific operating policy.
+- It does not include real Reclaim tasks, private scheduling ledgers, household details, health-support policy, Calendar fallback rules, or operator-specific operating policy.
 - It does not imply guest-management software, badge tooling, calendar routing, venue logistics automation, or private checklist extraction workflows.
 - It does not approve package publication, release automation, broader API commitments, or live event execution.
 

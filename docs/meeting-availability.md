@@ -78,4 +78,4 @@ The command returns JSON with:
 
 `examples/meeting-availability.example.json` uses invented meeting labels, placeholder busy windows, and generic work hours. It is intended for preview regression tests and local planning experiments only.
 
-Do not commit fixture files copied from a live account, private scheduling ledger, household routine, health-support policy, calendar fallback workflow, or Stefan-specific operating policy.
+Do not commit fixture files copied from a live account, private scheduling ledger, household routine, health-support policy, calendar fallback workflow, or operator-specific operating policy.

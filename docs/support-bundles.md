@@ -55,4 +55,4 @@ The generator preserves numbers, booleans, ISO-like dates, times, command ids, a
 
 ## Public Boundary
 
-Keep support-bundle inputs synthetic when possible. If a local incident came from a live account, run the generator locally and share only the resulting redacted bundle. Do not commit or paste raw Reclaim tasks, private scheduling ledgers, household details, health-support policy, Calendar fallback rules, or Stefan-specific operating policy into example files or issue notes.
+Keep support-bundle inputs synthetic when possible. If a local incident came from a live account, run the generator locally and share only the resulting redacted bundle. Do not commit or paste raw Reclaim tasks, private scheduling ledgers, household details, health-support policy, Calendar fallback rules, or operator-specific operating policy into example files or issue notes.

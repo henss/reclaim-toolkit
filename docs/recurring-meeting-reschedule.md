@@ -88,4 +88,4 @@ The command returns JSON with:
 
 `examples/recurring-meeting-reschedule.example.json` uses invented meeting labels, placeholder occurrences, and generic work hours. It is intended for preview regression tests and local what-if experiments only.
 
-Do not commit fixtures copied from a live account, private scheduling ledger, household routine, health-support policy, calendar fallback workflow, or Stefan-specific operating policy.
+Do not commit fixtures copied from a live account, private scheduling ledger, household routine, health-support policy, calendar fallback workflow, or operator-specific operating policy.

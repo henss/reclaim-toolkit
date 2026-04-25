@@ -1,7 +1,7 @@
 {
   "matrix": "reclaim-freshness-scenarios",
   "readSafety": "synthetic_fixture",
-  "generatedFor": "OPS-1743",
+  "generatedFor": "public-safe-freshness-signal-scenario",
   "scenarios": [
     {
       "id": "moment-no-change",

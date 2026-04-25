@@ -1,6 +1,6 @@
 # Freshness Signals Spike
 
-This document is a proposal artifact, not a release plan or API commitment. It compares documented Reclaim freshness signals and recommends the first bounded public-safe slice for `OPS-1743`.
+This document is a proposal artifact, not a release plan or API commitment. It compares documented Reclaim freshness signals and recommends the first bounded public-safe slice for the public-safe freshness-signal scenario.
 
 ## Scope
 

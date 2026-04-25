@@ -42,7 +42,7 @@ Scheduling helpers need a stricter route than self-contained object writes.
 - Keep Meeting Availability and Recurring Meeting Reschedule preview-only unless there is public API-shape evidence for the exact write or reschedule operation and the helper can stay independent from private fallback rules.
 - Keep Meetings and Hours read-only unless the toolkit can prove that a write surface is stable, receipt-friendly, and does not imply account-specific hours switching policy.
 - Treat any move from preview/read-only scheduling helpers to confirmed writes as a separate review slice from Habit, Focus, or Buffer expansion.
-- Stop for review if the proposed scheduling surface would require real schedule examples, private ledgers, household routines, health-support policies, or Stefan-specific operating rules to explain safe defaults.
+- Stop for review if the proposed scheduling surface would require real schedule examples, private ledgers, household routines, health-support policies, or operator-specific operating rules to explain safe defaults.
 
 The public toolkit can keep preview and audit-style scheduling helpers because they use synthetic fixtures and bounded summaries. It should not imply that live meeting writes, hours switching, or fallback routing are already on an approved implementation track.
 
