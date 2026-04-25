@@ -1,15 +1,54 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
-import { parseReclaimTaskInputs, tasks } from "../src/index.js";
+import {
+  parseReclaimTaskInputs,
+  parseReclaimTaskPreviewInput,
+  tasks
+} from "../src/index.js";
 import { runNpmCli } from "./cli-test-helpers.js";
+
+function loadTasksFixture(): unknown {
+  return JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "examples", "tasks.example.json"), "utf8")
+  ) as unknown;
+}
+
+function expectTaskTimePolicyExplanations(
+  tasksWithPolicyExplanation: Array<{
+    title: string;
+    timePolicyExplanation?: {
+      title: string;
+      status: string;
+      selectedPolicy?: { id: string; title?: string };
+      selectionReason: string;
+      availablePolicyMinutes?: number;
+    };
+  }>
+): void {
+  expect(tasksWithPolicyExplanation[0]?.timePolicyExplanation).toMatchObject({
+    title: "Draft planning notes",
+    status: "fit",
+    selectedPolicy: {
+      id: "policy-work",
+      title: "Work Hours"
+    },
+    selectionReason: 'Matched preferred Reclaim time policy title "Work Hours".',
+    availablePolicyMinutes: 360
+  });
+  expect(tasksWithPolicyExplanation[1]?.timePolicyExplanation).toMatchObject({
+    title: "Review pull request",
+    status: "fit",
+    selectedPolicy: {
+      id: "policy-work"
+    },
+    selectionReason: 'Matched preferred Reclaim time policy title "Work Hours".'
+  });
+}
 
 describe("task preview receipt", () => {
   test("adds a stable preview receipt to task previews", () => {
-    const raw = JSON.parse(
-      fs.readFileSync(path.join(process.cwd(), "examples", "tasks.example.json"), "utf8")
-    ) as unknown;
-
+    const raw = loadTasksFixture();
     const preview = tasks.previewCreates(parseReclaimTaskInputs(raw));
 
     expect(preview.taskCount).toBe(2);
@@ -38,6 +77,16 @@ describe("task preview receipt", () => {
     const output = JSON.parse(result.stdout) as {
       taskCount: number;
       inputDuplicatePlan: { duplicateGroupCount: number };
+      tasks: Array<{
+        title: string;
+        timePolicyExplanation?: {
+          title: string;
+          status: string;
+          selectedPolicy?: { id: string; title?: string };
+          selectionReason: string;
+          availablePolicyMinutes?: number;
+        };
+      }>;
       previewReceipt: {
         operation: string;
         readinessStatus: string;
@@ -49,8 +98,11 @@ describe("task preview receipt", () => {
     expect(output.previewReceipt.operation).toBe("task.preview");
     expect(output.previewReceipt.readinessStatus).toBe("ready_for_confirmed_write");
     expect(Date.parse(output.previewReceipt.previewGeneratedAt)).not.toBeNaN();
+    expectTaskTimePolicyExplanations(output.tasks);
   });
+});
 
+describe("task preview duplicate and fixture handling", () => {
   test("flags duplicate imported inputs before confirmed writes", () => {
     const preview = tasks.previewCreates(
       [
@@ -86,6 +138,20 @@ describe("task preview receipt", () => {
     });
     expect(preview.previewReceipt.readinessStatus).toBe("evidence_pending");
     expect(preview.previewReceipt.readinessGate).toContain("duplicate input group");
+  });
+
+  test("adds task time-policy explanations when preview input includes synthetic policy context", () => {
+    const previewInput = parseReclaimTaskPreviewInput(loadTasksFixture());
+    const preview = tasks.previewCreates(previewInput.tasks, {
+      timePolicyContext: {
+        timeSchemes: previewInput.timeSchemes,
+        defaultTaskEventCategory: previewInput.defaultTaskEventCategory ?? "PERSONAL",
+        preferredTimePolicyId: previewInput.preferredTimePolicyId,
+        preferredTimePolicyTitle: previewInput.preferredTimePolicyTitle
+      }
+    });
+
+    expectTaskTimePolicyExplanations(preview.tasks);
   });
 
   test("preserves synthetic errand windows in the shopping preview fixture", () => {

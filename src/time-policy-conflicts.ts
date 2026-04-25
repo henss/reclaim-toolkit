@@ -267,7 +267,7 @@ function buildHoursProfileExplanation(
   return `The hours profile resolves to ${selectedPolicy?.title ?? "the selected policy"} with ${selectedPolicy?.windowCount ?? 0} configured window(s).`;
 }
 
-function explainTaskConflict(
+export function explainTaskConflict(
   task: ReclaimTimePolicyExplainerTask,
   input: ReclaimTimePolicyExplainerInput
 ): TimePolicyConflictTaskExplanation {
@@ -343,7 +343,7 @@ function explainTaskConflict(
   };
 }
 
-function explainHoursProfileConflict(
+export function explainHoursProfileConflict(
   profile: ReclaimTimePolicyExplainerHoursProfile,
   input: ReclaimTimePolicyExplainerInput
 ): TimePolicyConflictHoursProfileExplanation {

@@ -2,9 +2,12 @@ import { z } from "zod";
 import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
 import {
   ReclaimTimeSchemeSnapshotSchema,
-  previewTimePolicySelection,
   type TimePolicyDiscoveryItem
 } from "./time-policy-selection.js";
+import {
+  explainHoursProfileConflict,
+  type TimePolicyConflictHoursProfileExplanation
+} from "./time-policy-conflicts.js";
 
 const ReclaimHoursProfileSchema = z.object({
   id: z.string().min(1),
@@ -28,6 +31,7 @@ export interface HoursProfilePreview {
   preferredTimePolicyTitle?: string;
   selectedPolicy?: TimePolicyDiscoveryItem;
   selectionReason: string;
+  timePolicyExplanation: TimePolicyConflictHoursProfileExplanation;
   isCurrentProfile: boolean;
 }
 
@@ -108,10 +112,13 @@ export function previewHoursPresetSwitches(
   input: z.infer<typeof ReclaimHoursPresetSwitchPreviewInputSchema>
 ): HoursPresetSwitchPreview {
   const profiles = input.profiles.map((profile) => {
-    const selection = previewTimePolicySelection(input.timeSchemes, {
-      preferredTimePolicyId: profile.preferredTimePolicyId,
-      preferredTimePolicyTitle: profile.preferredTimePolicyTitle,
-      eventCategory: profile.eventCategory
+    const timePolicyExplanation = explainHoursProfileConflict(profile, {
+      tasks: [],
+      focusBlocks: [],
+      buffers: [],
+      hoursProfiles: [],
+      timeSchemes: input.timeSchemes,
+      defaultTaskEventCategory: profile.eventCategory
     });
 
     return {
@@ -120,8 +127,9 @@ export function previewHoursPresetSwitches(
       eventCategory: profile.eventCategory,
       preferredTimePolicyId: profile.preferredTimePolicyId,
       preferredTimePolicyTitle: profile.preferredTimePolicyTitle,
-      selectedPolicy: selection.selectedPolicy,
-      selectionReason: selection.selectionReason,
+      selectedPolicy: timePolicyExplanation.selectedPolicy,
+      selectionReason: timePolicyExplanation.selectionReason,
+      timePolicyExplanation,
       isCurrentProfile: false
     } satisfies HoursProfilePreview;
   });

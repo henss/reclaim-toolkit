@@ -7,8 +7,10 @@ import {
   buffers,
   focus,
   parseReclaimBufferInputs,
+  parseReclaimBufferPreviewInput,
   parseReclaimBufferTemplateInputs,
-  parseReclaimFocusInputs
+  parseReclaimFocusInputs,
+  parseReclaimFocusPreviewInput
 } from "../src/index.js";
 
 function npmCommand(): string {
@@ -33,12 +35,60 @@ function runNpmCli(args: string[]): SpawnSyncReturns<string> {
   });
 }
 
+function loadFocusAndBufferFixture(): unknown {
+  return JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "examples", "focus-and-buffers.example.json"), "utf8")
+  ) as unknown;
+}
+
+function expectFocusAndBufferTimePolicyExplanations(
+  focusBlocks: Array<{
+    timePolicyExplanation?: {
+      title: string;
+      status: string;
+      selectedPolicy?: { id: string; title?: string };
+      checkedDays?: string[];
+    };
+  }>,
+  buffers: Array<{
+    timePolicyExplanation?: {
+      title: string;
+      status: string;
+      selectedPolicy?: { id: string; title?: string };
+      checkedDays?: string[];
+    };
+  }>
+): void {
+  expect(focusBlocks[0]?.timePolicyExplanation).toMatchObject({
+    title: "Prototype review block",
+    status: "fit",
+    selectedPolicy: {
+      id: "policy-work",
+      title: "Work Hours"
+    },
+    checkedDays: ["tuesday"]
+  });
+  expect(buffers[0]?.timePolicyExplanation).toMatchObject({
+    title: "Post-review notes buffer",
+    status: "fit",
+    selectedPolicy: {
+      id: "policy-work"
+    },
+    checkedDays: ["tuesday", "thursday"]
+  });
+  expect(buffers[1]?.timePolicyExplanation).toMatchObject({
+    title: "Context switch buffer",
+    status: "fit",
+    selectedPolicy: {
+      id: "policy-personal"
+    },
+    checkedDays: ["monday", "friday"]
+  });
+}
+
 describe("focus and buffers", () => {
   test("parses and previews the synthetic focus and buffer fixture without write capability", () => {
-    const raw = JSON.parse(
-      fs.readFileSync(path.join(process.cwd(), "examples", "focus-and-buffers.example.json"), "utf8")
-    ) as unknown;
-
+    const raw = loadFocusAndBufferFixture();
     const parsedFocusBlocks = parseReclaimFocusInputs(raw);
     const parsedBuffers = parseReclaimBufferInputs(raw);
     const focusPreview = focus.previewCreates(parsedFocusBlocks);
@@ -78,6 +128,74 @@ describe("focus and buffers", () => {
       anchor: "Prototype review block",
       alwaysPrivate: true
     });
+  });
+});
+
+describe("focus and buffer time-policy explanations", () => {
+  test("adds time-policy explanations to focus and buffer previews when synthetic policy context is provided", () => {
+    const focusInput = parseReclaimFocusPreviewInput(loadFocusAndBufferFixture());
+    const bufferInput = parseReclaimBufferPreviewInput(loadFocusAndBufferFixture());
+    const focusPreview = focus.previewCreates(focusInput.focusBlocks, {
+      timePolicyContext: {
+        timeSchemes: focusInput.timeSchemes,
+        defaultTaskEventCategory: focusInput.defaultTaskEventCategory ?? "WORK",
+        preferredTimePolicyId: focusInput.preferredTimePolicyId,
+        preferredTimePolicyTitle: focusInput.preferredTimePolicyTitle
+      }
+    });
+    const bufferPreview = buffers.previewCreates(bufferInput.buffers, {
+      timePolicyContext: {
+        timeSchemes: bufferInput.timeSchemes,
+        defaultTaskEventCategory: bufferInput.defaultTaskEventCategory ?? "PERSONAL",
+        preferredTimePolicyId: bufferInput.preferredTimePolicyId,
+        preferredTimePolicyTitle: bufferInput.preferredTimePolicyTitle
+      }
+    });
+
+    expectFocusAndBufferTimePolicyExplanations(focusPreview.focusBlocks, bufferPreview.buffers);
+  });
+
+  test("emits parseable JSON with time-policy explanations for focus and buffer preview CLIs", () => {
+    const focusResult = runNpmCli([
+      "reclaim:focus:preview-create",
+      "--",
+      "--input",
+      path.join("examples", "focus-and-buffers.example.json")
+    ]);
+    const bufferResult = runNpmCli([
+      "reclaim:buffers:preview-create",
+      "--",
+      "--input",
+      path.join("examples", "focus-and-buffers.example.json")
+    ]);
+
+    expect(focusResult.status).toBe(0);
+    expect(focusResult.stderr).toBe("");
+    expect(bufferResult.status).toBe(0);
+    expect(bufferResult.stderr).toBe("");
+
+    const focusOutput = JSON.parse(focusResult.stdout) as {
+      focusBlocks: Array<{
+        timePolicyExplanation?: {
+          title: string;
+          status: string;
+          selectedPolicy?: { id: string; title?: string };
+          checkedDays?: string[];
+        };
+      }>;
+    };
+    const bufferOutput = JSON.parse(bufferResult.stdout) as {
+      buffers: Array<{
+        timePolicyExplanation?: {
+          title: string;
+          status: string;
+          selectedPolicy?: { id: string; title?: string };
+          checkedDays?: string[];
+        };
+      }>;
+    };
+
+    expectFocusAndBufferTimePolicyExplanations(focusOutput.focusBlocks, bufferOutput.buffers);
   });
 
   test("rejects ambiguous focus and buffer inputs", () => {

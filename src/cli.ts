@@ -16,11 +16,11 @@ import {
   bufferTemplates,
   parseReclaimBufferTemplateInputs
 } from "./buffer-templates.js";
-import { buffers, parseReclaimBufferInputs } from "./buffers.js";
+import { buffers, parseReclaimBufferInputs, parseReclaimBufferPreviewInput } from "./buffers.js";
 import { createReclaimClient } from "./client.js";
 import { getReclaimCliHelp } from "./cli-help.js";
 import { getReclaimConfigStatus, loadReclaimConfig } from "./config.js";
-import { focus, parseReclaimFocusInputs } from "./focus.js";
+import { focus, parseReclaimFocusInputs, parseReclaimFocusPreviewInput } from "./focus.js";
 import { habits, parseReclaimHabitInputs } from "./habits.js";
 import { runReclaimHealthCheck } from "./health.js";
 import {
@@ -43,6 +43,7 @@ import {
 } from "./mock-lab.js";
 import { getReclaimOnboardingWizard } from "./onboarding.js";
 import {
+  parseReclaimTaskPreviewInput,
   parseReclaimTaskInputs,
   parseTaskWriteReceipts,
   tasks,
@@ -174,7 +175,17 @@ function buildCoreCommandHandlers(): Record<string, CommandHandler> {
 function buildPreviewCommandHandlers(): Record<string, CommandHandler> {
   return {
     "reclaim:tasks:preview-create": () => {
-      printJson(tasks.previewCreates(parseReclaimTaskInputs(readJsonInput())));
+      const input = parseReclaimTaskPreviewInput(readJsonInput());
+      printJson(tasks.previewCreates(input.tasks, {
+        timePolicyContext: input.timeSchemes.length > 0 || input.defaultTaskEventCategory !== undefined
+          ? {
+            timeSchemes: input.timeSchemes,
+            defaultTaskEventCategory: input.defaultTaskEventCategory ?? "PERSONAL",
+            preferredTimePolicyId: input.preferredTimePolicyId,
+            preferredTimePolicyTitle: input.preferredTimePolicyTitle
+          }
+          : undefined
+      }));
     },
     "reclaim:scenarios:preview-weekly": () => {
       printJson(weeklyScenarioComposer.preview(parseReclaimWeeklyScenarioComposerInput(readJsonInput())));
@@ -183,10 +194,30 @@ function buildPreviewCommandHandlers(): Record<string, CommandHandler> {
       printJson(habits.previewCreates(parseReclaimHabitInputs(readJsonInput())));
     },
     "reclaim:focus:preview-create": () => {
-      printJson(focus.previewCreates(parseReclaimFocusInputs(readJsonInput())));
+      const input = parseReclaimFocusPreviewInput(readJsonInput());
+      printJson(focus.previewCreates(input.focusBlocks, {
+        timePolicyContext: input.timeSchemes.length > 0 || input.defaultTaskEventCategory !== undefined
+          ? {
+            timeSchemes: input.timeSchemes,
+            defaultTaskEventCategory: input.defaultTaskEventCategory ?? "WORK",
+            preferredTimePolicyId: input.preferredTimePolicyId,
+            preferredTimePolicyTitle: input.preferredTimePolicyTitle
+          }
+          : undefined
+      }));
     },
     "reclaim:buffers:preview-create": () => {
-      printJson(buffers.previewCreates(parseReclaimBufferInputs(readJsonInput())));
+      const input = parseReclaimBufferPreviewInput(readJsonInput());
+      printJson(buffers.previewCreates(input.buffers, {
+        timePolicyContext: input.timeSchemes.length > 0 || input.defaultTaskEventCategory !== undefined
+          ? {
+            timeSchemes: input.timeSchemes,
+            defaultTaskEventCategory: input.defaultTaskEventCategory ?? "PERSONAL",
+            preferredTimePolicyId: input.preferredTimePolicyId,
+            preferredTimePolicyTitle: input.preferredTimePolicyTitle
+          }
+          : undefined
+      }));
     },
     "reclaim:buffers:preview-rule": () => {
       printJson(bufferRules.preview(parseReclaimBufferRulePreviewInput(readJsonInput())));

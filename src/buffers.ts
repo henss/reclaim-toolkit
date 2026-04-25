@@ -1,5 +1,11 @@
 import { z } from "zod";
 import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
+import { ReclaimTimeSchemeSnapshotSchema } from "./time-policy-selection.js";
+import {
+  explainBufferConflict,
+  type TimePolicyConflictBufferExplanation,
+  type TimePolicyProposalContext
+} from "./time-policy-proposals.js";
 import type { ReclaimTaskEventCategory } from "./types.js";
 
 const HOUR_MINUTE_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -33,7 +39,23 @@ export const ReclaimBufferInputListSchema = z.union([
   z.object({ buffers: z.array(ReclaimBufferInputSchema) })
 ]).transform((value) => Array.isArray(value) ? value : value.buffers);
 
+export const ReclaimBufferPreviewInputSchema = z.object({
+  buffers: z.array(ReclaimBufferInputSchema),
+  timeSchemes: z.array(ReclaimTimeSchemeSnapshotSchema).default([]),
+  defaultTaskEventCategory: z.enum(["PERSONAL", "WORK"]).optional(),
+  preferredTimePolicyId: z.string().min(1).optional(),
+  preferredTimePolicyTitle: z.string().min(1).optional()
+});
+
 export type ReclaimBufferInput = z.input<typeof ReclaimBufferInputSchema>;
+
+export interface BufferPreviewInput {
+  buffers: ReclaimBufferInput[];
+  timeSchemes: TimePolicyProposalContext["timeSchemes"];
+  defaultTaskEventCategory?: ReclaimTaskEventCategory;
+  preferredTimePolicyId?: string;
+  preferredTimePolicyTitle?: string;
+}
 
 export interface ReclaimBufferCreatePreviewRequest {
   title: string;
@@ -50,6 +72,7 @@ export interface ReclaimBufferCreatePreviewRequest {
 export interface PreviewBufferCreate {
   title: string;
   request: ReclaimBufferCreatePreviewRequest;
+  timePolicyExplanation?: TimePolicyConflictBufferExplanation;
 }
 
 export interface BufferCreatePreview {
@@ -61,6 +84,17 @@ export interface BufferCreatePreview {
 
 export function parseReclaimBufferInputs(raw: unknown): ReclaimBufferInput[] {
   return ReclaimBufferInputListSchema.parse(raw);
+}
+
+export function parseReclaimBufferPreviewInput(raw: unknown): BufferPreviewInput {
+  const parsed = ReclaimBufferPreviewInputSchema.parse(raw);
+  return {
+    buffers: parsed.buffers,
+    timeSchemes: parsed.timeSchemes,
+    defaultTaskEventCategory: parsed.defaultTaskEventCategory,
+    preferredTimePolicyId: parsed.preferredTimePolicyId,
+    preferredTimePolicyTitle: parsed.preferredTimePolicyTitle
+  };
 }
 
 export function buildBufferPreviewRequest(
@@ -87,13 +121,35 @@ export function previewBufferCreates(
   bufferInputs: ReclaimBufferInput[],
   options: {
     eventCategory?: ReclaimTaskEventCategory;
+    timePolicyContext?: TimePolicyProposalContext;
   } = {}
 ): BufferCreatePreview {
+  const timePolicyContext = options.timePolicyContext;
+  const defaultTaskEventCategory = options.eventCategory ?? timePolicyContext?.defaultTaskEventCategory ?? "PERSONAL";
   return {
     bufferCount: bufferInputs.length,
     buffers: bufferInputs.map((bufferInput) => ({
       title: bufferInput.title,
-      request: buildBufferPreviewRequest(bufferInput, options)
+      request: buildBufferPreviewRequest(bufferInput, options),
+      timePolicyExplanation: timePolicyContext
+        ? explainBufferConflict(
+          {
+            title: bufferInput.title,
+            durationMinutes: bufferInput.durationMinutes,
+            eventCategory: bufferInput.eventCategory,
+            placement: bufferInput.placement,
+            anchor: bufferInput.anchor,
+            windowStart: bufferInput.windowStart,
+            windowEnd: bufferInput.windowEnd
+          },
+          {
+            timeSchemes: timePolicyContext.timeSchemes,
+            defaultTaskEventCategory,
+            preferredTimePolicyId: timePolicyContext.preferredTimePolicyId,
+            preferredTimePolicyTitle: timePolicyContext.preferredTimePolicyTitle
+          }
+        )
+        : undefined
     })),
     writeSafety: "preview_only",
     previewReceipt: createPreviewReceipt({

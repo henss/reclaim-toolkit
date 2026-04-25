@@ -86,7 +86,7 @@ The Habit fixture is preview-only and does not create live habits:
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
 ```
 
-The Focus and Buffer fixture is preview-only and does not create live focus blocks or buffers. Both commands now include a top-level `previewReceipt` describing the current no-write gate:
+The Focus and Buffer fixture is preview-only and does not create live focus blocks or buffers. Both commands now include a top-level `previewReceipt` describing the current no-write gate, and the committed fixture also carries synthetic policy context so each preview item includes `timePolicyExplanation`:
 
 ```bash
 npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
@@ -129,7 +129,7 @@ The Meetings and Hours fixture is read-only and does not create meetings or upda
 npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
 ```
 
-For a synthetic profile-switch preview that compares how named local presets would resolve Reclaim hours policies, the CLI also returns a top-level `previewReceipt` because the comparison stays local and read-only:
+For a synthetic profile-switch preview that compares how named local presets would resolve Reclaim hours policies, the CLI also returns a top-level `previewReceipt` because the comparison stays local and read-only. Each profile also includes `timePolicyExplanation` so the hours preview uses the same public-safe policy reasoning shape as task, Focus, and Buffer previews:
 
 ```bash
 npm run reclaim:meetings-hours:preview-switch -- --input examples/meetings-hours-profile-switch.example.json

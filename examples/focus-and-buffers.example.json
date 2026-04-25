@@ -1,4 +1,48 @@
 {
+  "defaultTaskEventCategory": "WORK",
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Work Hours",
+      "taskCategory": "WORK",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        {
+          "dayOfWeek": "monday",
+          "start": "13:00",
+          "end": "15:00"
+        },
+        {
+          "dayOfWeek": "tuesday",
+          "start": "09:00",
+          "end": "13:00"
+        },
+        {
+          "dayOfWeek": "thursday",
+          "start": "12:00",
+          "end": "13:00"
+        }
+      ]
+    },
+    {
+      "id": "policy-personal",
+      "title": "Personal Hours",
+      "taskCategory": "PERSONAL",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        {
+          "dayOfWeek": "monday",
+          "start": "15:00",
+          "end": "17:00"
+        },
+        {
+          "dayOfWeek": "friday",
+          "start": "15:00",
+          "end": "17:00"
+        }
+      ]
+    }
+  ],
   "focusBlocks": [
     {
       "title": "Prototype review block",

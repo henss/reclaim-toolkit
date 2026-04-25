@@ -1,6 +1,7 @@
 # Task Inputs
 
 Task commands accept either an array of task inputs or an object with a `tasks` array.
+For preview-only task review, the same object may also include synthetic `timeSchemes`, `defaultTaskEventCategory`, and optional `preferredTimePolicyId` or `preferredTimePolicyTitle` so the preview can attach the same public-safe time-policy explanation used by the dedicated explainer command.
 
 ```json
 {
@@ -42,7 +43,7 @@ The command returns the task-assignment policies exposed by Reclaim, marks which
 
 Use synthetic task input files for previews and keep local config files out of version control.
 
-When a reviewer needs to know why a proposed task fits or conflicts before any live write, use the synthetic explainer described in [time-policy-conflicts.md](time-policy-conflicts.md). It stays read-only and explains policy selection, category mismatches, and bounded window conflicts instead of silently picking a policy.
+When a reviewer needs to know why a proposed task fits or conflicts before any live write, use the synthetic explainer described in [time-policy-conflicts.md](time-policy-conflicts.md). It stays read-only and explains policy selection, category mismatches, and bounded window conflicts instead of silently picking a policy. The preview command now also emits a per-task `timePolicyExplanation` field when the preview input includes synthetic policy context, so a normal preview can carry the same reasoning without switching commands.
 
 ## Read-Only Task Listing
 

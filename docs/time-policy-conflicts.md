@@ -1,6 +1,7 @@
 # Time-Policy Conflict Explainer
 
 Use the synthetic explainer when proposed task, focus-block, buffer, or hours-profile shapes need a read-only explanation before any live Reclaim write.
+The same explanation envelope is also reused inside task, Focus, Buffer, and Hours preview outputs when those preview fixtures include synthetic policy context.
 
 ```bash
 npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-conflicts.example.json

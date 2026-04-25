@@ -64,6 +64,7 @@ npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.exa
 ```
 
 Both commands return JSON with `writeSafety: "preview_only"` plus a top-level `previewReceipt` that records when the preview was generated and why the helper remains preview-only.
+When the preview input also includes synthetic `timeSchemes` plus optional default or preferred policy hints, each preview item includes a `timePolicyExplanation` object with the selected policy, selection reason, fit/conflict status, and any bounded window checks that were possible from the supplied fixture.
 
 ## Public-Safe Fixtures
 

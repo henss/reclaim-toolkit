@@ -36,7 +36,14 @@ describe("meetings-hours profile switch preview", () => {
         id: "policy-work",
         title: "Work Hours"
       },
-      selectionReason: 'Matched preferred Reclaim time policy title "Work Hours".'
+      selectionReason: 'Matched preferred Reclaim time policy title "Work Hours".',
+      timePolicyExplanation: {
+        profileId: "profile-workweek",
+        status: "fit",
+        selectedPolicy: {
+          id: "policy-work"
+        }
+      }
     });
     expect(preview.switchPreviews).toEqual([
       {
@@ -75,7 +82,12 @@ describe("meetings-hours profile switch preview", () => {
     expect(result.stderr).toBe("");
     const output = JSON.parse(result.stdout) as {
       currentProfileId: string;
-      profiles: Array<{ id: string; isCurrentProfile: boolean; selectedPolicy?: { id: string } }>;
+      profiles: Array<{
+        id: string;
+        isCurrentProfile: boolean;
+        selectedPolicy?: { id: string };
+        timePolicyExplanation: { status: string; selectedPolicy?: { id: string } };
+      }>;
       switchPreviews: Array<{ targetProfileId: string; outcome: string }>;
       readSafety: string;
       previewReceipt: { operation: string; readinessStatus: string; previewGeneratedAt: string };
@@ -87,7 +99,11 @@ describe("meetings-hours profile switch preview", () => {
     expect(Date.parse(output.previewReceipt.previewGeneratedAt)).not.toBeNaN();
     expect(output.profiles.find((profile) => profile.id === "profile-workweek")).toMatchObject({
       isCurrentProfile: true,
-      selectedPolicy: { id: "policy-work" }
+      selectedPolicy: { id: "policy-work" },
+      timePolicyExplanation: {
+        status: "fit",
+        selectedPolicy: { id: "policy-work" }
+      }
     });
     expect(output.switchPreviews).toMatchObject([
       {

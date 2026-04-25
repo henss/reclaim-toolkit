@@ -78,6 +78,23 @@ The profile-switch preview also returns one JSON document:
         "matchesDefaultEventCategory": true
       },
       "selectionReason": "Matched preferred Reclaim time policy title \"Work Hours\".",
+      "timePolicyExplanation": {
+        "profileId": "profile-workweek",
+        "title": "Workweek",
+        "status": "fit",
+        "eventCategory": "WORK",
+        "selectedPolicy": {
+          "id": "policy-work",
+          "title": "Work Hours",
+          "taskCategory": "WORK",
+          "features": ["TASK_ASSIGNMENT"],
+          "matchesDefaultEventCategory": true,
+          "windowCount": 2
+        },
+        "selectionReason": "Matched preferred Reclaim time policy title \"Work Hours\".",
+        "explanation": "The hours profile resolves to Work Hours with 2 configured window(s).",
+        "conflicts": []
+      },
       "isCurrentProfile": true
     }
   ],
@@ -104,7 +121,7 @@ The profile-switch preview also returns one JSON document:
 }
 ```
 
-Use the switch preview when a local workflow keeps multiple synthetic profile presets and needs to compare which Reclaim hours preset each profile would select before touching any live config. The preview remains local-only and read-only: it evaluates profile hints against provided time-scheme inputs and does not inspect calendars, write hours, or switch any account setting.
+Use the switch preview when a local workflow keeps multiple synthetic profile presets and needs to compare which Reclaim hours preset each profile would select before touching any live config. The preview remains local-only and read-only: it evaluates profile hints against provided time-scheme inputs and does not inspect calendars, write hours, or switch any account setting. Each profile now includes `timePolicyExplanation`, which mirrors the dedicated conflict explainer so task, Focus, Buffer, and Hours previews can all expose one policy-reasoning shape.
 
 The local preview commands also include a top-level `previewReceipt` so automated consumers can distinguish preview-generated read summaries from authenticated live reads without inferring it from the command name alone.
 

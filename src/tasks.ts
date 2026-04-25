@@ -12,6 +12,12 @@ import {
   selectTimeScheme
 } from "./time-policies.js";
 import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
+import { ReclaimTimeSchemeSnapshotSchema } from "./time-policy-selection.js";
+import {
+  explainTaskConflict,
+  type ReclaimTimePolicyExplainerInput,
+  type TimePolicyConflictTaskExplanation
+} from "./time-policy-conflicts.js";
 import {
   inspectExistingTaskDuplicates,
   inspectInputTaskDuplicates,
@@ -64,11 +70,35 @@ export const ReclaimTaskInputListSchema = z.union([
   z.object({ tasks: z.array(ReclaimTaskInputSchema) })
 ]).transform((value) => Array.isArray(value) ? value : value.tasks);
 
+export const ReclaimTaskPreviewInputSchema = z.object({
+  tasks: z.array(ReclaimTaskInputSchema),
+  timeSchemes: z.array(ReclaimTimeSchemeSnapshotSchema).default([]),
+  defaultTaskEventCategory: z.enum(["PERSONAL", "WORK"]).optional(),
+  preferredTimePolicyId: z.string().min(1).optional(),
+  preferredTimePolicyTitle: z.string().min(1).optional()
+});
+
 export type ReclaimTaskInput = z.input<typeof ReclaimTaskInputSchema>;
+
+export interface TaskPreviewInput {
+  tasks: ReclaimTaskInput[];
+  timeSchemes: ReclaimTimePolicyExplainerInput["timeSchemes"];
+  defaultTaskEventCategory?: ReclaimTaskEventCategory;
+  preferredTimePolicyId?: string;
+  preferredTimePolicyTitle?: string;
+}
+
+export interface TaskPreviewTimePolicyContext {
+  timeSchemes: ReclaimTimePolicyExplainerInput["timeSchemes"];
+  defaultTaskEventCategory: ReclaimTaskEventCategory;
+  preferredTimePolicyId?: string;
+  preferredTimePolicyTitle?: string;
+}
 
 export interface PreviewTaskCreate {
   title: string;
   request: ReclaimCreateTaskInput;
+  timePolicyExplanation?: TimePolicyConflictTaskExplanation;
 }
 
 export interface TaskCreatePreview {
@@ -132,6 +162,17 @@ export function parseReclaimTaskInputs(raw: unknown): ReclaimTaskInput[] {
   return ReclaimTaskInputListSchema.parse(raw);
 }
 
+export function parseReclaimTaskPreviewInput(raw: unknown): TaskPreviewInput {
+  const parsed = ReclaimTaskPreviewInputSchema.parse(raw);
+  return {
+    tasks: parsed.tasks,
+    timeSchemes: parsed.timeSchemes,
+    defaultTaskEventCategory: parsed.defaultTaskEventCategory,
+    preferredTimePolicyId: parsed.preferredTimePolicyId,
+    preferredTimePolicyTitle: parsed.preferredTimePolicyTitle
+  };
+}
+
 function toTimeChunks(durationMinutes: number): number {
   return Math.max(1, Math.ceil(durationMinutes / RECLAIM_TIME_BLOCK_MINUTES));
 }
@@ -165,11 +206,36 @@ export function previewCreates(
   options: {
     timeSchemeId?: string;
     eventCategory?: ReclaimTaskEventCategory;
+    timePolicyContext?: TaskPreviewTimePolicyContext;
   } = {}
 ): TaskCreatePreview {
+  const timePolicyContext = options.timePolicyContext;
+  const defaultTaskEventCategory = options.eventCategory ?? timePolicyContext?.defaultTaskEventCategory ?? "PERSONAL";
   const previewTasks = taskInputs.map((task) => ({
     title: task.title,
-    request: buildCreateInput(task, options)
+    request: buildCreateInput(task, options),
+    timePolicyExplanation: timePolicyContext
+      ? explainTaskConflict(
+        {
+          title: task.title,
+          durationMinutes: task.durationMinutes,
+          due: task.due,
+          startAfter: task.startAfter,
+          timeSchemeId: task.timeSchemeId ?? options.timeSchemeId,
+          eventCategory: task.eventCategory
+        },
+        {
+          tasks: [],
+          focusBlocks: [],
+          buffers: [],
+          hoursProfiles: [],
+          timeSchemes: timePolicyContext.timeSchemes,
+          defaultTaskEventCategory,
+          preferredTimePolicyId: timePolicyContext.preferredTimePolicyId,
+          preferredTimePolicyTitle: timePolicyContext.preferredTimePolicyTitle
+        }
+      )
+      : undefined
   }));
   const inputDuplicatePlan = inspectInputTaskDuplicates(previewTasks.map((task) => task.request));
   const hasInputDuplicates = inputDuplicatePlan.duplicateGroupCount > 0;

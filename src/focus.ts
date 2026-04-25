@@ -1,5 +1,11 @@
 import { z } from "zod";
 import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
+import { ReclaimTimeSchemeSnapshotSchema } from "./time-policy-selection.js";
+import {
+  explainFocusBlockConflict,
+  type TimePolicyConflictFocusExplanation,
+  type TimePolicyProposalContext
+} from "./time-policy-proposals.js";
 import type { ReclaimTaskEventCategory } from "./types.js";
 
 const HOUR_MINUTE_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -76,8 +82,24 @@ export const ReclaimFocusInputListSchema = z.union([
   z.object({ focusBlocks: z.array(ReclaimFocusInputSchema) })
 ]).transform((value) => Array.isArray(value) ? value : value.focusBlocks);
 
+export const ReclaimFocusPreviewInputSchema = z.object({
+  focusBlocks: z.array(ReclaimFocusInputSchema),
+  timeSchemes: z.array(ReclaimTimeSchemeSnapshotSchema).default([]),
+  defaultTaskEventCategory: z.enum(["PERSONAL", "WORK"]).optional(),
+  preferredTimePolicyId: z.string().min(1).optional(),
+  preferredTimePolicyTitle: z.string().min(1).optional()
+});
+
 export type ReclaimFocusDay = z.infer<typeof ReclaimFocusDaySchema>;
 export type ReclaimFocusInput = z.input<typeof ReclaimFocusInputSchema>;
+
+export interface FocusPreviewInput {
+  focusBlocks: ReclaimFocusInput[];
+  timeSchemes: TimePolicyProposalContext["timeSchemes"];
+  defaultTaskEventCategory?: ReclaimTaskEventCategory;
+  preferredTimePolicyId?: string;
+  preferredTimePolicyTitle?: string;
+}
 
 export interface ReclaimFocusCreatePreviewRequest {
   title: string;
@@ -95,6 +117,7 @@ export interface ReclaimFocusCreatePreviewRequest {
 export interface PreviewFocusCreate {
   title: string;
   request: ReclaimFocusCreatePreviewRequest;
+  timePolicyExplanation?: TimePolicyConflictFocusExplanation;
 }
 
 export interface FocusCreatePreview {
@@ -106,6 +129,17 @@ export interface FocusCreatePreview {
 
 export function parseReclaimFocusInputs(raw: unknown): ReclaimFocusInput[] {
   return ReclaimFocusInputListSchema.parse(raw);
+}
+
+export function parseReclaimFocusPreviewInput(raw: unknown): FocusPreviewInput {
+  const parsed = ReclaimFocusPreviewInputSchema.parse(raw);
+  return {
+    focusBlocks: parsed.focusBlocks,
+    timeSchemes: parsed.timeSchemes,
+    defaultTaskEventCategory: parsed.defaultTaskEventCategory,
+    preferredTimePolicyId: parsed.preferredTimePolicyId,
+    preferredTimePolicyTitle: parsed.preferredTimePolicyTitle
+  };
 }
 
 function buildFocusPreviewRequest(
@@ -133,13 +167,36 @@ export function previewFocusCreates(
   focusInputs: ReclaimFocusInput[],
   options: {
     eventCategory?: ReclaimTaskEventCategory;
+    timePolicyContext?: TimePolicyProposalContext;
   } = {}
 ): FocusCreatePreview {
+  const timePolicyContext = options.timePolicyContext;
+  const defaultTaskEventCategory = options.eventCategory ?? timePolicyContext?.defaultTaskEventCategory ?? "WORK";
   return {
     focusBlockCount: focusInputs.length,
     focusBlocks: focusInputs.map((focusInput) => ({
       title: focusInput.title,
-      request: buildFocusPreviewRequest(focusInput, options)
+      request: buildFocusPreviewRequest(focusInput, options),
+      timePolicyExplanation: timePolicyContext
+        ? explainFocusBlockConflict(
+          {
+            title: focusInput.title,
+            durationMinutes: focusInput.durationMinutes,
+            eventCategory: focusInput.eventCategory,
+            cadence: focusInput.cadence,
+            daysOfWeek: focusInput.daysOfWeek,
+            date: focusInput.date,
+            windowStart: focusInput.windowStart,
+            windowEnd: focusInput.windowEnd
+          },
+          {
+            timeSchemes: timePolicyContext.timeSchemes,
+            defaultTaskEventCategory,
+            preferredTimePolicyId: timePolicyContext.preferredTimePolicyId,
+            preferredTimePolicyTitle: timePolicyContext.preferredTimePolicyTitle
+          }
+        )
+        : undefined
     })),
     writeSafety: "preview_only",
     previewReceipt: createPreviewReceipt({

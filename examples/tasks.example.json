@@ -1,4 +1,26 @@
 {
+  "defaultTaskEventCategory": "WORK",
+  "preferredTimePolicyTitle": "Work Hours",
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Work Hours",
+      "taskCategory": "WORK",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        {
+          "dayOfWeek": "wednesday",
+          "start": "09:00",
+          "end": "17:00"
+        },
+        {
+          "dayOfWeek": "thursday",
+          "start": "09:00",
+          "end": "13:00"
+        }
+      ]
+    }
+  ],
   "tasks": [
     {
       "title": "Draft planning notes",
