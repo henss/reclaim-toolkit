@@ -100,9 +100,15 @@ The same lab can exercise the larger synthetic scheduling recipe pack:
 npm run reclaim:demo:mock-api -- --input examples/scheduling-recipes.example.json
 ```
 
+To inspect the lab's public-safe failure modes without any live credentials, run:
+
+```bash
+npm run reclaim:demo:mock-api -- --profile failure-modes
+```
+
 This lab is intentionally narrow: it covers the toolkit task flow only, uses invented task and policy data, does not contact Reclaim, and is not a complete emulator or API compatibility promise.
 
-The ordered synthetic route and response contract for the lab is recorded in `docs/mock-api-response-matrix.example.json`. Use it as a small auditable reference for seeded reads, task CRUD, and error-path behavior without treating it as a broader API surface commitment.
+The ordered synthetic route and response contract for the baseline lab is recorded in `docs/mock-api-response-matrix.example.json`. The synthetic failure matrix for pagination, rate limits, and narrow route errors is recorded in `docs/mock-api-failure-mode-matrix.example.json`. Use both as small auditable references without treating them as broader API surface commitments.
 
 Design note: the lab stays inside this repository as a small in-memory test double rather than adopting a broader SDK, CLI, agent server, or workflow runner. Existing related projects are useful API references, but this demo needs only deterministic task CRUD, time-policy selection, duplicate cleanup, and write-receipt exercise for synthetic fixtures. Keeping that behavior local avoids new credentials, background services, public API commitments, or package-manager surface while preserving a credential-free dogfood path for the npm CLI commands.
 

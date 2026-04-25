@@ -1,0 +1,76 @@
+{
+  "lab": "mock-api-failure-mode-matrix",
+  "version": 1,
+  "profile": "failure-modes",
+  "executionOrderMatters": false,
+  "notes": [
+    "Synthetic failure-mode coverage for pagination, rate limits, and narrow route errors.",
+    "This lab stays local to the toolkit task flow and does not claim broader Reclaim API compatibility.",
+    "All data is invented and safe for public docs, examples, and tests."
+  ],
+  "scenarios": [
+    {
+      "name": "paginatedTaskReads",
+      "category": "pagination",
+      "outcome": "recovered",
+      "details": {
+        "taskIds": [
+          101,
+          102
+        ],
+        "requestCount": 2,
+        "requests": [
+          "https://mock.reclaim.local/api/tasks",
+          "https://mock.reclaim.local/api/tasks?page=2"
+        ]
+      }
+    },
+    {
+      "name": "boundedRateLimitRetry",
+      "category": "rate_limit",
+      "outcome": "recovered",
+      "details": {
+        "taskIds": [
+          101,
+          102
+        ],
+        "requestCount": 3,
+        "requests": [
+          "https://mock.reclaim.local/api/tasks",
+          "https://mock.reclaim.local/api/tasks",
+          "https://mock.reclaim.local/api/tasks?page=2"
+        ]
+      }
+    },
+    {
+      "name": "exhaustedRateLimitRetries",
+      "category": "rate_limit",
+      "outcome": "failed",
+      "details": {
+        "error": "Reclaim request failed: 429 Too Many Requests for /tasks"
+      }
+    },
+    {
+      "name": "updateMissingTask",
+      "category": "not_found",
+      "outcome": "returned_error",
+      "details": {
+        "status": 404,
+        "json": {
+          "message": "Task not found."
+        }
+      }
+    },
+    {
+      "name": "unknownRoute",
+      "category": "unknown_route",
+      "outcome": "returned_error",
+      "details": {
+        "status": 404,
+        "json": {
+          "message": "Unhandled mock route: GET /unknown"
+        }
+      }
+    }
+  ]
+}

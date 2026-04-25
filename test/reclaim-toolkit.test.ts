@@ -12,7 +12,10 @@ import {
   tasks,
   type ReclaimTaskRecord
 } from "../src/index.js";
-import { createMockReclaimApiFetch, runMockReclaimApiDemo } from "../src/mock-lab.js";
+import {
+  createMockReclaimApiFetch,
+  runMockReclaimApiDemo
+} from "../src/mock-lab.js";
 import {
   listen,
   makeTempDir,

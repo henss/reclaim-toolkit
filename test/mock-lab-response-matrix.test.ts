@@ -1,7 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
-import { createMockReclaimApiFetch } from "../src/mock-lab.js";
+import {
+  createMockReclaimApiFetch,
+  runMockReclaimFailureModeLab
+} from "../src/mock-lab.js";
 
 interface MockMatrixRequest {
   method: string;
@@ -28,10 +31,32 @@ interface MockMatrixFixture {
   responses: MockMatrixEntry[];
 }
 
+interface MockFailureModeScenarioFixture {
+  name: string;
+  category: string;
+  outcome: string;
+  details: Record<string, unknown>;
+}
+
+interface MockFailureModeFixture {
+  lab: string;
+  version: number;
+  profile: string;
+  executionOrderMatters: boolean;
+  notes: string[];
+  scenarios: MockFailureModeScenarioFixture[];
+}
+
 function readMockMatrixFixture(): MockMatrixFixture {
   return JSON.parse(
     fs.readFileSync(path.join(process.cwd(), "docs", "mock-api-response-matrix.example.json"), "utf8")
   ) as MockMatrixFixture;
+}
+
+function readFailureModeFixture(): MockFailureModeFixture {
+  return JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "docs", "mock-api-failure-mode-matrix.example.json"), "utf8")
+  ) as MockFailureModeFixture;
 }
 
 function createRequestInit(request: MockMatrixRequest): RequestInit | undefined {
@@ -69,5 +94,11 @@ describe("mock API response matrix", () => {
 
       expect(await response.text(), entry.name).toBe(entry.expected.body ?? "");
     }
+  });
+
+  test("matches the documented synthetic failure-mode matrix", async () => {
+    const fixture = readFailureModeFixture();
+
+    expect(await runMockReclaimFailureModeLab()).toEqual(fixture);
   });
 });

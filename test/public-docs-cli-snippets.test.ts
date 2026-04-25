@@ -125,6 +125,7 @@ describe("public docs CLI snippets", () => {
       "README.md: npm run reclaim:meetings-hours:inspect -- --config config/reclaim.local.json",
       "README.md: npm run reclaim:account-audit:inspect -- --config config/reclaim.local.json",
       "README.md: npm run reclaim:demo:mock-api -- --input examples/tasks.example.json",
+      "README.md: npm run reclaim:demo:mock-api -- --profile failure-modes",
       "README.md: npm run reclaim:tasks:list -- --config config/reclaim.local.json",
       "README.md: npm run reclaim:tasks:filter -- --config config/reclaim.local.json --title-contains notes --event-category WORK",
       "README.md: npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-category WORK --format csv",
@@ -134,6 +135,7 @@ describe("public docs CLI snippets", () => {
       "README.md: npm run --silent reclaim:onboarding",
       "README.md: npm run --silent reclaim:tasks:preview-create -- --input examples/tasks.example.json",
       "README.md: npm run reclaim:demo:mock-api -- --input examples/tasks.example.json",
+      "README.md: npm run reclaim:demo:mock-api -- --profile failure-modes",
       "README.md: npm run reclaim:openapi:generate",
       "docs/account-audit.md: npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json",
       "docs/account-audit.md: npm run reclaim:account-audit:inspect -- --config config/reclaim.local.json",
@@ -166,6 +168,7 @@ describe("public docs CLI snippets", () => {
       "docs/tasks.md: npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-category WORK --format csv",
       "docs/tasks.md: npm run reclaim:demo:mock-api -- --input examples/tasks.example.json",
       "docs/tasks.md: npm run reclaim:demo:mock-api -- --input examples/scheduling-recipes.example.json",
+      "docs/tasks.md: npm run reclaim:demo:mock-api -- --profile failure-modes",
       "docs/tasks.md: npm run reclaim:tasks:validate-write-receipts -- --config config/reclaim.local.json --input examples/task-write-receipts.example.json",
       "docs/tasks.md: npm run reclaim:tasks:preview-create -- --input examples/shopping-errand-windows.example.json",
       "docs/tasks.md: npm run reclaim:tasks:preview-create -- --input examples/event-prep-block-example-pack.example.json",
@@ -194,6 +197,7 @@ describe("public docs CLI snippets", () => {
       "examples/README.md: npm run reclaim:meetings-hours:preview-switch -- --input examples/meetings-hours-profile-switch.example.json",
       "examples/README.md: npm run reclaim:tasks:validate-write-receipts -- --config config/reclaim.local.json --input examples/task-write-receipts.example.json",
       "examples/README.md: npm run reclaim:demo:mock-api -- --input examples/tasks.example.json",
+      "examples/README.md: npm run reclaim:demo:mock-api -- --profile failure-modes",
       "examples/README.md: npm run reclaim:time-policies:list -- --config config/reclaim.local.json",
       "examples/README.md: npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json"
     ]);

@@ -58,6 +58,7 @@ npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.
 npm run reclaim:meetings-hours:inspect -- --config config/reclaim.local.json
 npm run reclaim:account-audit:inspect -- --config config/reclaim.local.json
 npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
+npm run reclaim:demo:mock-api -- --profile failure-modes
 npm run reclaim:tasks:list -- --config config/reclaim.local.json
 npm run reclaim:tasks:filter -- --config config/reclaim.local.json --title-contains notes --event-category WORK
 npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-category WORK --format csv
@@ -94,8 +95,11 @@ On success, commands emit one pretty-printed JSON document to stdout, write no n
 
 Local preview commands are safe for credential-free practice when paired with synthetic fixtures. Authenticated read commands require a local config and may return account-specific values. Confirmed write commands require their explicit confirmation flags and should be reviewed before use.
 
-To practice the task flow without Reclaim credentials, run `npm run reclaim:demo:mock-api -- --input examples/tasks.example.json`. The demo uses an in-memory synthetic API surface with placeholder policies and tasks, then prints health, time-policy, preview, duplicate-cleanup, and create results. It is not a complete Reclaim emulator.
-`createMockReclaimApiFetch` also accepts synthetic pagination and rate-limit fixtures for test-only read-collector coverage.
+To practice the task flow without Reclaim credentials, run `npm run reclaim:demo:mock-api -- --input examples/tasks.example.json`. The default `baseline` profile uses an in-memory synthetic API surface with placeholder policies and tasks, then prints health, time-policy, preview, duplicate-cleanup, and create results.
+
+To exercise the public-safe failure-mode lab, run `npm run reclaim:demo:mock-api -- --profile failure-modes`. That profile emits a small synthetic matrix covering paginated reads, bounded rate-limit recovery, exhausted rate-limit retries, missing-task errors, and unknown-route errors.
+
+The lab remains intentionally narrow. It is not a complete Reclaim emulator or compatibility promise. The auditable route and failure fixtures live in `docs/mock-api-response-matrix.example.json` and `docs/mock-api-failure-mode-matrix.example.json`.
 
 ## Library
 

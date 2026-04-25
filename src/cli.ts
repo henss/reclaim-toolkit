@@ -34,7 +34,11 @@ import {
   parseReclaimHoursPresetSwitchPreviewInput,
   parseReclaimMeetingsAndHoursSnapshot
 } from "./meetings-hours.js";
-import { runMockReclaimApiDemo } from "./mock-lab.js";
+import {
+  runMockReclaimApiDemo,
+  runMockReclaimFailureModeLab,
+  type MockReclaimLabProfile
+} from "./mock-lab.js";
 import { getReclaimOnboardingWizard } from "./onboarding.js";
 import {
   parseReclaimTaskInputs,
@@ -79,6 +83,24 @@ function parseTaskExportFormat(): "json" | "csv" {
     throw new Error("Expected --format json or --format csv.");
   }
   return format;
+}
+
+function parseMockLabProfile(): MockReclaimLabProfile {
+  const profile = parseFlag("--profile") ?? "baseline";
+  if (profile === "baseline" || profile === "failure-modes") {
+    return profile;
+  }
+
+  throw new Error("Expected --profile baseline or --profile failure-modes.");
+}
+
+async function runMockLabCommand(): Promise<void> {
+  const profile = parseMockLabProfile();
+  printJson(
+    profile === "failure-modes"
+      ? await runMockReclaimFailureModeLab()
+      : await runMockReclaimApiDemo(parseFlag("--input"))
+  );
 }
 
 function readJsonInput(): unknown {
@@ -179,9 +201,7 @@ function buildCommandHandlers(): Record<string, CommandHandler> {
     "reclaim:account-audit:inspect": async () => {
       printJson(await accountAudit.inspect(loadClient()));
     },
-    "reclaim:demo:mock-api": async () => {
-      printJson(await runMockReclaimApiDemo(parseFlag("--input")));
-    },
+    "reclaim:demo:mock-api": runMockLabCommand,
     "reclaim:tasks:create": async () => {
       printJson(await tasks.create(loadClient(), parseReclaimTaskInputs(readJsonInput()), {
         confirmWrite: hasFlag("--confirm-write")

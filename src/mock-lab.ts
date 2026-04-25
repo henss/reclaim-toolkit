@@ -37,6 +37,8 @@ export interface MockReclaimApiFixtures {
 }
 
 export interface MockReclaimApiDemoResult {
+  lab: "mock-api-demo";
+  profile: "baseline";
   health: Awaited<ReturnType<typeof runReclaimHealthCheck>>;
   timePolicies: ReturnType<typeof tasks.previewTimePolicySelection>;
   createPreview: ReturnType<typeof tasks.previewCreates>;
@@ -44,6 +46,24 @@ export interface MockReclaimApiDemoResult {
   duplicatePlan: ReturnType<typeof tasks.inspectDuplicates>;
   duplicateCleanup: Awaited<ReturnType<typeof tasks.cleanupDuplicates>>;
   finalTaskCount: number;
+}
+
+export type MockReclaimLabProfile = "baseline" | "failure-modes";
+
+export interface MockReclaimFailureModeScenarioResult {
+  name: string;
+  category: "pagination" | "rate_limit" | "not_found" | "unknown_route";
+  outcome: "recovered" | "failed" | "returned_error";
+  details: Record<string, unknown>;
+}
+
+export interface MockReclaimFailureModeLabResult {
+  lab: "mock-api-failure-mode-matrix";
+  version: 1;
+  profile: "failure-modes";
+  executionOrderMatters: false;
+  notes: string[];
+  scenarios: MockReclaimFailureModeScenarioResult[];
 }
 
 const DEMO_CONFIG: ReclaimConfig = {
@@ -248,6 +268,132 @@ export function createMockReclaimApiFetch(
   }) as typeof fetch;
 }
 
+function trackRequests(fetchImpl: typeof fetch, requests: string[]): typeof fetch {
+  return (async (input: string | URL | Request, init?: RequestInit) => {
+    requests.push(String(input));
+    return fetchImpl(input, init);
+  }) as typeof fetch;
+}
+
+async function readJsonResponse(response: Response): Promise<unknown> {
+  return JSON.parse(await response.text()) as unknown;
+}
+
+export async function runMockReclaimFailureModeLab(): Promise<MockReclaimFailureModeLabResult> {
+  const paginatedRequests: string[] = [];
+  const paginatedClient = createReclaimClient(
+    DEMO_CONFIG,
+    trackRequests(
+      createMockReclaimApiFetch(createSeedState(), {
+        tasks: { pageSize: 1 }
+      }),
+      paginatedRequests
+    )
+  );
+  const paginatedTasks = await paginatedClient.listTasks();
+
+  const retriedRequests: string[] = [];
+  const retriedClient = createReclaimClient(
+    DEMO_CONFIG,
+    trackRequests(
+      createMockReclaimApiFetch(createSeedState(), {
+        tasks: {
+          pageSize: 1,
+          rateLimitResponses: 1,
+          retryAfterSeconds: 0
+        }
+      }),
+      retriedRequests
+    )
+  );
+  const retriedTasks = await retriedClient.listTasks();
+
+  const exhaustedClient = createReclaimClient(
+    DEMO_CONFIG,
+    createMockReclaimApiFetch(createSeedState(), {
+      tasks: {
+        rateLimitResponses: 3,
+        retryAfterSeconds: 0
+      }
+    })
+  );
+
+  let exhaustedRateLimitMessage = "";
+  try {
+    await exhaustedClient.listTasks();
+  } catch (error) {
+    exhaustedRateLimitMessage = error instanceof Error ? error.message : String(error);
+  }
+
+  const fetchImpl = createMockReclaimApiFetch();
+  const missingTaskResponse = await fetchImpl("https://mock.reclaim.local/api/tasks/999", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ notes: "Missing task path" })
+  });
+  const unknownRouteResponse = await fetchImpl("https://mock.reclaim.local/api/unknown");
+
+  return {
+    lab: "mock-api-failure-mode-matrix",
+    version: 1,
+    profile: "failure-modes",
+    executionOrderMatters: false,
+    notes: [
+      "Synthetic failure-mode coverage for pagination, rate limits, and narrow route errors.",
+      "This lab stays local to the toolkit task flow and does not claim broader Reclaim API compatibility.",
+      "All data is invented and safe for public docs, examples, and tests."
+    ],
+    scenarios: [
+      {
+        name: "paginatedTaskReads",
+        category: "pagination",
+        outcome: "recovered",
+        details: {
+          taskIds: paginatedTasks.map((task) => task.id),
+          requestCount: paginatedRequests.length,
+          requests: paginatedRequests
+        }
+      },
+      {
+        name: "boundedRateLimitRetry",
+        category: "rate_limit",
+        outcome: "recovered",
+        details: {
+          taskIds: retriedTasks.map((task) => task.id),
+          requestCount: retriedRequests.length,
+          requests: retriedRequests
+        }
+      },
+      {
+        name: "exhaustedRateLimitRetries",
+        category: "rate_limit",
+        outcome: "failed",
+        details: {
+          error: exhaustedRateLimitMessage
+        }
+      },
+      {
+        name: "updateMissingTask",
+        category: "not_found",
+        outcome: "returned_error",
+        details: {
+          status: missingTaskResponse.status,
+          json: await readJsonResponse(missingTaskResponse)
+        }
+      },
+      {
+        name: "unknownRoute",
+        category: "unknown_route",
+        outcome: "returned_error",
+        details: {
+          status: unknownRouteResponse.status,
+          json: await readJsonResponse(unknownRouteResponse)
+        }
+      }
+    ]
+  };
+}
+
 export async function runMockReclaimApiDemo(
   inputPath = path.join("examples", "tasks.example.json")
 ): Promise<MockReclaimApiDemoResult> {
@@ -278,6 +424,8 @@ export async function runMockReclaimApiDemo(
   });
 
   return {
+    lab: "mock-api-demo",
+    profile: "baseline",
     health: await runReclaimHealthCheck(DEMO_CONFIG, fetchImpl),
     timePolicies,
     createPreview,
