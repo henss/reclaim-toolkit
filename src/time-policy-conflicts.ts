@@ -267,6 +267,122 @@ function buildHoursProfileExplanation(
   return `The hours profile resolves to ${selectedPolicy?.title ?? "the selected policy"} with ${selectedPolicy?.windowCount ?? 0} configured window(s).`;
 }
 
+function explainTaskConflict(
+  task: ReclaimTimePolicyExplainerTask,
+  input: ReclaimTimePolicyExplainerInput
+): TimePolicyConflictTaskExplanation {
+  const taskEventCategory = task.eventCategory ?? input.defaultTaskEventCategory;
+  const selectionPreview = task.timeSchemeId
+    ? explicitSelectionPreview(
+      input.timeSchemes.find((scheme) => scheme.id === task.timeSchemeId),
+      task.timeSchemeId,
+      taskEventCategory
+    )
+    : previewTimePolicySelection(input.timeSchemes, {
+      preferredTimePolicyId: input.preferredTimePolicyId,
+      preferredTimePolicyTitle: input.preferredTimePolicyTitle,
+      eventCategory: taskEventCategory
+    });
+  const selectedScheme = selectionPreview.selectedPolicy
+    ? input.timeSchemes.find((scheme) => scheme.id === selectionPreview.selectedPolicy?.id)
+    : undefined;
+  const selectedPolicy = selectedPolicyWithWindowCount(selectedScheme, taskEventCategory);
+  const conflicts: string[] = [];
+
+  if (!selectedScheme) {
+    conflicts.push("No matching Reclaim task-assignment time policy was available for this task.");
+  } else {
+    if (!selectedScheme.features.includes(TASK_ASSIGNMENT_FEATURE)) {
+      conflicts.push(`Selected policy ${selectedScheme.id} does not advertise the ${TASK_ASSIGNMENT_FEATURE} feature.`);
+    }
+    if (selectedScheme.taskCategory !== taskEventCategory) {
+      conflicts.push(`Selected policy category ${selectedScheme.taskCategory} does not match task event category ${taskEventCategory}.`);
+    }
+  }
+
+  const startAfter = parseIsoDate(task.startAfter, "startAfter", conflicts);
+  const due = parseIsoDate(task.due, "due", conflicts);
+  if (startAfter && due && due.getTime() <= startAfter.getTime()) {
+    conflicts.push("Task due must be later than startAfter for a bounded policy check.");
+  }
+
+  let availablePolicyMinutes: number | undefined;
+  const hasBoundedWindowCheck = Boolean(startAfter && due && selectedScheme && conflicts.length === 0);
+  if (hasBoundedWindowCheck) {
+    availablePolicyMinutes = computeAvailablePolicyMinutes(selectedScheme!, startAfter!, due!);
+    if (availablePolicyMinutes === undefined) {
+      conflicts.push("Selected policy did not include windows for a bounded capacity check.");
+    } else if (availablePolicyMinutes === 0) {
+      conflicts.push("Selected policy windows do not expose any schedulable time between startAfter and due.");
+    } else if (availablePolicyMinutes < task.durationMinutes) {
+      conflicts.push(
+        `Task needs ${task.durationMinutes} minutes but the selected policy exposes only ${availablePolicyMinutes} minute(s) between startAfter and due.`
+      );
+    }
+  }
+
+  const status: "fit" | "conflict" = conflicts.length > 0 ? "conflict" : "fit";
+  return {
+    title: task.title,
+    status,
+    eventCategory: taskEventCategory,
+    taskEventCategory,
+    requiredMinutes: task.durationMinutes,
+    selectedPolicy,
+    selectionReason: selectionPreview.selectionReason,
+    explanation: buildTaskExplanation(
+      status,
+      task.durationMinutes,
+      availablePolicyMinutes,
+      selectedPolicy,
+      conflicts,
+      hasBoundedWindowCheck
+    ),
+    conflicts,
+    availablePolicyMinutes
+  };
+}
+
+function explainHoursProfileConflict(
+  profile: ReclaimTimePolicyExplainerHoursProfile,
+  input: ReclaimTimePolicyExplainerInput
+): TimePolicyConflictHoursProfileExplanation {
+  const selectionPreview = previewTimePolicySelection(input.timeSchemes, {
+    preferredTimePolicyId: profile.preferredTimePolicyId ?? input.preferredTimePolicyId,
+    preferredTimePolicyTitle: profile.preferredTimePolicyTitle ?? input.preferredTimePolicyTitle,
+    eventCategory: profile.eventCategory
+  });
+  const selectedScheme = selectionPreview.selectedPolicy
+    ? input.timeSchemes.find((scheme) => scheme.id === selectionPreview.selectedPolicy?.id)
+    : undefined;
+  const selectedPolicy = selectedPolicyWithWindowCount(selectedScheme, profile.eventCategory);
+  const conflicts: string[] = [];
+
+  if (!selectedScheme) {
+    conflicts.push("No matching Reclaim time policy was available for this hours profile.");
+  } else {
+    if (selectedScheme.taskCategory !== profile.eventCategory) {
+      conflicts.push(
+        `Selected policy category ${selectedScheme.taskCategory} does not match hours profile event category ${profile.eventCategory}.`
+      );
+    }
+    if ((selectedScheme.windows?.length ?? 0) === 0) {
+      conflicts.push("Selected policy did not include any hours windows for this profile preview.");
+    }
+  }
+
+  return {
+    profileId: profile.id,
+    title: profile.title,
+    status: conflicts.length > 0 ? "conflict" : "fit",
+    eventCategory: profile.eventCategory,
+    selectedPolicy,
+    selectionReason: selectionPreview.selectionReason,
+    explanation: buildHoursProfileExplanation(selectedPolicy, conflicts),
+    conflicts
+  };
+}
+
 export function parseReclaimTimePolicyExplainerInput(raw: unknown): ReclaimTimePolicyExplainerInput {
   return ReclaimTimePolicyExplainerInputSchema.parse(raw);
 }
@@ -274,118 +390,10 @@ export function parseReclaimTimePolicyExplainerInput(raw: unknown): ReclaimTimeP
 export function explainTimePolicyConflicts(
   input: ReclaimTimePolicyExplainerInput
 ): TimePolicyConflictExplanation {
-  const tasks = input.tasks.map((task) => {
-    const taskEventCategory = task.eventCategory ?? input.defaultTaskEventCategory;
-    const selectionPreview = task.timeSchemeId
-      ? explicitSelectionPreview(
-        input.timeSchemes.find((scheme) => scheme.id === task.timeSchemeId),
-        task.timeSchemeId,
-        taskEventCategory
-      )
-      : previewTimePolicySelection(input.timeSchemes, {
-        preferredTimePolicyId: input.preferredTimePolicyId,
-        preferredTimePolicyTitle: input.preferredTimePolicyTitle,
-        eventCategory: taskEventCategory
-      });
-    const selectedScheme = selectionPreview.selectedPolicy
-      ? input.timeSchemes.find((scheme) => scheme.id === selectionPreview.selectedPolicy?.id)
-      : undefined;
-    const selectedPolicy = selectedPolicyWithWindowCount(selectedScheme, taskEventCategory);
-    const conflicts: string[] = [];
-
-    if (!selectedScheme) {
-      conflicts.push("No matching Reclaim task-assignment time policy was available for this task.");
-    } else {
-      if (!selectedScheme.features.includes(TASK_ASSIGNMENT_FEATURE)) {
-        conflicts.push(`Selected policy ${selectedScheme.id} does not advertise the ${TASK_ASSIGNMENT_FEATURE} feature.`);
-      }
-      if (selectedScheme.taskCategory !== taskEventCategory) {
-        conflicts.push(
-          `Selected policy category ${selectedScheme.taskCategory} does not match task event category ${taskEventCategory}.`
-        );
-      }
-    }
-
-    const startAfter = parseIsoDate(task.startAfter, "startAfter", conflicts);
-    const due = parseIsoDate(task.due, "due", conflicts);
-    if (startAfter && due && due.getTime() <= startAfter.getTime()) {
-      conflicts.push("Task due must be later than startAfter for a bounded policy check.");
-    }
-
-    let availablePolicyMinutes: number | undefined;
-    const hasBoundedWindowCheck = Boolean(startAfter && due && selectedScheme && conflicts.length === 0);
-    if (hasBoundedWindowCheck) {
-      availablePolicyMinutes = computeAvailablePolicyMinutes(selectedScheme!, startAfter!, due!);
-      if (availablePolicyMinutes === undefined) {
-        conflicts.push("Selected policy did not include windows for a bounded capacity check.");
-      } else if (availablePolicyMinutes === 0) {
-        conflicts.push("Selected policy windows do not expose any schedulable time between startAfter and due.");
-      } else if (availablePolicyMinutes < task.durationMinutes) {
-        conflicts.push(
-          `Task needs ${task.durationMinutes} minutes but the selected policy exposes only ${availablePolicyMinutes} minute(s) between startAfter and due.`
-        );
-      }
-    }
-
-    const status: "fit" | "conflict" = conflicts.length > 0 ? "conflict" : "fit";
-    return {
-      title: task.title,
-      status,
-      eventCategory: taskEventCategory,
-      taskEventCategory,
-      requiredMinutes: task.durationMinutes,
-      selectedPolicy,
-      selectionReason: selectionPreview.selectionReason,
-      explanation: buildTaskExplanation(
-        status,
-        task.durationMinutes,
-        availablePolicyMinutes,
-        selectedPolicy,
-        conflicts,
-        hasBoundedWindowCheck
-      ),
-      conflicts,
-      availablePolicyMinutes
-    };
-  });
+  const tasks = input.tasks.map((task) => explainTaskConflict(task, input));
   const focusBlocks = input.focusBlocks.map((focusBlock) => explainFocusBlockConflict(focusBlock, input));
   const buffers = input.buffers.map((buffer) => explainBufferConflict(buffer, input));
-  const hoursProfiles = input.hoursProfiles.map((profile) => {
-    const selectionPreview = previewTimePolicySelection(input.timeSchemes, {
-      preferredTimePolicyId: profile.preferredTimePolicyId ?? input.preferredTimePolicyId,
-      preferredTimePolicyTitle: profile.preferredTimePolicyTitle ?? input.preferredTimePolicyTitle,
-      eventCategory: profile.eventCategory
-    });
-    const selectedScheme = selectionPreview.selectedPolicy
-      ? input.timeSchemes.find((scheme) => scheme.id === selectionPreview.selectedPolicy?.id)
-      : undefined;
-    const selectedPolicy = selectedPolicyWithWindowCount(selectedScheme, profile.eventCategory);
-    const conflicts: string[] = [];
-
-    if (!selectedScheme) {
-      conflicts.push("No matching Reclaim time policy was available for this hours profile.");
-    } else {
-      if (selectedScheme.taskCategory !== profile.eventCategory) {
-        conflicts.push(
-          `Selected policy category ${selectedScheme.taskCategory} does not match hours profile event category ${profile.eventCategory}.`
-        );
-      }
-      if ((selectedScheme.windows?.length ?? 0) === 0) {
-        conflicts.push("Selected policy did not include any hours windows for this profile preview.");
-      }
-    }
-
-    return {
-      profileId: profile.id,
-      title: profile.title,
-      status: conflicts.length > 0 ? "conflict" : "fit",
-      eventCategory: profile.eventCategory,
-      selectedPolicy,
-      selectionReason: selectionPreview.selectionReason,
-      explanation: buildHoursProfileExplanation(selectedPolicy, conflicts),
-      conflicts
-    } satisfies TimePolicyConflictHoursProfileExplanation;
-  });
+  const hoursProfiles = input.hoursProfiles.map((profile) => explainHoursProfileConflict(profile, input));
 
   return {
     proposalCount: tasks.length + focusBlocks.length + buffers.length + hoursProfiles.length,
