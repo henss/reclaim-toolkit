@@ -55,9 +55,12 @@ npm run reclaim:buffers:preview-template -- --input examples/buffer-templates.ex
 npm run reclaim:meetings:preview-availability -- --input examples/meeting-availability.example.json
 npm run reclaim:meetings:preview-recurring-reschedule -- --input examples/recurring-meeting-reschedule.example.json
 npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
+npm run reclaim:hours-config:preview-audit -- --input examples/hours-config.example.json
+npm run reclaim:hours-config:preview-diff -- --input examples/hours-config-diff.example.json
 npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json
 npm run reclaim:account-audit:preview-drift -- --input examples/account-audit-drift.example.json
 npm run reclaim:meetings-hours:inspect -- --config config/reclaim.local.json
+npm run reclaim:hours-config:audit -- --config config/reclaim.local.json
 npm run reclaim:account-audit:inspect -- --config config/reclaim.local.json
 npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
 npm run reclaim:demo:mock-api -- --profile failure-modes
@@ -74,7 +77,9 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 `reclaim:openapi:capability-matrix` is a credential-free public-metadata command that compares the published Reclaim API document with the toolkit's shipped and roadmap surfaces, then emits a ranked `nextSurfaceReport` so future module bets can start from auditable contract evidence instead of ad hoc backlog expansion.
 `reclaim:support:bundle` is a redacted troubleshooting command for preview or config incidents. It preserves structural JSON signals, dates, times, and safety enums while redacting task titles, ids, emails, secrets, free-text notes, and absolute paths.
 Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
+`reclaim:hours-config:audit` is a summary-only authenticated read command that collapses Reclaim time-scheme state into coverage, timezone, and window counts instead of returning policy ids or policy titles.
 `reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
+`reclaim:hours-config:preview-diff` is a source-handle preview command that compares two synthetic hours-config snapshots and emits a summary-only drift digest without replaying policy ids or policy titles.
 `reclaim:account-audit:preview-drift` is a source-handle preview command that compares two synthetic account snapshots and emits a summary-only drift digest plus a normalized change class without copying task titles, meeting titles, ids, or user identifiers.
 `reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task, focus, buffer, hours-profile, and policy inputs.
 When task, Focus, Buffer, or Hours preview fixtures include synthetic policy context, the preview JSON now carries per-item `timePolicyExplanation` objects so callers can inspect policy fit, selection reasoning, and conflicts without changing commands.
@@ -138,7 +143,7 @@ console.log({ policyPreview, policyConflicts, readOnlyTasks, writeReceipts: resu
 
 ## Modules
 
-Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, Buffer, Meeting Availability, and recurring meeting reschedule helpers, a Buffer rule preview helper with diff-style receipts, a Buffer template preview helper, a summary-only Account Audit snapshot plus synthetic drift digest, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
+Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, Buffer, Meeting Availability, and recurring meeting reschedule helpers, a Buffer rule preview helper with diff-style receipts, a Buffer template preview helper, a summary-only Hours Config audit plus synthetic drift digest, a summary-only Account Audit snapshot plus synthetic drift digest, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
 
 See [docs/habits.md](docs/habits.md) for the public-safe Habit input shape.
 See [docs/focus-and-buffers.md](docs/focus-and-buffers.md) for the public-safe Focus and Buffer input shapes.
@@ -146,6 +151,7 @@ See [docs/buffer-rules.md](docs/buffer-rules.md) for the preview-only Buffer rul
 See [docs/buffer-templates.md](docs/buffer-templates.md) for the preview-only Buffer template helper.
 See [docs/meeting-availability.md](docs/meeting-availability.md) for the preview-only Meeting Availability helper.
 See [docs/recurring-meeting-reschedule.md](docs/recurring-meeting-reschedule.md) for the preview-only recurring meeting reschedule simulator.
+See [docs/hours-config.md](docs/hours-config.md) for the summary-only Hours Config audit output and source-handle drift digest.
 See [docs/account-audit.md](docs/account-audit.md) for the summary-only Account Audit snapshot output and source-handle drift digest.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
 See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.

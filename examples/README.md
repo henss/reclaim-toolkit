@@ -29,6 +29,8 @@ Rules:
 - `meeting-availability.example.json`: preview-only Meeting Availability fixture with synthetic busy meetings and generic policy windows.
 - `recurring-meeting-reschedule.example.json`: preview-only recurring series fixture with synthetic keep, move, and blocked outcomes.
 - `meetings-and-hours.example.json`: synthetic Meetings and Hours inspector fixture with placeholder meeting and time-policy summaries.
+- `hours-config.example.json`: synthetic Hours Config audit fixture with placeholder policy coverage and window shapes.
+- `hours-config-diff.example.json`: synthetic Hours Config comparison fixture keyed by source handles for summary-only drift classification.
 - `account-audit.example.json`: synthetic Account Audit inspector fixture with placeholder task, meeting, and time-policy summaries.
 - `account-audit-drift.example.json`: synthetic Account Audit comparison fixture keyed by source handles for summary-only drift classification.
 - `support-bundle-preview.example.json`: synthetic support-bundle incident request for local preview troubleshooting.
@@ -135,6 +137,18 @@ For a synthetic profile-switch preview that compares how named local presets wou
 
 ```bash
 npm run reclaim:meetings-hours:preview-switch -- --input examples/meetings-hours-profile-switch.example.json
+```
+
+For a summary-only hours-config audit shape that avoids exporting policy ids or titles, use:
+
+```bash
+npm run reclaim:hours-config:preview-audit -- --input examples/hours-config.example.json
+```
+
+For a source-handle drift digest that compares two synthetic hours-config snapshots without replaying their private details, use:
+
+```bash
+npm run reclaim:hours-config:preview-diff -- --input examples/hours-config-diff.example.json
 ```
 
 The task write-receipt fixture is also read-only. Pair it with a private local config when comparing saved receipts against the current remote task list:

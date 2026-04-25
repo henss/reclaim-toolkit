@@ -8,6 +8,27 @@ export * from "./buffers.js";
 export * from "./focus.js";
 export * from "./habits.js";
 export * from "./health.js";
+export {
+  createHoursConfigDiffDigest,
+  hoursConfig,
+  type HoursConfigAuditInspection,
+  type HoursConfigChangeClass,
+  type HoursConfigCountItem,
+  type HoursConfigDiffDigest,
+  type HoursConfigDiffInput,
+  type HoursConfigDiffMetricChange,
+  type HoursConfigDiffSnapshotReference,
+  type HoursConfigDriftBand,
+  type HoursConfigDriftDirection,
+  type HoursConfigDriftGroup,
+  type HoursConfigSnapshot,
+  ReclaimHoursConfigDiffInputSchema,
+  ReclaimHoursConfigSnapshotSchema,
+  parseReclaimHoursConfigDiffInput,
+  parseReclaimHoursConfigSnapshot,
+  inspectHoursConfigSnapshot,
+  auditHoursConfig
+} from "./hours-config.js";
 export * from "./meeting-availability.js";
 export * from "./meeting-recurring-reschedule.js";
 export * from "./meetings-hours.js";

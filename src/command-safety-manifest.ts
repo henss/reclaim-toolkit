@@ -320,6 +320,30 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
     readinessGate: "Hours switching is intentionally blocked from live writes pending separate scheduling-surface approval."
   },
   {
+    command: "reclaim:hours-config:preview-audit",
+    summary: "Inspect synthetic hours-configuration snapshots as summary-only coverage and window counts.",
+    safetyClass: "local_preview",
+    currentMode: "read_only",
+    requiresConfig: false,
+    groupId: "optional",
+    includeByDefault: false,
+    readinessStatus: "ready",
+    readinessGate:
+      "This summary-only hours-config audit is public-safe because it returns coverage and window counts instead of policy ids, titles, or meeting details."
+  },
+  {
+    command: "reclaim:hours-config:preview-diff",
+    summary: "Compare two synthetic hours-configuration snapshots using source handles only.",
+    safetyClass: "local_preview",
+    currentMode: "read_only",
+    requiresConfig: false,
+    groupId: "optional",
+    includeByDefault: false,
+    readinessStatus: "ready",
+    readinessGate:
+      "This diff digest stays public-safe because it compares summary-only hours-config signals keyed by source handles instead of replaying private policy details."
+  },
+  {
     command: "reclaim:meetings-hours:inspect",
     summary: "Read meetings and hours summaries from a configured account.",
     safetyClass: "authenticated_read",
@@ -329,6 +353,18 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
     includeByDefault: false,
     readinessStatus: "blocked",
     readinessGate: "This surface stays read-only; live hours mutation is not approved in the public toolkit."
+  },
+  {
+    command: "reclaim:hours-config:audit",
+    summary: "Read a summary-only hours-configuration audit from a configured account.",
+    safetyClass: "authenticated_read",
+    currentMode: "read_only",
+    requiresConfig: true,
+    groupId: "optional",
+    includeByDefault: false,
+    readinessStatus: "ready",
+    readinessGate:
+      "This authenticated audit surface is intentionally limited to hours-config coverage and window counts."
   },
   {
     command: "reclaim:account-audit:preview-inspect",

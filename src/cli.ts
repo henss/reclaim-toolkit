@@ -24,6 +24,11 @@ import { focus, parseReclaimFocusPreviewInput } from "./focus.js";
 import { habits, parseReclaimHabitInputs } from "./habits.js";
 import { runReclaimHealthCheck } from "./health.js";
 import {
+  hoursConfig,
+  parseReclaimHoursConfigDiffInput,
+  parseReclaimHoursConfigSnapshot
+} from "./hours-config.js";
+import {
   meetingAvailability,
   parseReclaimMeetingAvailabilityPreviewInput
 } from "./meeting-availability.js";
@@ -238,6 +243,12 @@ function buildPreviewCommandHandlers(): Record<string, CommandHandler> {
     "reclaim:meetings-hours:preview-switch": () => {
       printJson(meetingsHours.previewPresetSwitches(parseReclaimHoursPresetSwitchPreviewInput(readJsonInput())));
     },
+    "reclaim:hours-config:preview-audit": () => {
+      printJson(hoursConfig.inspectSnapshot(parseReclaimHoursConfigSnapshot(readJsonInput())));
+    },
+    "reclaim:hours-config:preview-diff": () => {
+      printJson(hoursConfig.createDiffDigest(parseReclaimHoursConfigDiffInput(readJsonInput())));
+    },
     "reclaim:account-audit:preview-inspect": () => {
       printJson(accountAudit.inspectSnapshot(parseReclaimAccountAuditSnapshot(readJsonInput())));
     },
@@ -251,6 +262,9 @@ function buildAuthenticatedReadCommandHandlers(): Record<string, CommandHandler>
   return {
     "reclaim:meetings-hours:inspect": async () => {
       printJson(await meetingsHours.inspect(loadClient()));
+    },
+    "reclaim:hours-config:audit": async () => {
+      printJson(await hoursConfig.audit(loadClient()));
     },
     "reclaim:account-audit:inspect": async () => {
       printJson(await accountAudit.inspect(loadClient()));

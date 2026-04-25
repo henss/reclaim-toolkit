@@ -74,6 +74,16 @@ describe("CLI help output", () => {
       readinessStatus: "blocked",
       readinessGate: expect.stringContaining("routing review")
     });
+    expect(optionalGroup?.commands.find((command) => command.command === "reclaim:hours-config:audit")).toMatchObject({
+      currentMode: "read_only",
+      readinessStatus: "ready",
+      readinessGate: expect.stringContaining("hours-config coverage")
+    });
+    expect(optionalGroup?.commands.find((command) => command.command === "reclaim:hours-config:preview-diff")).toMatchObject({
+      currentMode: "read_only",
+      readinessStatus: "ready",
+      readinessGate: expect.stringContaining("source handles")
+    });
     expect(optionalGroup?.commands.find((command) => command.command === "reclaim:account-audit:inspect")).toMatchObject({
       currentMode: "read_only",
       readinessStatus: "ready"

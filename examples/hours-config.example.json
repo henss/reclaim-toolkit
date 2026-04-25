@@ -1,0 +1,32 @@
+{
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Work Hours",
+      "taskCategory": "WORK",
+      "timezone": "Europe/Berlin",
+      "features": ["TASK_ASSIGNMENT", "AVAILABILITY"],
+      "windows": [
+        { "dayOfWeek": "monday", "start": "09:00", "end": "17:00" },
+        { "dayOfWeek": "tuesday", "start": "09:00", "end": "17:00" }
+      ]
+    },
+    {
+      "id": "policy-personal",
+      "title": "Personal Hours",
+      "taskCategory": "PERSONAL",
+      "timezone": "Europe/Berlin",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        { "dayOfWeek": "wednesday", "start": "18:00", "end": "20:00" }
+      ]
+    },
+    {
+      "id": "policy-flex",
+      "title": "Flexible Hours",
+      "taskCategory": "WORK",
+      "features": ["AVAILABILITY"],
+      "windows": []
+    }
+  ]
+}
