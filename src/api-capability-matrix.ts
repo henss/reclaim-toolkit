@@ -9,12 +9,14 @@ type CapabilityScope = "current_surface" | "future_bet";
 type ToolkitStatus = "implemented" | "preview_only" | "read_only" | "not_started";
 type OpenApiSupport = "documented" | "partial" | "not_documented";
 type RiskLevel = "low" | "medium" | "high";
+type CandidateReportMode = "ranked_candidate" | "needs_evidence" | "out_of_scope";
 
 interface CapabilityDefinition {
   id: string;
   label: string;
   scope: CapabilityScope;
   toolkitStatus: ToolkitStatus;
+  nextSurfaceEligible: boolean;
   pathPrefixes: string[];
   requiredMethods: string[];
   documentedRecommendation: string;
@@ -39,6 +41,18 @@ export interface ReclaimApiCapabilityMatrixRow {
   recommendation: string;
 }
 
+export interface ReclaimNextSurfaceCandidateReportRow {
+  id: string;
+  label: string;
+  mode: CandidateReportMode;
+  rank?: number;
+  openApiSupport: OpenApiSupport;
+  toolkitStatus: ToolkitStatus;
+  riskLevel: RiskLevel;
+  missingRequiredMethods: string[];
+  rationale: string;
+}
+
 export interface ReclaimApiCapabilityMatrix {
   matrix: "reclaim-openapi-capability-matrix";
   readSafety: "public_metadata";
@@ -53,6 +67,10 @@ export interface ReclaimApiCapabilityMatrix {
     notDocumentedCount: number;
     recommendedNextBet?: string;
   };
+  nextSurfaceReport: {
+    recommendedCandidateId?: string;
+    candidates: ReclaimNextSurfaceCandidateReportRow[];
+  };
   capabilities: ReclaimApiCapabilityMatrixRow[];
 }
 
@@ -62,6 +80,7 @@ const CAPABILITY_DEFINITIONS: CapabilityDefinition[] = [
     label: "Tasks CRUD baseline",
     scope: "current_surface",
     toolkitStatus: "implemented",
+    nextSurfaceEligible: false,
     pathPrefixes: ["/api/tasks"],
     requiredMethods: ["GET", "POST", "PATCH", "DELETE"],
     documentedRecommendation:
@@ -76,6 +95,7 @@ const CAPABILITY_DEFINITIONS: CapabilityDefinition[] = [
     label: "Habit live-write candidate",
     scope: "future_bet",
     toolkitStatus: "preview_only",
+    nextSurfaceEligible: true,
     pathPrefixes: ["/api/smart-habits", "/api/assist/habits"],
     requiredMethods: ["POST"],
     documentedRecommendation:
@@ -90,6 +110,7 @@ const CAPABILITY_DEFINITIONS: CapabilityDefinition[] = [
     label: "Focus and Buffer live-write candidate",
     scope: "future_bet",
     toolkitStatus: "preview_only",
+    nextSurfaceEligible: true,
     pathPrefixes: ["/api/focus", "/api/buffers", "/api/buffer"],
     requiredMethods: ["POST"],
     documentedRecommendation:
@@ -104,6 +125,7 @@ const CAPABILITY_DEFINITIONS: CapabilityDefinition[] = [
     label: "Meeting write candidate",
     scope: "future_bet",
     toolkitStatus: "read_only",
+    nextSurfaceEligible: true,
     pathPrefixes: ["/api/meetings"],
     requiredMethods: ["POST", "PATCH", "DELETE"],
     documentedRecommendation:
@@ -118,6 +140,7 @@ const CAPABILITY_DEFINITIONS: CapabilityDefinition[] = [
     label: "Hours write and configuration helpers",
     scope: "future_bet",
     toolkitStatus: "read_only",
+    nextSurfaceEligible: true,
     pathPrefixes: ["/api/timeschemes"],
     requiredMethods: ["POST", "PATCH", "DELETE"],
     documentedRecommendation:
@@ -132,6 +155,7 @@ const CAPABILITY_DEFINITIONS: CapabilityDefinition[] = [
     label: "Higher-level task search and completion helpers",
     scope: "future_bet",
     toolkitStatus: "not_started",
+    nextSurfaceEligible: false,
     pathPrefixes: ["/api/tasks"],
     requiredMethods: ["GET", "PATCH"],
     documentedRecommendation:
@@ -251,11 +275,113 @@ function recommendNextBet(capabilities: ReclaimApiCapabilityMatrixRow[]): string
   )?.id;
 }
 
+function sortWeight<T extends string>(value: T, weights: Record<T, number>): number {
+  return weights[value];
+}
+
+function buildNextSurfaceReport(
+  capabilities: ReclaimApiCapabilityMatrixRow[]
+): ReclaimApiCapabilityMatrix["nextSurfaceReport"] {
+  const definitionsById = new Map(CAPABILITY_DEFINITIONS.map((definition) => [definition.id, definition]));
+  const candidateRows = capabilities
+    .filter((capability) => definitionsById.get(capability.id)?.nextSurfaceEligible)
+    .sort((left, right) => {
+      const leftSupport = sortWeight(left.openApiSupport, {
+        documented: 0,
+        partial: 1,
+        not_documented: 2
+      });
+      const rightSupport = sortWeight(right.openApiSupport, {
+        documented: 0,
+        partial: 1,
+        not_documented: 2
+      });
+      if (leftSupport !== rightSupport) {
+        return leftSupport - rightSupport;
+      }
+
+      const leftStatus = sortWeight(left.toolkitStatus, {
+        preview_only: 0,
+        read_only: 1,
+        not_started: 2,
+        implemented: 3
+      });
+      const rightStatus = sortWeight(right.toolkitStatus, {
+        preview_only: 0,
+        read_only: 1,
+        not_started: 2,
+        implemented: 3
+      });
+      if (leftStatus !== rightStatus) {
+        return leftStatus - rightStatus;
+      }
+
+      const leftRisk = sortWeight(left.riskLevel, {
+        low: 0,
+        medium: 1,
+        high: 2
+      });
+      const rightRisk = sortWeight(right.riskLevel, {
+        low: 0,
+        medium: 1,
+        high: 2
+      });
+      if (leftRisk !== rightRisk) {
+        return leftRisk - rightRisk;
+      }
+
+      if (left.missingRequiredMethods.length !== right.missingRequiredMethods.length) {
+        return left.missingRequiredMethods.length - right.missingRequiredMethods.length;
+      }
+
+      return left.label.localeCompare(right.label);
+    });
+
+  const recommendedCandidateId = candidateRows.find((capability) =>
+    capability.openApiSupport === "documented" && capability.toolkitStatus === "preview_only"
+  )?.id;
+
+  let rank = 0;
+  const candidates: ReclaimNextSurfaceCandidateReportRow[] = candidateRows.map((capability) => {
+    if (capability.openApiSupport === "documented" && capability.toolkitStatus === "preview_only") {
+      rank += 1;
+      return {
+        id: capability.id,
+        label: capability.label,
+        mode: "ranked_candidate",
+        rank,
+        openApiSupport: capability.openApiSupport,
+        toolkitStatus: capability.toolkitStatus,
+        riskLevel: capability.riskLevel,
+        missingRequiredMethods: capability.missingRequiredMethods,
+        rationale: capability.recommendation
+      };
+    }
+
+    return {
+      id: capability.id,
+      label: capability.label,
+      mode: capability.openApiSupport === "not_documented" ? "out_of_scope" : "needs_evidence",
+      openApiSupport: capability.openApiSupport,
+      toolkitStatus: capability.toolkitStatus,
+      riskLevel: capability.riskLevel,
+      missingRequiredMethods: capability.missingRequiredMethods,
+      rationale: capability.recommendation
+    };
+  });
+
+  return {
+    recommendedCandidateId,
+    candidates
+  };
+}
+
 export function buildReclaimApiCapabilityMatrix(
   spec: string,
   source: ReclaimApiCapabilityMatrix["source"]
 ): ReclaimApiCapabilityMatrix {
   const capabilities = buildCapabilityRows(spec);
+  const nextSurfaceReport = buildNextSurfaceReport(capabilities);
 
   return {
     matrix: "reclaim-openapi-capability-matrix",
@@ -266,8 +392,9 @@ export function buildReclaimApiCapabilityMatrix(
       documentedCount: capabilities.filter((capability) => capability.openApiSupport === "documented").length,
       partialCount: capabilities.filter((capability) => capability.openApiSupport === "partial").length,
       notDocumentedCount: capabilities.filter((capability) => capability.openApiSupport === "not_documented").length,
-      recommendedNextBet: recommendNextBet(capabilities)
+      recommendedNextBet: nextSurfaceReport.recommendedCandidateId ?? recommendNextBet(capabilities)
     },
+    nextSurfaceReport,
     capabilities
   };
 }

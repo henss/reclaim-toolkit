@@ -65,7 +65,7 @@ Only `generated/reclaim-openapi/reclaim-openapi.d.ts` is tracked. The raw spec, 
 
 ## Guidance For Future Agents
 
-- Use `reclaim:openapi:capability-matrix` before proposing a new public surface bet. It reports which roadmap candidates already have documented operations, which are only partially documented, and which still lack contract evidence in the published API document.
+- Use `reclaim:openapi:capability-matrix` before proposing a new public surface bet. It reports which roadmap candidates already have documented operations, which are only partially documented, which still lack contract evidence, and a ranked `nextSurfaceReport` that keeps the next bet focused on new public surface families rather than repo-internal task-helper expansion.
 - Start new endpoint work from the sanitized OpenAPI generation path instead of writing another bespoke client surface by hand.
 - Start from `createReclaimOpenApiClient` when you need a typed endpoint call instead of rebuilding request plumbing or hand-authoring another full client library.
 - Use the generated `paths` types with a thin client such as `openapi-fetch`, or wrap them in a narrow repo-owned adapter for boundary-local naming, auth defaults, receipts, and safety checks.

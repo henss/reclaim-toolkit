@@ -70,8 +70,38 @@ describe("Reclaim API capability matrix", () => {
         partialCount: 2,
         notDocumentedCount: 1,
         recommendedNextBet: "habit-live-write"
+      },
+      nextSurfaceReport: {
+        recommendedCandidateId: "habit-live-write"
       }
     });
+    expect(matrix.nextSurfaceReport.candidates).toEqual([
+      expect.objectContaining({
+        id: "habit-live-write",
+        mode: "ranked_candidate",
+        rank: 1,
+        openApiSupport: "documented",
+        toolkitStatus: "preview_only"
+      }),
+      expect.objectContaining({
+        id: "hours-write-and-config",
+        mode: "needs_evidence",
+        openApiSupport: "partial",
+        toolkitStatus: "read_only"
+      }),
+      expect.objectContaining({
+        id: "meeting-writes",
+        mode: "needs_evidence",
+        openApiSupport: "partial",
+        toolkitStatus: "read_only"
+      }),
+      expect.objectContaining({
+        id: "focus-and-buffers-live-write",
+        mode: "out_of_scope",
+        openApiSupport: "not_documented",
+        toolkitStatus: "preview_only"
+      })
+    ]);
     expect(matrix.capabilities.find((capability) => capability.id === "tasks-crud")).toMatchObject({
       openApiSupport: "documented",
       toolkitStatus: "implemented",
@@ -105,6 +135,7 @@ describe("Reclaim API capability matrix", () => {
         location: specPath
       });
       expect(matrix.summary.recommendedNextBet).toBe("habit-live-write");
+      expect(matrix.nextSurfaceReport.recommendedCandidateId).toBe("habit-live-write");
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
@@ -124,6 +155,10 @@ describe("Reclaim API capability matrix", () => {
         readSafety: string;
         source: { type: string; location: string };
         summary: { recommendedNextBet?: string };
+        nextSurfaceReport: {
+          recommendedCandidateId?: string;
+          candidates: Array<{ id: string; mode: string; rank?: number }>;
+        };
       };
       expect(output.readSafety).toBe("public_metadata");
       expect(output.source).toEqual({
@@ -131,6 +166,12 @@ describe("Reclaim API capability matrix", () => {
         location: specPath
       });
       expect(output.summary.recommendedNextBet).toBe("habit-live-write");
+      expect(output.nextSurfaceReport.recommendedCandidateId).toBe("habit-live-write");
+      expect(output.nextSurfaceReport.candidates[0]).toMatchObject({
+        id: "habit-live-write",
+        mode: "ranked_candidate",
+        rank: 1
+      });
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
