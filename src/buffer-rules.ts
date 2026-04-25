@@ -1,11 +1,17 @@
 import { z } from "zod";
 import {
+  buildProtectedTimeWindowDiff,
+  type BufferRulePolicyContext,
+  type BufferRuleProtectedTimeWindowDiff
+} from "./buffer-rule-protected-time-diff.js";
+import {
   buildBufferPreviewRequest,
   type PreviewBufferCreate,
   ReclaimBufferInputListSchema,
   ReclaimBufferInputSchema,
   type ReclaimBufferCreatePreviewRequest
 } from "./buffers.js";
+import { ReclaimTimeSchemeSnapshotSchema } from "./time-policy-selection.js";
 
 const BUFFER_RULE_DIFF_FIELDS = [
   "title",
@@ -25,7 +31,11 @@ export const ReclaimBufferRuleInputSchema = ReclaimBufferInputSchema.extend({
 
 export const ReclaimBufferRulePreviewInputSchema = z.object({
   rules: z.array(ReclaimBufferRuleInputSchema),
-  currentBuffers: ReclaimBufferInputListSchema.optional()
+  currentBuffers: ReclaimBufferInputListSchema.optional(),
+  timeSchemes: z.array(ReclaimTimeSchemeSnapshotSchema).default([]),
+  defaultTaskEventCategory: z.enum(["PERSONAL", "WORK"]).optional(),
+  preferredTimePolicyId: z.string().min(1).optional(),
+  preferredTimePolicyTitle: z.string().min(1).optional()
 });
 
 export type ReclaimBufferRuleInput = z.input<typeof ReclaimBufferRuleInputSchema>;
@@ -46,6 +56,7 @@ export interface BufferRulePreviewReceipt {
     unchanged: number;
   };
   diffLines: string[];
+  protectedTimeWindowDiff?: BufferRuleProtectedTimeWindowDiff;
   rollbackHint: string;
 }
 
@@ -154,12 +165,14 @@ function buildBufferRuleDiff(
 function buildBufferRulePreview(
   ruleInput: ReclaimBufferRuleInput,
   currentBuffers: PreviewBufferCreate[],
+  policyContext: BufferRulePolicyContext,
   index: number
 ): PreviewBufferRule {
   const parsed = ReclaimBufferRuleInputSchema.parse(ruleInput);
   const request = buildBufferPreviewRequest(parsed);
   const currentBuffer = findCurrentBuffer(parsed, currentBuffers);
   const diff = buildBufferRuleDiff(currentBuffer?.request, request);
+  const protectedTimeWindowDiff = buildProtectedTimeWindowDiff(parsed, policyContext);
   const previewId = `buffer-rule-preview-${index + 1}`;
 
   return {
@@ -184,6 +197,7 @@ function buildBufferRulePreview(
       matchedBufferTitle: currentBuffer?.title,
       diffSummary: diff.summary,
       diffLines: diff.diffLines,
+      protectedTimeWindowDiff,
       rollbackHint: "No rollback is required because this helper only emits a synthetic preview diff."
     }
   };
@@ -196,10 +210,16 @@ export function parseReclaimBufferRulePreviewInput(raw: unknown): ReclaimBufferR
 export function previewBufferRules(input: ReclaimBufferRulePreviewInput): BufferRulePreview {
   const parsed = ReclaimBufferRulePreviewInputSchema.parse(input);
   const currentBuffers = (parsed.currentBuffers ?? []).map((bufferInput) => buildPreviewBufferCreate(bufferInput));
+  const policyContext: BufferRulePolicyContext = {
+    timeSchemes: parsed.timeSchemes,
+    defaultTaskEventCategory: parsed.defaultTaskEventCategory,
+    preferredTimePolicyId: parsed.preferredTimePolicyId,
+    preferredTimePolicyTitle: parsed.preferredTimePolicyTitle
+  };
 
   return {
     ruleCount: parsed.rules.length,
-    rules: parsed.rules.map((rule, index) => buildBufferRulePreview(rule, currentBuffers, index)),
+    rules: parsed.rules.map((rule, index) => buildBufferRulePreview(rule, currentBuffers, policyContext, index)),
     writeSafety: "preview_only"
   };
 }

@@ -1,4 +1,25 @@
 {
+  "defaultTaskEventCategory": "WORK",
+  "timeSchemes": [
+    {
+      "id": "policy-work",
+      "title": "Work Hours",
+      "taskCategory": "WORK",
+      "features": ["TASK_ASSIGNMENT"],
+      "windows": [
+        {
+          "dayOfWeek": "tuesday",
+          "start": "11:00",
+          "end": "12:30"
+        },
+        {
+          "dayOfWeek": "thursday",
+          "start": "11:50",
+          "end": "12:00"
+        }
+      ]
+    }
+  ],
   "currentBuffers": [
     {
       "title": "Weekly project sync recovery",

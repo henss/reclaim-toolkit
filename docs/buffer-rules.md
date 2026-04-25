@@ -61,6 +61,7 @@ The command returns JSON with:
 - `mockResponse`: preview metadata showing whether the synthetic action is `create` or `update`.
 - `previewReceipt.diffLines`: a diff-style list using `+`, `-`, and leading-space lines for added, changed, removed, and unchanged fields.
 - `previewReceipt.diffSummary`: aggregate counts for the emitted diff.
+- `previewReceipt.protectedTimeWindowDiff`: optional protected-time comparison output when the input also includes synthetic `timeSchemes` plus bounded `windowStart`/`windowEnd` values. `+` lines show days with enough protected overlap, `~` lines show partial overlap, and `-` lines show days that fall outside the protected windows.
 - `writeSafety: "preview_only"` to keep the no-write boundary explicit.
 
 ## Public-Safe Fixture
