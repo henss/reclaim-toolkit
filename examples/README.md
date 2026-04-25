@@ -29,6 +29,8 @@ Rules:
 - `meeting-availability.example.json`: preview-only Meeting Availability fixture with synthetic busy meetings and generic policy windows.
 - `recurring-meeting-reschedule.example.json`: preview-only recurring series fixture with synthetic keep, move, and blocked outcomes.
 - `meetings-and-hours.example.json`: synthetic Meetings and Hours inspector fixture with placeholder meeting and time-policy summaries.
+- `support-bundle-preview.example.json`: synthetic support-bundle incident request for local preview troubleshooting.
+- `support-bundle-replay.expected.json`: committed redacted support-bundle replay snapshot with a normalized `generatedAt` placeholder for stable diffs.
 - `task-write-receipts.example.json`: synthetic task write-receipt fixture for read-only remote-state validation.
 
 Run the public-boundary lint before committing example changes:

@@ -1,10 +1,10 @@
 {
   "incidentType": "preview",
   "command": "reclaim:meetings:preview-availability",
-  "notes": "Investigating a local preview incident copied from a private planning run.",
+  "notes": "Investigating a synthetic preview-availability incident replay.",
   "input": {
     "request": {
-      "title": "Quarterly planning sync",
+      "title": "Release readiness sync",
       "durationMinutes": 45,
       "eventCategory": "WORK",
       "dateRangeStart": "2026-05-11",
@@ -25,14 +25,14 @@
     ],
     "busyMeetings": [
       {
-        "id": "meeting-private-1",
-        "title": "Household coordination block",
+        "id": "meeting-sim-1",
+        "title": "Incident timeline review",
         "date": "2026-05-11",
         "startTime": "09:00",
         "endTime": "10:00"
       },
       {
-        "id": "meeting-private-2",
+        "id": "meeting-sim-2",
         "title": "Config review",
         "date": "2026-05-14",
         "startTime": "13:00",

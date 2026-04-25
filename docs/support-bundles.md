@@ -22,6 +22,15 @@ Generate a config incident bundle with an optional health check:
 
 The command writes one JSON document to stdout and exits with code `0` on success. It follows the same CLI profile as the other toolkit commands: parse stdout only after a zero exit code, and treat stderr as the diagnostic surface for failures.
 
+## Incident Replay Kit
+
+The public replay kit for this surface is the pair of synthetic files in `examples/`:
+
+- `support-bundle-preview.example.json`: the synthetic incident request passed to `reclaim:support:bundle`.
+- `support-bundle-replay.expected.json`: the committed redacted output snapshot with `generatedAt` normalized to `<generated-at>` so reviewers can diff the structural contract without depending on wall-clock time.
+
+Use the replay pair when reviewing bundle-shape changes, redaction regressions, or docs updates. Keep both files synthetic and small enough to audit in one pass.
+
 ## Incident Types
 
 - `preview`: runs one supported local preview or read-only helper in-process, then stores a redacted copy of the input and the resulting JSON shape.

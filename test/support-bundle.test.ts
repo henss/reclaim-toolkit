@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
 import {
@@ -12,15 +13,26 @@ import {
   writeConfigFile
 } from "./cli-test-helpers.js";
 
+function normalizeGeneratedBundle(value: unknown): unknown {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+
+  return {
+    ...value,
+    generatedAt: "<generated-at>"
+  };
+}
+
 describe("support bundle", () => {
   test("generates a redacted preview bundle from a synthetic incident packet", async () => {
     const request = parseReclaimSupportBundleRequest({
       incidentType: "preview",
       command: "reclaim:meetings:preview-availability",
-      notes: "Copied from a household-heavy private troubleshooting pass.",
+      notes: "Copied from a synthetic incident replay drill.",
       input: {
         request: {
-          title: "Household planning block",
+          title: "Operations planning block",
           durationMinutes: 45,
           eventCategory: "WORK",
           dateRangeStart: "2026-05-11",
@@ -38,7 +50,7 @@ describe("support bundle", () => {
         busyMeetings: [
           {
             id: "meeting-123",
-            title: "Stefan private sync",
+            title: "Incident rehearsal sync",
             date: "2026-05-11",
             startTime: "09:00",
             endTime: "10:00"
@@ -78,10 +90,23 @@ describe("support bundle", () => {
         })
       ]
     }));
-    expect(JSON.stringify(bundle)).not.toContain("Stefan private sync");
+    expect(JSON.stringify(bundle)).not.toContain("Incident rehearsal sync");
     expect(JSON.stringify(bundle)).not.toContain("policy-work-private");
     expect(bundle.redactionPolicy.counters.ids).toBeGreaterThan(0);
     expect(bundle.redactionPolicy.counters.text).toBeGreaterThan(0);
+  });
+
+  test("keeps the committed incident replay kit aligned with generated output", async () => {
+    const request = parseReclaimSupportBundleRequest(JSON.parse(
+      fs.readFileSync(path.join("examples", "support-bundle-preview.example.json"), "utf8")
+    ) as unknown);
+    const expectedBundle = JSON.parse(
+      fs.readFileSync(path.join("examples", "support-bundle-replay.expected.json"), "utf8")
+    ) as unknown;
+
+    const bundle = await generateReclaimSupportBundle(request);
+
+    expect(normalizeGeneratedBundle(bundle)).toEqual(expectedBundle);
   });
 
   test("sanitizes config incidents and optional health checks", async () => {

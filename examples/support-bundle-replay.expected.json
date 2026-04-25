@@ -1,0 +1,356 @@
+{
+  "bundleVersion": "1",
+  "generatedAt": "<generated-at>",
+  "incidentType": "preview",
+  "generator": "reclaim-toolkit-support-bundle",
+  "redactionPolicy": {
+    "mode": "strict_public_safe",
+    "safeDefaults": [
+      "numbers, booleans, and null values are preserved",
+      "ISO-like dates and times are preserved",
+      "command ids and safety enums are preserved",
+      "titles, ids, notes, emails, secrets, absolute paths, and free text are redacted"
+    ],
+    "counters": {
+      "apiKeys": 0,
+      "emails": 0,
+      "ids": 16,
+      "paths": 0,
+      "text": 24
+    }
+  },
+  "config": {
+    "requestedPath": "config/reclaim.local.json",
+    "pathDisplay": "relative",
+    "status": "missing",
+    "apiUrl": {
+      "classification": "missing"
+    },
+    "hasApiKey": false,
+    "hasPreferredTimePolicyId": false,
+    "hasPreferredTimePolicyTitle": false,
+    "notes": [
+      "No local Reclaim config was found at the requested path."
+    ]
+  },
+  "scoutDecision": {
+    "category": "tooling",
+    "recommendation": "evaluate_registry_candidate",
+    "decision": "local_build",
+    "rationale": "The scout found no npm-adjacent package candidate for this capability, and the existing repo already has a small CLI-plus-JSON seam that makes a local implementation lower-risk than adding another dependency surface."
+  },
+  "notes": "<redacted-text>",
+  "preview": {
+    "command": "reclaim:meetings:preview-availability",
+    "executionStatus": "ok",
+    "summary": {
+      "inputTopLevelKeys": [
+        "busyMeetings",
+        "request",
+        "timeSchemes"
+      ],
+      "inputArrayFieldSizes": [
+        {
+          "key": "busyMeetings",
+          "count": 2
+        },
+        {
+          "key": "timeSchemes",
+          "count": 1
+        }
+      ],
+      "outputTopLevelKeys": [
+        "busyMeetingCount",
+        "candidateSlots",
+        "candidateWindows",
+        "daySummaries",
+        "excludedWindows",
+        "request",
+        "returnedCandidateCount",
+        "returnedCandidateWindowCount",
+        "selectedPolicy",
+        "selectionReason",
+        "totalCandidateCount",
+        "totalCandidateWindowCount",
+        "writeSafety"
+      ],
+      "outputSafety": "preview_only"
+    },
+    "input": {
+      "request": {
+        "title": "<redacted-text>",
+        "durationMinutes": 45,
+        "eventCategory": "WORK",
+        "dateRangeStart": "2026-05-11",
+        "dateRangeEnd": "2026-05-15",
+        "preferredTimePolicyTitle": "<redacted-text>"
+      },
+      "timeSchemes": [
+        {
+          "id": "<redacted-id>",
+          "title": "<redacted-text>",
+          "taskCategory": "WORK",
+          "features": [
+            "TASK_ASSIGNMENT",
+            "AVAILABILITY"
+          ],
+          "windows": [
+            {
+              "dayOfWeek": "monday",
+              "start": "09:00",
+              "end": "12:00"
+            },
+            {
+              "dayOfWeek": "wednesday",
+              "start": "10:00",
+              "end": "16:00"
+            }
+          ]
+        }
+      ],
+      "busyMeetings": [
+        {
+          "id": "<redacted-id>",
+          "title": "<redacted-text>",
+          "date": "2026-05-11",
+          "startTime": "09:00",
+          "endTime": "10:00"
+        },
+        {
+          "id": "<redacted-id>",
+          "title": "<redacted-text>",
+          "date": "2026-05-14",
+          "startTime": "13:00",
+          "endTime": "14:00"
+        }
+      ]
+    },
+    "result": {
+      "request": {
+        "title": "<redacted-text>",
+        "durationMinutes": 45,
+        "eventCategory": "WORK",
+        "dateRangeStart": "2026-05-11",
+        "dateRangeEnd": "2026-05-15",
+        "slotIntervalMinutes": 30,
+        "maxSuggestions": 10
+      },
+      "busyMeetingCount": 2,
+      "selectedPolicy": {
+        "id": "<redacted-id>",
+        "title": "<redacted-text>",
+        "taskCategory": "WORK",
+        "features": [
+          "TASK_ASSIGNMENT",
+          "AVAILABILITY"
+        ],
+        "matchesDefaultEventCategory": true
+      },
+      "selectionReason": "<redacted-text>",
+      "totalCandidateWindowCount": 2,
+      "returnedCandidateWindowCount": 2,
+      "candidateWindows": [
+        {
+          "date": "2026-05-11",
+          "dayOfWeek": "monday",
+          "startTime": "10:00",
+          "endTime": "12:00",
+          "availableMinutes": 120,
+          "durationMinutes": 45,
+          "slotCount": 3,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "09:00",
+          "policyWindowEnd": "12:00"
+        },
+        {
+          "date": "2026-05-13",
+          "dayOfWeek": "wednesday",
+          "startTime": "10:00",
+          "endTime": "16:00",
+          "availableMinutes": 360,
+          "durationMinutes": 45,
+          "slotCount": 11,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "10:00",
+          "policyWindowEnd": "16:00"
+        }
+      ],
+      "excludedWindows": [],
+      "totalCandidateCount": 14,
+      "returnedCandidateCount": 10,
+      "candidateSlots": [
+        {
+          "date": "2026-05-11",
+          "dayOfWeek": "monday",
+          "startTime": "10:00",
+          "endTime": "10:45",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "09:00",
+          "policyWindowEnd": "12:00"
+        },
+        {
+          "date": "2026-05-11",
+          "dayOfWeek": "monday",
+          "startTime": "10:30",
+          "endTime": "11:15",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "09:00",
+          "policyWindowEnd": "12:00"
+        },
+        {
+          "date": "2026-05-11",
+          "dayOfWeek": "monday",
+          "startTime": "11:00",
+          "endTime": "11:45",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "09:00",
+          "policyWindowEnd": "12:00"
+        },
+        {
+          "date": "2026-05-13",
+          "dayOfWeek": "wednesday",
+          "startTime": "10:00",
+          "endTime": "10:45",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "10:00",
+          "policyWindowEnd": "16:00"
+        },
+        {
+          "date": "2026-05-13",
+          "dayOfWeek": "wednesday",
+          "startTime": "10:30",
+          "endTime": "11:15",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "10:00",
+          "policyWindowEnd": "16:00"
+        },
+        {
+          "date": "2026-05-13",
+          "dayOfWeek": "wednesday",
+          "startTime": "11:00",
+          "endTime": "11:45",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "10:00",
+          "policyWindowEnd": "16:00"
+        },
+        {
+          "date": "2026-05-13",
+          "dayOfWeek": "wednesday",
+          "startTime": "11:30",
+          "endTime": "12:15",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "10:00",
+          "policyWindowEnd": "16:00"
+        },
+        {
+          "date": "2026-05-13",
+          "dayOfWeek": "wednesday",
+          "startTime": "12:00",
+          "endTime": "12:45",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "10:00",
+          "policyWindowEnd": "16:00"
+        },
+        {
+          "date": "2026-05-13",
+          "dayOfWeek": "wednesday",
+          "startTime": "12:30",
+          "endTime": "13:15",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "10:00",
+          "policyWindowEnd": "16:00"
+        },
+        {
+          "date": "2026-05-13",
+          "dayOfWeek": "wednesday",
+          "startTime": "13:00",
+          "endTime": "13:45",
+          "durationMinutes": 45,
+          "policyId": "<redacted-id>",
+          "policyTitle": "<redacted-text>",
+          "policyWindowStart": "10:00",
+          "policyWindowEnd": "16:00"
+        }
+      ],
+      "daySummaries": [
+        {
+          "date": "2026-05-11",
+          "dayOfWeek": "monday",
+          "policyWindowCount": 1,
+          "candidateWindowCount": 1,
+          "candidateSlotCount": 3,
+          "excludedWindowCount": 0,
+          "blockedSlotCount": 0,
+          "notes": []
+        },
+        {
+          "date": "2026-05-12",
+          "dayOfWeek": "tuesday",
+          "policyWindowCount": 0,
+          "candidateWindowCount": 0,
+          "candidateSlotCount": 0,
+          "excludedWindowCount": 0,
+          "blockedSlotCount": 0,
+          "notes": [
+            "<redacted-text>"
+          ]
+        },
+        {
+          "date": "2026-05-13",
+          "dayOfWeek": "wednesday",
+          "policyWindowCount": 1,
+          "candidateWindowCount": 1,
+          "candidateSlotCount": 11,
+          "excludedWindowCount": 0,
+          "blockedSlotCount": 0,
+          "notes": []
+        },
+        {
+          "date": "2026-05-14",
+          "dayOfWeek": "thursday",
+          "policyWindowCount": 0,
+          "candidateWindowCount": 0,
+          "candidateSlotCount": 0,
+          "excludedWindowCount": 0,
+          "blockedSlotCount": 0,
+          "notes": [
+            "<redacted-text>"
+          ]
+        },
+        {
+          "date": "2026-05-15",
+          "dayOfWeek": "friday",
+          "policyWindowCount": 0,
+          "candidateWindowCount": 0,
+          "candidateSlotCount": 0,
+          "excludedWindowCount": 0,
+          "blockedSlotCount": 0,
+          "notes": [
+            "<redacted-text>"
+          ]
+        }
+      ],
+      "writeSafety": "preview_only"
+    }
+  }
+}
