@@ -1,0 +1,20 @@
+[
+  {
+    "type": "dependency",
+    "from": "eslint.config.mjs",
+    "to": "typescript-eslint",
+    "rule": {
+      "severity": "error",
+      "name": "not-to-unresolvable"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "eslint.typechecked.config.mjs",
+    "to": "typescript-eslint",
+    "rule": {
+      "severity": "error",
+      "name": "not-to-unresolvable"
+    }
+  }
+]

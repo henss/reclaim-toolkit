@@ -35,6 +35,31 @@ interface RuleDelta {
   currentCount: number;
 }
 const BLOCKING_RULE_IDS = new Set(["complexity", "max-depth", "max-lines-per-function", "max-params"]);
+const AGENT_SAFE_PATTERN_RULES: Array<{
+  ruleId: string;
+  count: (text: string, relativePath: string) => number;
+}> = [
+  {
+    ruleId: "agent-safe/no-export-star-barrel-growth",
+    count: (text) => countMatches(text, /^\s*export\s+\*/gm)
+  },
+  {
+    ruleId: "agent-safe/no-dynamic-import-growth",
+    count: (text) => countMatches(text, /\bimport\s*\(/g)
+  },
+  {
+    ruleId: "agent-safe/no-require-growth",
+    count: (text) => countMatches(text, /\brequire\s*\(/g)
+  },
+  {
+    ruleId: "agent-safe/no-ambient-declare-growth",
+    count: (text) => countMatches(text, /^\s*declare\s+(?:global|module|namespace|const|let|var|function|class)\b/gm)
+  },
+  {
+    ruleId: "agent-safe/no-grab-bag-utils-path-growth",
+    count: (_text, relativePath) => (/\/utils(?:\/|\.|$)/.test(relativePath) ? 1 : 0)
+  }
+];
 const MIN_MEANINGFUL_OVERSIZE_REDUCTION_LINES = 5;
 const MIN_MEANINGFUL_OVERSIZE_REDUCTION_RATIO = 0.03;
 const repoRoot = process.cwd();
@@ -106,6 +131,10 @@ function isTrackedSurface(relativePath: string): boolean {
 
 function getLineCountFromText(text: string): number {
   return text.split(/\r?\n/).length;
+}
+
+function countMatches(text: string, pattern: RegExp): number {
+  return Array.from(text.matchAll(pattern)).length;
 }
 
 function getGitFileText(ref: string, relativePath: string): string | undefined {
@@ -220,7 +249,33 @@ async function loadStructuralRuleViolations(reports: FileReport[], baselineRef: 
     }
     if (fileDeltas.length > 0) deltas.set(relativePath, fileDeltas);
   }
+  mergeRuleDeltas(deltas, collectAgentSafePatternDeltas(reports, baselineRef));
   return deltas;
+}
+
+function collectAgentSafePatternDeltas(reports: FileReport[], baselineRef: string): Map<string, RuleDelta[]> {
+  const deltas = new Map<string, RuleDelta[]>();
+  for (const report of reports) {
+    const absolutePath = path.join(repoRoot, report.filePath);
+    const currentText = fs.readFileSync(absolutePath, "utf8");
+    const baselineText = getGitFileText(baselineRef, report.filePath) ?? "";
+    const fileDeltas: RuleDelta[] = [];
+    for (const rule of AGENT_SAFE_PATTERN_RULES) {
+      const currentCount = rule.count(currentText, report.filePath);
+      const baselineCount = rule.count(baselineText, report.filePath);
+      if (currentCount > baselineCount) {
+        fileDeltas.push({ ruleId: rule.ruleId, baselineCount, currentCount });
+      }
+    }
+    if (fileDeltas.length > 0) deltas.set(report.filePath, fileDeltas);
+  }
+  return deltas;
+}
+
+function mergeRuleDeltas(target: Map<string, RuleDelta[]>, source: Map<string, RuleDelta[]>): void {
+  for (const [filePath, deltas] of source.entries()) {
+    target.set(filePath, [...(target.get(filePath) ?? []), ...deltas]);
+  }
 }
 
 function renderNearLimitReports(reports: FileReport[]): void {

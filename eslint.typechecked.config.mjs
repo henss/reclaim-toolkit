@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["node_modules/**", "dist/**", "build/**", "coverage/**", "generated/**", ".runtime/**", ".sandbox-tmp/**"],
+    ignores: ["node_modules/**", "dist/**", "build/**", "coverage/**", "generated/**", ".runtime/**", ".sandbox-tmp/**", ".dependency-cruiser.cjs"],
   },
   {
     files: ["**/*.{ts,tsx}"],

@@ -79,7 +79,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:typechecked": "eslint . --config eslint.typechecked.config.mjs",
-    "verify:session": "npm run lint && npm run typecheck && npm run test && npm run check:agent-surface"
+    "verify:session": "npm run lint && npm run typecheck && npm run test && npm run check:agent-surface",
+    "arch": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --ignore-known .dependency-cruiser-known-violations.json --output-type err",
+    "arch:baseline": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --output-type baseline --output-to .dependency-cruiser-known-violations.json",
+    "arch:graph": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --ignore-known .dependency-cruiser-known-violations.json --output-type mermaid"
   },
   "dependencies": {
     "openapi-fetch": "^0.17.0",
@@ -95,6 +98,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.0",
-    "vitest": "^4.1.2"
+    "vitest": "^4.1.2",
+    "dependency-cruiser": "^17.3.10"
   }
 }

@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["node_modules/**", "dist/**", "build/**", "coverage/**", "generated/**", ".runtime/**", ".sandbox-tmp/**"],
+    ignores: ["node_modules/**", "dist/**", "build/**", "coverage/**", "generated/**", ".runtime/**", ".sandbox-tmp/**", ".dependency-cruiser.cjs"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -40,12 +40,28 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-empty-object-type": "warn",
+      "@typescript-eslint/no-require-imports": "error",
       "preserve-caught-error": "warn",
       complexity: ["warn", 12],
       "max-depth": ["warn", 4],
       "max-lines": ["warn", { max: 550, skipBlankLines: true, skipComments: true }],
       "max-lines-per-function": ["warn", { max: 120, skipBlankLines: true, skipComments: true }],
       "max-params": ["warn", 5],
+      "no-var": "error",
+      "prefer-const": ["warn", { destructuring: "all" }],
+      "no-restricted-properties": [
+        "warn",
+        {
+          object: "Date",
+          property: "now",
+          message: "Inject time at IO/workflow boundaries so tests can stay deterministic.",
+        },
+        {
+          object: "Math",
+          property: "random",
+          message: "Inject randomness at IO/workflow boundaries so behavior can be tested deterministically.",
+        },
+      ],
       "no-restricted-syntax": [
         "error",
         {

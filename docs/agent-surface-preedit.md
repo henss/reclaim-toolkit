@@ -31,3 +31,9 @@ Avoid:
 - implicit framework conventions without tests
 - mock-heavy tests that can pass while behavior is broken
 - hidden build magic
+
+Enforcement:
+- Dependency-cruiser blocks new architecture dependency violations while keeping existing violations in a baseline file.
+- ESLint hard-blocks default exports, type-only import violations, CommonJS `require` in TypeScript, and `var`.
+- ESLint warns on direct `Date.now`, direct `Math.random`, and missed `prefer-const` opportunities.
+- The agent-surface guard blocks changed-file growth in `export *` barrels, dynamic imports, `require` calls, ambient declarations, and new grab-bag `utils` paths.

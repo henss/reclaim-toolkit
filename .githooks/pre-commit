@@ -2,6 +2,8 @@
 set -eu
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
+echo "pre-commit: running architecture dependency guard"
+npm run --if-present arch
 echo "pre-commit: running staged agent-surface guard"
 npm run --if-present check:agent-surface:staged
 has_eslint_repo_check() { node -e "const fs=require('fs'); const pkgPath='package.json'; const candidateFiles=['eslint.config.js','eslint.config.cjs','eslint.config.mjs','eslint.config.ts','.eslintrc','.eslintrc.js','.eslintrc.cjs','.eslintrc.json','.eslintrc.yaml','.eslintrc.yml']; const pkg=fs.existsSync(pkgPath)?JSON.parse(fs.readFileSync(pkgPath,'utf8')):{}; const deps={...(pkg.dependencies||{}),...(pkg.devDependencies||{})}; const hasConfig=candidateFiles.some((file)=>fs.existsSync(file))||Boolean(pkg.eslintConfig); process.exit(hasConfig||Boolean(deps.eslint)?0:1);"; }
