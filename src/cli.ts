@@ -196,6 +196,7 @@ function buildPreviewCommandHandlers(): Record<string, CommandHandler> {
     "reclaim:focus:preview-create": () => {
       const input = parseReclaimFocusPreviewInput(readJsonInput());
       printJson(focus.previewCreates(input.focusBlocks, {
+        currentFocusBlocks: input.currentFocusBlocks,
         timePolicyContext: input.timeSchemes.length > 0 || input.defaultTaskEventCategory !== undefined
           ? {
             timeSchemes: input.timeSchemes,

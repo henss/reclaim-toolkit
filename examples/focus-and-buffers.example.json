@@ -43,6 +43,38 @@
       ]
     }
   ],
+  "currentFocusBlocks": [
+    {
+      "title": "Prototype review block",
+      "notes": "Review a generic prototype and capture follow-up questions.",
+      "durationMinutes": 90,
+      "eventCategory": "WORK",
+      "cadence": "weekly",
+      "daysOfWeek": ["tuesday"],
+      "windowStart": "09:00",
+      "windowEnd": "12:00"
+    },
+    {
+      "title": "Documentation drafting block",
+      "notes": "Draft public-safe notes for a sample toolkit workflow.",
+      "durationMinutes": 45,
+      "eventCategory": "WORK",
+      "cadence": "once",
+      "date": "2026-05-18",
+      "windowStart": "12:00",
+      "windowEnd": "14:00"
+    },
+    {
+      "title": "Weekly review follow-up block",
+      "notes": "Capture generic follow-up items from a synthetic review cycle.",
+      "durationMinutes": 30,
+      "eventCategory": "WORK",
+      "cadence": "weekly",
+      "daysOfWeek": ["thursday"],
+      "windowStart": "15:00",
+      "windowEnd": "16:00"
+    }
+  ],
   "focusBlocks": [
     {
       "title": "Prototype review block",
@@ -63,6 +95,16 @@
       "date": "2026-05-18",
       "windowStart": "13:00",
       "windowEnd": "15:00"
+    },
+    {
+      "title": "Inbox triage block",
+      "notes": "Work through a generic queue before the next sample delivery window.",
+      "durationMinutes": 45,
+      "eventCategory": "WORK",
+      "cadence": "once",
+      "date": "2026-05-19",
+      "windowStart": "10:00",
+      "windowEnd": "11:00"
     }
   ],
   "buffers": [

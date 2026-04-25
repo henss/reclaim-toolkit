@@ -94,10 +94,10 @@ describe("focus and buffers", () => {
     const focusPreview = focus.previewCreates(parsedFocusBlocks);
     const bufferPreview = buffers.previewCreates(parsedBuffers);
 
-    expect(parsedFocusBlocks).toHaveLength(2);
+    expect(parsedFocusBlocks).toHaveLength(3);
     expect(parsedBuffers).toHaveLength(2);
     expect(focusPreview).toMatchObject({
-      focusBlockCount: 2,
+      focusBlockCount: 3,
       writeSafety: "preview_only",
       previewReceipt: {
         operation: "focus.preview",

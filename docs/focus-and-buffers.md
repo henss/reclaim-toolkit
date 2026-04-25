@@ -64,10 +64,11 @@ npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.exa
 ```
 
 Both commands return JSON with `writeSafety: "preview_only"` plus a top-level `previewReceipt` that records when the preview was generated and why the helper remains preview-only.
+Focus preview fixtures can also include an optional `currentFocusBlocks` array. When present, each previewed focus block includes a `planDiff` receipt with a create/update/unchanged action plus explicit `diffLines`, and the top-level output adds `currentFocusBlockCount`, `removedFocusBlocks`, and `planDiffSummary` so callers can review synthetic add/update/remove decisions before any live scheduling work exists.
 When the preview input also includes synthetic `timeSchemes` plus optional default or preferred policy hints, each preview item includes a `timePolicyExplanation` object with the selected policy, selection reason, fit/conflict status, and any bounded window checks that were possible from the supplied fixture.
 
 ## Public-Safe Fixtures
 
-`examples/focus-and-buffers.example.json` uses invented titles, generic notes, placeholder windows, and conventional `WORK` or `PERSONAL` categories. It is intended for schema regression tests and local previews only.
+`examples/focus-and-buffers.example.json` uses invented titles, generic notes, placeholder windows, and conventional `WORK` or `PERSONAL` categories. Its optional `currentFocusBlocks` baseline is also synthetic and exists only to exercise diff-style preview receipts for planner review.
 
 Do not commit focus or buffer files copied from a live account, private scheduling ledger, calendar export, household routine, health-support policy, or personal operating policy.

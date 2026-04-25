@@ -93,6 +93,8 @@ npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.examp
 npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
 ```
 
+The Focus preview fixture also includes a synthetic `currentFocusBlocks` baseline so the CLI can emit `planDiff` receipts, `removedFocusBlocks`, and a top-level `planDiffSummary` without relying on any live Reclaim state.
+
 The time-policy conflict fixture is read-only and explains fit or conflict reasons for synthetic task, focus, buffer, and hours-profile proposals:
 
 ```bash

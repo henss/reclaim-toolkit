@@ -1,4 +1,11 @@
 import { z } from "zod";
+import {
+  applyFocusPlanDiffSummary,
+  buildFocusPlanDiffReceipt,
+  createEmptyFocusPlanDiffSummary,
+  type FocusPlanDiffReceipt,
+  type FocusPlanDiffSummary
+} from "./focus-plan-diff.js";
 import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
 import { ReclaimTimeSchemeSnapshotSchema } from "./time-policy-selection.js";
 import {
@@ -7,6 +14,8 @@ import {
   type TimePolicyProposalContext
 } from "./time-policy-proposals.js";
 import type { ReclaimTaskEventCategory } from "./types.js";
+
+export type { FocusPlanDiffReceipt, FocusPlanDiffSummary } from "./focus-plan-diff.js";
 
 const HOUR_MINUTE_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -84,6 +93,7 @@ export const ReclaimFocusInputListSchema = z.union([
 
 export const ReclaimFocusPreviewInputSchema = z.object({
   focusBlocks: z.array(ReclaimFocusInputSchema),
+  currentFocusBlocks: z.array(ReclaimFocusInputSchema).default([]),
   timeSchemes: z.array(ReclaimTimeSchemeSnapshotSchema).default([]),
   defaultTaskEventCategory: z.enum(["PERSONAL", "WORK"]).optional(),
   preferredTimePolicyId: z.string().min(1).optional(),
@@ -95,6 +105,7 @@ export type ReclaimFocusInput = z.input<typeof ReclaimFocusInputSchema>;
 
 export interface FocusPreviewInput {
   focusBlocks: ReclaimFocusInput[];
+  currentFocusBlocks: ReclaimFocusInput[];
   timeSchemes: TimePolicyProposalContext["timeSchemes"];
   defaultTaskEventCategory?: ReclaimTaskEventCategory;
   preferredTimePolicyId?: string;
@@ -117,12 +128,22 @@ export interface ReclaimFocusCreatePreviewRequest {
 export interface PreviewFocusCreate {
   title: string;
   request: ReclaimFocusCreatePreviewRequest;
+  planDiff: FocusPlanDiffReceipt;
   timePolicyExplanation?: TimePolicyConflictFocusExplanation;
+}
+
+export interface RemovedFocusPreview {
+  title: string;
+  request: ReclaimFocusCreatePreviewRequest;
+  planDiff: FocusPlanDiffReceipt;
 }
 
 export interface FocusCreatePreview {
   focusBlockCount: number;
+  currentFocusBlockCount: number;
   focusBlocks: PreviewFocusCreate[];
+  removedFocusBlocks: RemovedFocusPreview[];
+  planDiffSummary: FocusPlanDiffSummary;
   writeSafety: "preview_only";
   previewReceipt: PreviewReceipt;
 }
@@ -135,6 +156,7 @@ export function parseReclaimFocusPreviewInput(raw: unknown): FocusPreviewInput {
   const parsed = ReclaimFocusPreviewInputSchema.parse(raw);
   return {
     focusBlocks: parsed.focusBlocks,
+    currentFocusBlocks: parsed.currentFocusBlocks,
     timeSchemes: parsed.timeSchemes,
     defaultTaskEventCategory: parsed.defaultTaskEventCategory,
     preferredTimePolicyId: parsed.preferredTimePolicyId,
@@ -167,16 +189,32 @@ export function previewFocusCreates(
   focusInputs: ReclaimFocusInput[],
   options: {
     eventCategory?: ReclaimTaskEventCategory;
+    currentFocusBlocks?: ReclaimFocusInput[];
     timePolicyContext?: TimePolicyProposalContext;
   } = {}
 ): FocusCreatePreview {
   const timePolicyContext = options.timePolicyContext;
   const defaultTaskEventCategory = options.eventCategory ?? timePolicyContext?.defaultTaskEventCategory ?? "WORK";
-  return {
-    focusBlockCount: focusInputs.length,
-    focusBlocks: focusInputs.map((focusInput) => ({
+  const currentFocusBlocks = [...(options.currentFocusBlocks ?? [])];
+  const planDiffSummary = createEmptyFocusPlanDiffSummary();
+  const focusBlocks = focusInputs.map((focusInput) => {
+    const request = buildFocusPreviewRequest(focusInput, options);
+    const currentIndex = currentFocusBlocks.findIndex((currentFocusBlock) => currentFocusBlock.title === focusInput.title);
+    const matchedCurrent = currentIndex >= 0 ? currentFocusBlocks.splice(currentIndex, 1)[0] : undefined;
+    const matchedCurrentRequest = matchedCurrent
+      ? buildFocusPreviewRequest(matchedCurrent, options)
+      : undefined;
+    const planDiff = buildFocusPlanDiffReceipt(
+      matchedCurrentRequest,
+      request,
+      matchedCurrentRequest?.title
+    );
+    applyFocusPlanDiffSummary(planDiffSummary, planDiff.diffSummary);
+
+    return {
       title: focusInput.title,
-      request: buildFocusPreviewRequest(focusInput, options),
+      request,
+      planDiff,
       timePolicyExplanation: timePolicyContext
         ? explainFocusBlockConflict(
           {
@@ -197,7 +235,25 @@ export function previewFocusCreates(
           }
         )
         : undefined
-    })),
+    };
+  });
+  const removedFocusBlocks = currentFocusBlocks.map((currentFocusBlock) => {
+    const request = buildFocusPreviewRequest(currentFocusBlock, options);
+    const planDiff = buildFocusPlanDiffReceipt(request, undefined, currentFocusBlock.title);
+    applyFocusPlanDiffSummary(planDiffSummary, planDiff.diffSummary);
+    return {
+      title: currentFocusBlock.title,
+      request,
+      planDiff
+    };
+  });
+
+  return {
+    focusBlockCount: focusInputs.length,
+    currentFocusBlockCount: (options.currentFocusBlocks ?? []).length,
+    focusBlocks,
+    removedFocusBlocks,
+    planDiffSummary,
     writeSafety: "preview_only",
     previewReceipt: createPreviewReceipt({
       operation: "focus.preview",
