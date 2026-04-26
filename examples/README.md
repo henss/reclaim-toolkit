@@ -40,6 +40,7 @@ Rules:
 - `support-bundle-preview.example.json`: synthetic support-bundle incident request for local preview troubleshooting.
 - `support-bundle-replay.expected.json`: committed redacted support-bundle replay snapshot with a normalized `generatedAt` placeholder for stable diffs.
 - `task-write-receipts.example.json`: synthetic task write-receipt fixture for read-only remote-state validation.
+- `reclaim-fixture-recording.example.json`: synthetic raw interaction log for the library-only fixture recorder and scrubber prototype.
 
 Run the public-boundary lint before committing example changes:
 

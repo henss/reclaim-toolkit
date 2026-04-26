@@ -1,0 +1,51 @@
+{
+  "fixture": "reclaim-recorded-interaction-fixture",
+  "capturedAt": "2026-05-01T08:00:00.000Z",
+  "interactions": [
+    {
+      "label": "list-tasks",
+      "request": {
+        "method": "GET",
+        "path": "/api/tasks?status=NEW&view=planner",
+        "headers": {
+          "Authorization": "Bearer synthetic-secret-key",
+          "Content-Type": "application/json"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": [
+          {
+            "id": 421,
+            "title": "Prototype fixture scrubber",
+            "notes": "Validate the preview path before the demo.",
+            "eventCategory": "WORK",
+            "timeSchemeId": "policy-work",
+            "due": "2026-05-01T10:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "label": "current-user",
+      "request": {
+        "method": "GET",
+        "path": "/api/users/current",
+        "headers": {
+          "Authorization": "Bearer synthetic-secret-key"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "id": "user-123",
+          "email": "fixture.person@example.com",
+          "name": "Fixture Person"
+        }
+      }
+    }
+  ]
+}

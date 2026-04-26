@@ -6,6 +6,23 @@ export * from "./config.js";
 export * from "./buffer-templates.js";
 export * from "./buffers.js";
 export * from "./focus.js";
+export {
+  assertReclaimFixturePrivacy,
+  fixtureRecorder,
+  parseReclaimFixtureRecording,
+  ReclaimFixtureRecordingSchema,
+  scrubReclaimFixtureRecording,
+  inspectReclaimFixturePrivacy,
+  type ReclaimFixtureLeakCheck,
+  type ReclaimFixtureRecording,
+  type ReclaimRecordedInteraction,
+  type ReclaimRecordedRequest,
+  type ReclaimRecordedResponse,
+  type ReclaimSanitizedFixtureRecording,
+  type ReclaimSanitizedInteraction,
+  type ReclaimSanitizedRecordedRequest,
+  type ReclaimSanitizedRecordedResponse
+} from "./fixture-recorder.js";
 export * from "./habits.js";
 export * from "./health.js";
 export {

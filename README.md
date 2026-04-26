@@ -149,6 +149,7 @@ console.log({ policyPreview, policyConflicts, readOnlyTasks, writeReceipts: resu
 
 Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, Buffer, Meeting Availability, and recurring meeting reschedule helpers, a Buffer rule preview helper with diff-style receipts, a Buffer template preview helper, a summary-only Hours Config audit plus synthetic drift digest, a summary-only Account Audit snapshot plus synthetic drift digest, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
 
+See [docs/reclaim-fixture-recording.md](docs/reclaim-fixture-recording.md) for the synthetic raw-to-scrubbed fixture recorder prototype and leak-check rules.
 See [docs/habits.md](docs/habits.md) for the public-safe Habit input shape.
 See [docs/focus-and-buffers.md](docs/focus-and-buffers.md) for the public-safe Focus and Buffer input shapes.
 See [docs/buffer-rules.md](docs/buffer-rules.md) for the preview-only Buffer rule diff receipt helper.
