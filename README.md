@@ -160,6 +160,7 @@ See [docs/integration-starter-packs.md](docs/integration-starter-packs.md) for t
 See [docs/agent-ops-week-scenario-pack.md](docs/agent-ops-week-scenario-pack.md) for a synthetic Monday-through-Friday agent-ops pack that stays on the same preview-only task surface.
 See [docs/weekly-scenario-composer.md](docs/weekly-scenario-composer.md) for the public-safe compound weekly composer that combines multiple preview surfaces into one agenda.
 See [docs/support-bundles.md](docs/support-bundles.md) for the redacted support-bundle generator used for preview and config incidents.
+See [docs/build-vs-buy-workflows.md](docs/build-vs-buy-workflows.md) for the public-safe build-vs-buy comparison across the repo's current workflow categories.
 See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 See [docs/write-expansion-first-proof.md](docs/write-expansion-first-proof.md) for the current public-safe candidate ranking and next proof slice for expanding writes beyond tasks.
 See [docs/scheduling-surface-first-proof.md](docs/scheduling-surface-first-proof.md) for the current public-safe judgment on why scheduling helpers stay preview-only or read-only.
