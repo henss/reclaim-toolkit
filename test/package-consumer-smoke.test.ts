@@ -21,10 +21,37 @@ interface TypeScriptConsumerMode {
   tsconfig: Record<string, unknown>;
 }
 
+interface ExportSurfaceExpectation {
+  label: string;
+  importPath: string;
+  expectedExports: string[];
+  forbiddenExports: string[];
+}
+
 const repoRoot = process.cwd();
 const tempRoots: string[] = [];
 let packedTarballPath = "";
 const installTestTimeoutMs = 20_000;
+const exportSurfaceExpectations: ExportSurfaceExpectation[] = [
+  {
+    label: "core client subpath",
+    importPath: "reclaim-toolkit/core",
+    expectedExports: ["createReclaimClient", "createReclaimOpenApiClient", "loadReclaimConfig"],
+    forbiddenExports: ["getReclaimCliHelp", "runMockReadonlyReclaimMcpServer"]
+  },
+  {
+    label: "CLI metadata subpath",
+    importPath: "reclaim-toolkit/cli",
+    expectedExports: ["getReclaimCliHelp", "getReclaimOnboardingWizard", "getReclaimCommandSafetyManifest"],
+    forbiddenExports: ["createReclaimClient", "runMockReadonlyReclaimMcpServer"]
+  },
+  {
+    label: "mock utilities subpath",
+    importPath: "reclaim-toolkit/mock",
+    expectedExports: ["fixtureRecorder", "runMockReclaimApiDemo", "runMockReadonlyReclaimMcpServer"],
+    forbiddenExports: ["createReclaimClient", "getReclaimCliHelp"]
+  }
+];
 const typeScriptModes: TypeScriptConsumerMode[] = [
   {
     label: "TypeScript NodeNext imports",
@@ -101,6 +128,33 @@ const typeScriptModes: TypeScriptConsumerMode[] = [
     }
   }
 ];
+typeScriptModes.push({
+  label: "TypeScript core client subpath imports",
+  source: [
+    "import { createReclaimClient, loadReclaimConfig, type ReclaimConfig } from \"reclaim-toolkit/core\";",
+    "",
+    "const config: ReclaimConfig = {",
+    "  apiUrl: \"https://api.app.reclaim.ai\",",
+    "  apiKey: \"example-key\",",
+    "  timeoutMs: 20000,",
+    "  defaultTaskEventCategory: \"WORK\"",
+    "};",
+    "",
+    "createReclaimClient(config);",
+    "const maybeConfig = loadReclaimConfig();",
+    "console.log(maybeConfig?.apiUrl ?? config.apiUrl);"
+  ].join("\n"),
+  tsconfig: {
+    compilerOptions: {
+      target: "ES2022",
+      module: "NodeNext",
+      moduleResolution: "NodeNext",
+      strict: true,
+      noEmit: true,
+      skipLibCheck: true
+    }
+  }
+});
 
 function makeTempDir(prefix: string): string {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -262,8 +316,8 @@ function assertTypeScriptImportWorks(
 
   const compileResult = runTypeScriptProject(consumerDir);
 
-  expect(compileResult.status).toBe(0);
-  expect(compileResult.stderr).toBe("");
+  expect(compileResult.status, compileResult.stdout).toBe(0);
+  expect(compileResult.stderr, compileResult.stderr).toBe("");
 }
 
 function assertInstalledCliWorks(installMode: ConsumerInstallMode): void {
@@ -282,6 +336,32 @@ function assertInstalledCliWorks(installMode: ConsumerInstallMode): void {
       parseStatus: "missing"
     }
   });
+}
+
+function assertExportSurfaceWorks(
+  installMode: ConsumerInstallMode,
+  expectation: ExportSurfaceExpectation
+): void {
+  const consumerDir = createConsumerWorkspace();
+  installPackage(consumerDir, installMode.getInstallTarget());
+
+  const runResult = runNodeScript(
+    consumerDir,
+    [
+      `import * as exportedModule from ${JSON.stringify(expectation.importPath)};`,
+      "console.log(JSON.stringify(Object.keys(exportedModule).sort()));"
+    ].join("\n")
+  );
+
+  expect(runResult.status).toBe(0);
+  expect(runResult.stderr).toBe("");
+  const exports = JSON.parse(runResult.stdout) as string[];
+  for (const expectedExport of expectation.expectedExports) {
+    expect(exports).toContain(expectedExport);
+  }
+  for (const forbiddenExport of expectation.forbiddenExports) {
+    expect(exports).not.toContain(forbiddenExport);
+  }
 }
 
 function packBuiltPackage(): string {
@@ -347,5 +427,11 @@ describe("package consumer smoke matrix", () => {
     test(`supports the installed CLI via ${installMode.label}`, () => {
       assertInstalledCliWorks(installMode);
     }, installTestTimeoutMs);
+
+    for (const expectation of exportSurfaceExpectations) {
+      test(`supports ${expectation.label} via ${installMode.label}`, () => {
+        assertExportSurfaceWorks(installMode, expectation);
+      }, installTestTimeoutMs);
+    }
   }
 });

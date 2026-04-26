@@ -145,6 +145,16 @@ const result = await tasks.create(client, input, { confirmWrite: true });
 console.log({ policyPreview, policyConflicts, readOnlyTasks, writeReceipts: result.writeReceipts });
 ```
 
+The package also exposes narrower subpaths for consumers that want to keep runtime surfaces explicit:
+
+```ts
+import { createReclaimClient, loadReclaimConfig } from "reclaim-toolkit/core";
+import { getReclaimCliHelp } from "reclaim-toolkit/cli";
+import { runMockReclaimApiDemo } from "reclaim-toolkit/mock";
+```
+
+`reclaim-toolkit/core` is the client/config/type surface, `reclaim-toolkit/cli` exposes CLI metadata helpers without running the installed binary, and `reclaim-toolkit/mock` contains synthetic fixture and mock-lab utilities.
+
 ## Modules
 
 Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, Buffer, Meeting Availability, and recurring meeting reschedule helpers, a Buffer rule preview helper with diff-style receipts, a Buffer template preview helper, a summary-only Hours Config audit plus synthetic drift digest, a summary-only Account Audit snapshot plus synthetic drift digest, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
