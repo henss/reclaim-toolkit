@@ -6,6 +6,10 @@ import {
   type MeetingAvailabilityDaySummary,
   type MeetingAvailabilityExcludedWindow
 } from "./meeting-availability-windows.js";
+import {
+  listTimezoneRangeEdgeCases,
+  type PreviewTemporalEdgeCase
+} from "./timezone-edge-cases.js";
 import { ReclaimTimeSchemeSnapshotSchema, previewTimePolicySelection } from "./time-policy-selection.js";
 import type { TimePolicyDiscoveryItem } from "./time-policy-selection.js";
 import type { ReclaimTaskEventCategory, ReclaimTimeSchemeRecord } from "./types.js";
@@ -100,6 +104,7 @@ export interface MeetingAvailabilityPreview {
   request: MeetingAvailabilityRequestSummary;
   busyMeetingCount: number;
   selectedPolicy?: TimePolicyDiscoveryItem;
+  selectedPolicyTimezone?: string;
   selectionReason: string;
   totalCandidateWindowCount: number;
   returnedCandidateWindowCount: number;
@@ -109,6 +114,7 @@ export interface MeetingAvailabilityPreview {
   returnedCandidateCount: number;
   candidateSlots: MeetingAvailabilityCandidateSlot[];
   daySummaries: MeetingAvailabilityDaySummary[];
+  temporalEdgeCases?: PreviewTemporalEdgeCase[];
   writeSafety: "preview_only";
 }
 
@@ -141,8 +147,8 @@ function buildRequestSummary(
     eventCategory: request.eventCategory,
     dateRangeStart: request.dateRangeStart,
     dateRangeEnd: request.dateRangeEnd,
-    windowStart: request.windowStart,
-    windowEnd: request.windowEnd,
+    ...(request.windowStart ? { windowStart: request.windowStart } : {}),
+    ...(request.windowEnd ? { windowEnd: request.windowEnd } : {}),
     slotIntervalMinutes: request.slotIntervalMinutes,
     maxSuggestions: request.maxSuggestions
   };
@@ -196,6 +202,58 @@ function buildNoPolicyPreview(
   };
 }
 
+function toPreviewDayOfWeek(date: string): string {
+  return new Date(`${date}T12:00:00.000Z`).toLocaleDateString("en-US", {
+    weekday: "long",
+    timeZone: "UTC"
+  }).toLowerCase();
+}
+
+function listMeetingAvailabilityTemporalEdgeCases(
+  parsed: ReclaimMeetingAvailabilityPreviewInput,
+  selectedScheme: ReclaimTimeSchemeRecord
+): PreviewTemporalEdgeCase[] {
+  if (!selectedScheme.timezone) {
+    return [];
+  }
+
+  return listDatesInclusive(parsed.request.dateRangeStart, parsed.request.dateRangeEnd).flatMap((date) => {
+    const matchingWindows = (selectedScheme.windows ?? []).filter((window) => {
+      if (!window.start || !window.end) {
+        return false;
+      }
+
+      return !window.dayOfWeek || window.dayOfWeek.toLowerCase() === toPreviewDayOfWeek(date);
+    });
+
+    return listTimezoneRangeEdgeCases({
+      timezone: selectedScheme.timezone,
+      date,
+      ranges: [
+        ...(parsed.request.windowStart && parsed.request.windowEnd
+          ? [{
+            label: "requested availability window",
+            startTime: parsed.request.windowStart,
+            endTime: parsed.request.windowEnd
+          }]
+          : []),
+        ...matchingWindows.map((window) => ({
+          label: `policy window "${selectedScheme.title}"`,
+          startTime: window.start!,
+          endTime: window.end!
+        })),
+        ...parsed.busyMeetings
+          .filter((meeting) => meeting.date === date)
+          .map((meeting) => ({
+            label: `busy meeting "${meeting.title}"`,
+            startTime: meeting.startTime,
+            endTime: meeting.endTime
+          }))
+      ]
+    });
+  });
+}
+
 export function parseReclaimMeetingAvailabilityPreviewInput(raw: unknown): ReclaimMeetingAvailabilityPreviewInput {
   return ReclaimMeetingAvailabilityPreviewInputSchema.parse(raw);
 }
@@ -231,11 +289,13 @@ export function previewMeetingAvailability(
     candidateSlots.push(...dayPreview.candidateSlots);
     daySummaries.push(dayPreview.daySummary);
   }
+  const temporalEdgeCases = listMeetingAvailabilityTemporalEdgeCases(parsed, selection.selectedScheme);
 
   return {
     request: requestSummary,
     busyMeetingCount: parsed.busyMeetings.length,
     selectedPolicy: selection.selectedPolicy,
+    ...(selection.selectedScheme.timezone ? { selectedPolicyTimezone: selection.selectedScheme.timezone } : {}),
     selectionReason: selection.selectionReason,
     totalCandidateWindowCount: candidateWindows.length,
     returnedCandidateWindowCount: Math.min(candidateWindows.length, parsed.request.maxSuggestions),
@@ -245,6 +305,7 @@ export function previewMeetingAvailability(
     returnedCandidateCount: Math.min(candidateSlots.length, parsed.request.maxSuggestions),
     candidateSlots: candidateSlots.slice(0, parsed.request.maxSuggestions),
     daySummaries,
+    ...(temporalEdgeCases.length > 0 ? { temporalEdgeCases } : {}),
     writeSafety: "preview_only"
   };
 }

@@ -1,0 +1,70 @@
+{
+  "scenario": {
+    "title": "Synthetic timezone mismatch weekly preview",
+    "weekStartDate": "2026-05-18",
+    "timezone": "Europe/Berlin",
+    "defaultEventCategory": "WORK"
+  },
+  "tasks": [
+    {
+      "title": "Review cross-timezone preview notes",
+      "notes": "Validate the weekly agenda without importing any live calendar details.",
+      "durationMinutes": 45,
+      "due": "2026-05-18T11:00:00+02:00",
+      "startAfter": "2026-05-18T09:00:00+02:00",
+      "splitAllowed": false
+    }
+  ],
+  "focusBlocks": [
+    {
+      "title": "Synthetic timezone alignment block",
+      "notes": "Check screenshot labels against the selected meeting policy timezone.",
+      "durationMinutes": 60,
+      "eventCategory": "WORK",
+      "cadence": "weekly",
+      "daysOfWeek": [
+        "wednesday"
+      ],
+      "windowStart": "13:00",
+      "windowEnd": "14:00"
+    }
+  ],
+  "meetingAvailability": {
+    "request": {
+      "title": "Synthetic timezone review sync",
+      "durationMinutes": 30,
+      "eventCategory": "WORK",
+      "dateRangeStart": "2026-05-19",
+      "dateRangeEnd": "2026-05-20",
+      "windowStart": "09:00",
+      "windowEnd": "12:00",
+      "slotIntervalMinutes": 30,
+      "maxSuggestions": 3,
+      "preferredTimePolicyTitle": "East Coast Hours"
+    },
+    "busyMeetings": [],
+    "timeSchemes": [
+      {
+        "id": "policy-east-coast",
+        "title": "East Coast Hours",
+        "taskCategory": "WORK",
+        "timezone": "America/New_York",
+        "features": [
+          "TASK_ASSIGNMENT"
+        ],
+        "windows": [
+          {
+            "dayOfWeek": "tuesday",
+            "start": "09:00",
+            "end": "12:00"
+          },
+          {
+            "dayOfWeek": "wednesday",
+            "start": "09:00",
+            "end": "12:00"
+          }
+        ]
+      }
+    ]
+  }
+}

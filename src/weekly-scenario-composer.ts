@@ -10,6 +10,10 @@ import {
 } from "./meeting-availability.js";
 import { createPreviewReceipt, type PreviewReceipt } from "./preview-receipts.js";
 import { tasks, ReclaimTaskInputSchema, type ReclaimTaskInput, type TaskCreatePreview } from "./tasks.js";
+import {
+  createTimezoneMismatchEdgeCase,
+  type PreviewTemporalEdgeCase
+} from "./timezone-edge-cases.js";
 import type { ReclaimTaskEventCategory } from "./types.js";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -93,6 +97,7 @@ export interface WeeklyScenarioComposerPreview {
   days: WeeklyScenarioDay[];
   unscheduledEntries: WeeklyScenarioAgendaEntry[];
   bufferAnchorIssues: WeeklyScenarioBufferAnchorIssue[];
+  temporalEdgeCases?: PreviewTemporalEdgeCase[];
   previews: {
     tasks: TaskCreatePreview;
     habits: HabitCreatePreview;
@@ -394,6 +399,26 @@ function listIncludedSurfaces(input: ReclaimWeeklyScenarioComposerInput): string
   ].filter((surface): surface is string => surface !== undefined);
 }
 
+function listWeeklyScenarioTemporalEdgeCases(
+  scenarioTimezone: string,
+  weekStartDate: string,
+  meetingPreview: MeetingAvailabilityPreview | undefined
+): PreviewTemporalEdgeCase[] {
+  const mismatch = meetingPreview?.selectedPolicyTimezone
+    ? createTimezoneMismatchEdgeCase({
+      date: weekStartDate,
+      referenceTimezone: scenarioTimezone,
+      comparedTimezone: meetingPreview.selectedPolicyTimezone,
+      affectedInput: "meeting availability policy timezone"
+    })
+    : undefined;
+
+  return [
+    ...(meetingPreview?.temporalEdgeCases ?? []),
+    ...(mismatch ? [mismatch] : [])
+  ];
+}
+
 export function parseReclaimWeeklyScenarioComposerInput(raw: unknown): ReclaimWeeklyScenarioComposerInput {
   return ReclaimWeeklyScenarioComposerInputSchema.parse(raw);
 }
@@ -442,6 +467,11 @@ export function previewWeeklyScenario(
     ...focusEntries.unscheduledEntries,
     ...bufferEntries.unscheduledEntries
   ].sort((left, right) => entrySortKey(left).localeCompare(entrySortKey(right)));
+  const temporalEdgeCases = listWeeklyScenarioTemporalEdgeCases(
+    parsed.scenario.timezone,
+    parsed.scenario.weekStartDate,
+    meetingPreview
+  );
 
   return {
     composer: "reclaim-weekly-scenario-preview",
@@ -468,6 +498,7 @@ export function previewWeeklyScenario(
     days: groupEntriesByDay(weekDates, scheduledEntries),
     unscheduledEntries,
     bufferAnchorIssues: bufferEntries.anchorIssues,
+    ...(temporalEdgeCases.length > 0 ? { temporalEdgeCases } : {}),
     previews: {
       tasks: taskPreview,
       habits: habitPreview,

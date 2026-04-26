@@ -1,0 +1,40 @@
+{
+  "request": {
+    "title": "Synthetic DST spring-forward sync",
+    "durationMinutes": 30,
+    "eventCategory": "WORK",
+    "dateRangeStart": "2026-03-29",
+    "dateRangeEnd": "2026-03-29",
+    "windowStart": "01:30",
+    "windowEnd": "03:30",
+    "slotIntervalMinutes": 30,
+    "maxSuggestions": 4,
+    "preferredTimePolicyTitle": "Berlin Early Hours"
+  },
+  "busyMeetings": [
+    {
+      "title": "Synthetic skipped-hour handoff",
+      "date": "2026-03-29",
+      "startTime": "01:45",
+      "endTime": "03:15"
+    }
+  ],
+  "timeSchemes": [
+    {
+      "id": "policy-berlin-early",
+      "title": "Berlin Early Hours",
+      "taskCategory": "WORK",
+      "timezone": "Europe/Berlin",
+      "features": [
+        "TASK_ASSIGNMENT"
+      ],
+      "windows": [
+        {
+          "dayOfWeek": "sunday",
+          "start": "01:00",
+          "end": "04:00"
+        }
+      ]
+    }
+  ]
+}

@@ -61,7 +61,7 @@ export function toDiscoveryItem(
     id: scheme.id,
     title: scheme.title,
     taskCategory: scheme.taskCategory,
-    description: scheme.description,
+    ...(scheme.description ? { description: scheme.description } : {}),
     features: scheme.features,
     matchesDefaultEventCategory: scheme.taskCategory === eventCategory
   };

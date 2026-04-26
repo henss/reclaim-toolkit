@@ -68,14 +68,18 @@ npm run reclaim:meetings:preview-availability -- --input examples/meeting-availa
 The command returns JSON with:
 
 - `selectedPolicy` and `selectionReason`: the chosen policy using the toolkit's existing public-safe selector.
+- `selectedPolicyTimezone`: present when the selected policy carried a timezone.
 - `candidateWindows`: contiguous synthetic-free windows that fit the requested duration.
 - `excludedWindows`: overlapping policy windows or leftover gaps that did not fit the requested duration, plus explicit exclusion reasons.
 - `candidateSlots`: synthetic local slots that fit within the chosen policy window and do not overlap synthetic busy meetings.
 - `daySummaries`: per-day window and slot counts plus concise notes when a day has no matching policy window or all candidate windows were blocked.
+- `temporalEdgeCases`: present only when needed, with warning-only notes when a requested window, policy window, or synthetic busy meeting overlaps a skipped or repeated local DST hour in the selected timezone.
 - `writeSafety: "preview_only"` to keep the no-write boundary explicit.
 
 ## Public-Safe Fixture
 
 `examples/meeting-availability.example.json` uses invented meeting labels, placeholder busy windows, and generic work hours. It is intended for preview regression tests and local planning experiments only.
+
+`examples/meeting-availability-dst-spring.example.json` and `examples/meeting-availability-dst-fall.example.json` extend the same preview surface with synthetic DST spring-forward and fall-back windows so tests can confirm edge-case notes without importing a live calendar.
 
 Do not commit fixture files copied from a live account, private scheduling ledger, household routine, health-support policy, calendar fallback workflow, or operator-specific operating policy.

@@ -21,6 +21,7 @@ Rules:
 - `github-starter-pack.example.json`: transformed GitHub-style starter pack for Reclaim task previews.
 - `agent-ops-week-scenario-pack.example.json`: transformed synthetic agent-ops week pack for a bounded Monday-through-Friday preview scenario.
 - `compound-weekly-preview.example.json`: synthetic compound weekly pack that combines tasks, habits, focus, buffers, and meeting availability into one preview agenda.
+- `compound-weekly-timezone-edge.example.json`: synthetic weekly pack that keeps the same public-safe scenario shape while intentionally mixing scenario and meeting-policy timezones for preview warnings.
 - `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
 - `focus-and-buffers.example.json`: preview-only Focus and Buffer fixture with synthetic focus windows and transition buffers.
 - `time-policy-conflicts.example.json`: synthetic task, focus, buffer, and hours-profile conflict fixture for the read-only time-policy explainer.
@@ -28,6 +29,8 @@ Rules:
 - `buffer-rules.example.json`: preview-only Buffer rule fixture with a synthetic baseline buffer and diff-style preview receipts.
 - `buffer-templates.example.json`: preview-only Buffer template fixture with generic meeting-recovery and transition-time templates.
 - `meeting-availability.example.json`: preview-only Meeting Availability fixture with synthetic busy meetings and generic policy windows.
+- `meeting-availability-dst-spring.example.json`: preview-only Meeting Availability fixture for a skipped-hour spring-forward DST case.
+- `meeting-availability-dst-fall.example.json`: preview-only Meeting Availability fixture for a repeated-hour fall-back DST case.
 - `recurring-meeting-reschedule.example.json`: preview-only recurring series fixture with synthetic keep, move, and blocked outcomes.
 - `meetings-and-hours.example.json`: synthetic Meetings and Hours inspector fixture with placeholder meeting and time-policy summaries.
 - `hours-config.example.json`: synthetic Hours Config audit fixture with placeholder policy coverage and window shapes.

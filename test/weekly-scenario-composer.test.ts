@@ -13,6 +13,25 @@ function loadCompoundWeeklyFixture(): unknown {
   ) as unknown;
 }
 
+function loadWeeklyTimezoneEdgeFixture(): unknown {
+  return JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "examples", "compound-weekly-timezone-edge.example.json"), "utf8")
+  ) as unknown;
+}
+
+function expectTimezoneMismatchWarning(preview: ReturnType<typeof weeklyScenarioComposer.preview>): void {
+  expect(preview.temporalEdgeCases ?? []).toEqual(expect.arrayContaining([
+    expect.objectContaining({
+      kind: "timezone_mismatch",
+      date: "2026-05-18",
+      timezone: "America/New_York",
+      referenceTimezone: "Europe/Berlin",
+      affectedInput: "meeting availability policy timezone"
+    })
+  ]));
+  expect(preview.previews.meetingAvailability?.selectedPolicyTimezone).toBe("America/New_York");
+}
+
 describe("weekly scenario composer", () => {
   test("parses and composes a public-safe weekly preview across multiple surfaces", () => {
     const parsed = parseReclaimWeeklyScenarioComposerInput(loadCompoundWeeklyFixture());
@@ -128,5 +147,12 @@ describe("weekly scenario composer", () => {
     expect(output.weeklySummary.scheduledEntryCount).toBeGreaterThan(
       output.previews.meetingAvailability?.returnedCandidateCount ?? 0
     );
+  });
+
+  test("surfaces timezone mismatch warnings when the scenario and selected policy use different zones", () => {
+    const parsed = parseReclaimWeeklyScenarioComposerInput(loadWeeklyTimezoneEdgeFixture());
+    const preview = weeklyScenarioComposer.preview(parsed);
+
+    expectTimezoneMismatchWarning(preview);
   });
 });

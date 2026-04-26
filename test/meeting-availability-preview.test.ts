@@ -13,6 +13,12 @@ function loadMeetingAvailabilityFixture(): unknown {
   ) as unknown;
 }
 
+function loadMeetingAvailabilityEdgeFixture(fileName: string): unknown {
+  return JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "examples", fileName), "utf8")
+  ) as unknown;
+}
+
 function expectTuesdayWindowExclusion(
   value:
     | Array<{
@@ -55,6 +61,54 @@ function expectPreviewSelection(preview: ReturnType<typeof meetingAvailability.p
     totalCandidateWindowCount: 4,
     returnedCandidateWindowCount: 4
   });
+}
+
+function expectSpringForwardEdgeCases(preview: ReturnType<typeof meetingAvailability.preview>): void {
+  expect(preview.selectedPolicyTimezone).toBe("Europe/Berlin");
+  expect(preview.temporalEdgeCases ?? []).toEqual(expect.arrayContaining([
+    expect.objectContaining({
+      kind: "dst_gap",
+      date: "2026-03-29",
+      timezone: "Europe/Berlin",
+      affectedInput: "requested availability window",
+      localTimeRange: {
+        startTime: "02:00",
+        endTime: "02:59"
+      }
+    }),
+    expect.objectContaining({
+      kind: "dst_gap",
+      affectedInput: 'policy window "Berlin Early Hours"'
+    }),
+    expect.objectContaining({
+      kind: "dst_gap",
+      affectedInput: 'busy meeting "Synthetic skipped-hour handoff"'
+    })
+  ]));
+}
+
+function expectFallBackEdgeCases(preview: ReturnType<typeof meetingAvailability.preview>): void {
+  expect(preview.selectedPolicyTimezone).toBe("America/New_York");
+  expect(preview.temporalEdgeCases ?? []).toEqual(expect.arrayContaining([
+    expect.objectContaining({
+      kind: "dst_overlap",
+      date: "2026-11-01",
+      timezone: "America/New_York",
+      affectedInput: "requested availability window",
+      localTimeRange: {
+        startTime: "01:00",
+        endTime: "01:59"
+      }
+    }),
+    expect.objectContaining({
+      kind: "dst_overlap",
+      affectedInput: 'policy window "New York Early Hours"'
+    }),
+    expect.objectContaining({
+      kind: "dst_overlap",
+      affectedInput: 'busy meeting "Synthetic repeated-hour review"'
+    })
+  ]));
 }
 
 describe("meeting availability preview helper", () => {
@@ -162,5 +216,23 @@ describe("meeting availability preview helper", () => {
     expect(output.returnedCandidateCount).toBeGreaterThan(0);
     expect(output.candidateSlots[0]?.startTime).toBe("10:00");
     expect(output.candidateSlots[0]?.endTime).toBe("10:45");
+  });
+
+  test("flags skipped-hour DST edge cases on spring-forward previews", () => {
+    const parsed = parseReclaimMeetingAvailabilityPreviewInput(
+      loadMeetingAvailabilityEdgeFixture("meeting-availability-dst-spring.example.json")
+    );
+    const preview = meetingAvailability.preview(parsed);
+
+    expectSpringForwardEdgeCases(preview);
+  });
+
+  test("flags repeated-hour DST edge cases on fall-back previews", () => {
+    const parsed = parseReclaimMeetingAvailabilityPreviewInput(
+      loadMeetingAvailabilityEdgeFixture("meeting-availability-dst-fall.example.json")
+    );
+    const preview = meetingAvailability.preview(parsed);
+
+    expectFallBackEdgeCases(preview);
   });
 });

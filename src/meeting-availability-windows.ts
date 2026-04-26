@@ -175,7 +175,7 @@ function appendSlotsForAvailabilityWindow(
       durationMinutes: input.request.durationMinutes,
       policyId: selectedScheme.id,
       policyTitle: selectedScheme.title,
-      timezone: selectedScheme.timezone,
+      ...(selectedScheme.timezone ? { timezone: selectedScheme.timezone } : {}),
       policyWindowStart,
       policyWindowEnd
     });
@@ -233,7 +233,7 @@ function appendWindowOutcome(
       slotCount,
       policyId: context.selectedScheme.id,
       policyTitle: context.selectedScheme.title,
-      timezone: context.selectedScheme.timezone,
+      ...(context.selectedScheme.timezone ? { timezone: context.selectedScheme.timezone } : {}),
       policyWindowStart: context.policyWindowStart,
       policyWindowEnd: context.policyWindowEnd
     });

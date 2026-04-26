@@ -1,0 +1,40 @@
+{
+  "request": {
+    "title": "Synthetic DST fall-back sync",
+    "durationMinutes": 30,
+    "eventCategory": "WORK",
+    "dateRangeStart": "2026-11-01",
+    "dateRangeEnd": "2026-11-01",
+    "windowStart": "01:00",
+    "windowEnd": "02:30",
+    "slotIntervalMinutes": 30,
+    "maxSuggestions": 4,
+    "preferredTimePolicyTitle": "New York Early Hours"
+  },
+  "busyMeetings": [
+    {
+      "title": "Synthetic repeated-hour review",
+      "date": "2026-11-01",
+      "startTime": "01:15",
+      "endTime": "01:45"
+    }
+  ],
+  "timeSchemes": [
+    {
+      "id": "policy-nyc-early",
+      "title": "New York Early Hours",
+      "taskCategory": "WORK",
+      "timezone": "America/New_York",
+      "features": [
+        "TASK_ASSIGNMENT"
+      ],
+      "windows": [
+        {
+          "dayOfWeek": "sunday",
+          "start": "00:30",
+          "end": "03:30"
+        }
+      ]
+    }
+  ]
+}
