@@ -24,6 +24,7 @@ Rules:
 - `habits.example.json`: preview-only Habit fixture with synthetic daily and weekly examples.
 - `focus-and-buffers.example.json`: preview-only Focus and Buffer fixture with synthetic focus windows and transition buffers.
 - `time-policy-conflicts.example.json`: synthetic task, focus, buffer, and hours-profile conflict fixture for the read-only time-policy explainer.
+- `mock-readonly-mcp.example.json`: synthetic task, meeting, and time-policy fixture for the read-only MCP prototype.
 - `buffer-rules.example.json`: preview-only Buffer rule fixture with a synthetic baseline buffer and diff-style preview receipts.
 - `buffer-templates.example.json`: preview-only Buffer template fixture with generic meeting-recovery and transition-time templates.
 - `meeting-availability.example.json`: preview-only Meeting Availability fixture with synthetic busy meetings and generic policy windows.
@@ -101,6 +102,12 @@ The time-policy conflict fixture is read-only and explains fit or conflict reaso
 
 ```bash
 npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-conflicts.example.json
+```
+
+For a local agent-facing read-only MCP surface over synthetic tasks, meetings, and time policies, use:
+
+```bash
+npm run reclaim:mcp:mock-readonly -- --input examples/mock-readonly-mcp.example.json
 ```
 
 The Buffer rule fixture is preview-only and returns synthetic diff-style receipts for create/update review:

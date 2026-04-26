@@ -69,6 +69,11 @@ describe("CLI help output", () => {
     expect(optionalGroup?.commands.find((command) => command.command === "reclaim:focus:preview-create")).toMatchObject({
       readinessStatus: "evidence_pending"
     });
+    expect(optionalGroup?.commands.find((command) => command.command === "reclaim:mcp:mock-readonly")).toMatchObject({
+      currentMode: "preview_only",
+      readinessStatus: "ready",
+      readinessGate: expect.stringContaining("fixture-backed")
+    });
     expect(optionalGroup?.commands.find((command) => command.command === "reclaim:meetings:preview-availability")).toMatchObject({
       currentMode: "preview_only",
       readinessStatus: "blocked",

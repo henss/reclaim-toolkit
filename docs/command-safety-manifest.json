@@ -99,6 +99,18 @@
       "requiresConfig": false
     },
     {
+      "command": "reclaim:mcp:mock-readonly",
+      "invocation": "npm run reclaim:mcp:mock-readonly",
+      "summary": "Serve a fixture-backed read-only MCP surface over stdio for local agent experiments.",
+      "groupId": "optional",
+      "includeByDefault": false,
+      "safetyClass": "local_preview",
+      "currentMode": "preview_only",
+      "requiresConfig": false,
+      "readinessStatus": "ready",
+      "readinessGate": "This MCP surface is intentionally fixture-backed and read-only; live account-backed MCP contracts remain out of scope."
+    },
+    {
       "command": "reclaim:demo:mock-api",
       "invocation": "npm run reclaim:demo:mock-api",
       "summary": "Exercise the toolkit against the synthetic mock API surface.",

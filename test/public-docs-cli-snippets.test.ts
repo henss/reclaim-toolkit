@@ -85,6 +85,10 @@ function isCredentialFreeExecutableExample(commandLine: string): boolean {
     return false;
   }
 
+  if (commandLine === "npm run reclaim:mcp:mock-readonly -- --input examples/mock-readonly-mcp.example.json") {
+    return false;
+  }
+
   return true;
 }
 

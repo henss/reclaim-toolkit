@@ -42,6 +42,9 @@ import {
   parseReclaimMeetingsAndHoursSnapshot
 } from "./meetings-hours.js";
 import {
+  runMockReadonlyReclaimMcpServer
+} from "./mock-readonly-mcp.js";
+import {
   runMockReclaimApiDemo,
   runMockReclaimFailureModeLab,
   type MockReclaimLabProfile
@@ -123,6 +126,14 @@ function readJsonInput(): unknown {
   return JSON.parse(fs.readFileSync(inputPath, "utf8")) as unknown;
 }
 
+function requireInputPath(): string {
+  const inputPath = parseFlag("--input");
+  if (!inputPath) {
+    throw new Error("Expected --input <json>.");
+  }
+  return inputPath;
+}
+
 function loadClient(): ReturnType<typeof createReclaimClient> {
   const config = loadReclaimConfig(parseFlag("--config"));
   if (!config) {
@@ -170,6 +181,9 @@ function buildCoreCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:time-policies:explain-conflicts": () => {
       printJson(explainTimePolicyConflicts(parseReclaimTimePolicyExplainerInput(readJsonInput())));
+    },
+    "reclaim:mcp:mock-readonly": () => {
+      runMockReadonlyReclaimMcpServer(requireInputPath());
     },
     "reclaim:support:bundle": async () => {
       printJson(await supportBundle.generate(parseReclaimSupportBundleRequest(readJsonInput())));

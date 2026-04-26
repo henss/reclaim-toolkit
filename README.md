@@ -40,6 +40,7 @@ npm run reclaim:openapi:capability-matrix
 npm run reclaim:openapi:capability-matrix -- --input generated/reclaim-openapi/reclaim-api-0.1.raw.yml
 npm run reclaim:time-policies:list -- --config config/reclaim.local.json
 npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-conflicts.example.json
+npm run reclaim:mcp:mock-readonly -- --input examples/mock-readonly-mcp.example.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
 npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
 npm run reclaim:tasks:preview-create -- --input examples/shopping-errand-windows.example.json
@@ -84,6 +85,7 @@ Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, 
 `reclaim:hours-config:preview-diff` is a source-handle preview command that compares two synthetic hours-config snapshots and emits a summary-only drift digest without replaying policy ids or policy titles.
 `reclaim:account-audit:preview-drift` is a source-handle preview command that compares two synthetic account snapshots and emits a summary-only drift digest plus a normalized change class without copying task titles, meeting titles, ids, or user identifiers.
 `reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task, focus, buffer, hours-profile, and policy inputs.
+`reclaim:mcp:mock-readonly` is a fixture-backed stdio MCP prototype that exposes read-only task, time-policy, and meetings-hours tools for local agent experiments without any live Reclaim account access.
 When task, Focus, Buffer, or Hours preview fixtures include synthetic policy context, the preview JSON now carries per-item `timePolicyExplanation` objects so callers can inspect policy fit, selection reasoning, and conflicts without changing commands.
 `reclaim:scenarios:preview-weekly` is a synthetic local preview command that composes task, habit, focus, buffer, and meeting-availability fixtures into one weekly agenda view and preserves each underlying preview payload for review.
 `reclaim:meetings:preview-availability` is a synthetic local preview command that derives public-safe availability windows, candidate meeting slots, and exclusion reasons from synthetic time-policy windows and synthetic busy meetings.
@@ -157,6 +159,7 @@ See [docs/hours-config.md](docs/hours-config.md) for the summary-only Hours Conf
 See [docs/account-audit.md](docs/account-audit.md) for the summary-only Account Audit snapshot output and source-handle drift digest.
 See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
 See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.
+See [docs/mock-readonly-mcp.md](docs/mock-readonly-mcp.md) for the fixture-backed read-only MCP prototype.
 See [docs/event-prep-block-example-pack.md](docs/event-prep-block-example-pack.md) for a synthetic guest-visit preparation pack that stays on the same preview-only task surface.
 See [docs/integration-starter-packs.md](docs/integration-starter-packs.md) for the Todoist, Linear, and GitHub starter packs that already fit the task preview contract.
 See [docs/agent-ops-week-scenario-pack.md](docs/agent-ops-week-scenario-pack.md) for a synthetic Monday-through-Friday agent-ops pack that stays on the same preview-only task surface.

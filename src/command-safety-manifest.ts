@@ -126,6 +126,18 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
     includeByDefault: true
   },
   {
+    command: "reclaim:mcp:mock-readonly",
+    summary: "Serve a fixture-backed read-only MCP surface over stdio for local agent experiments.",
+    safetyClass: "local_preview",
+    currentMode: "preview_only",
+    requiresConfig: false,
+    groupId: "optional",
+    includeByDefault: false,
+    readinessStatus: "ready",
+    readinessGate:
+      "This MCP surface is intentionally fixture-backed and read-only; live account-backed MCP contracts remain out of scope."
+  },
+  {
     command: "reclaim:demo:mock-api",
     summary: "Exercise the toolkit against the synthetic mock API surface.",
     safetyClass: "local_preview",

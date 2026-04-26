@@ -1,0 +1,60 @@
+{
+  "fixture": "reclaim-toolkit-mock-readonly-mcp",
+  "defaultTaskEventCategory": "WORK",
+  "preferredTimePolicyTitle": "deep",
+  "tasks": [
+    {
+      "id": 41,
+      "title": "Draft planning notes",
+      "notes": "Capture placeholder questions for the weekly review.",
+      "eventCategory": "WORK",
+      "timeSchemeId": "policy-deep-work",
+      "due": "2026-05-06T15:00:00.000Z",
+      "startAfter": "2026-05-06T07:00:00.000Z"
+    },
+    {
+      "id": 42,
+      "title": "Update personal admin notes",
+      "eventCategory": "PERSONAL",
+      "timeSchemeId": "policy-personal"
+    }
+  ],
+  "meetings": [
+    {
+      "id": "meeting-demo-1",
+      "title": "Project sync",
+      "start": "2026-05-06T10:00:00.000Z",
+      "end": "2026-05-06T10:30:00.000Z",
+      "durationMinutes": 30,
+      "attendeeCount": 3
+    }
+  ],
+  "timeSchemes": [
+    {
+      "id": "policy-personal",
+      "title": "Personal Hours",
+      "taskCategory": "PERSONAL",
+      "description": "Synthetic personal task-assignment policy for examples.",
+      "features": [
+        "TASK_ASSIGNMENT"
+      ]
+    },
+    {
+      "id": "policy-deep-work",
+      "title": "Deep Work",
+      "taskCategory": "WORK",
+      "description": "Synthetic focused-work policy for examples.",
+      "timezone": "Europe/Berlin",
+      "features": [
+        "TASK_ASSIGNMENT"
+      ],
+      "windows": [
+        {
+          "dayOfWeek": "monday",
+          "start": "09:00",
+          "end": "17:00"
+        }
+      ]
+    }
+  ]
+}

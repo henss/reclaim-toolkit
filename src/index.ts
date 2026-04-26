@@ -39,3 +39,8 @@ export * from "./time-policies.js";
 export * from "./tasks.js";
 export * from "./types.js";
 export * from "./weekly-scenario-composer.js";
+export {
+  runMockReadonlyReclaimMcpServer,
+  startMockReadonlyReclaimMcpServer,
+  type MockReadonlyMcpServerOptions
+} from "./mock-readonly-mcp.js";
