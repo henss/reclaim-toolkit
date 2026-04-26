@@ -8,6 +8,8 @@ TypeScript utilities for working with Reclaim.ai APIs.
 npm install reclaim-toolkit
 ```
 
+For the currently exercised consumer install and TypeScript compile shapes, see [docs/package-consumer-smoke-matrix.md](docs/package-consumer-smoke-matrix.md).
+
 ## Configuration
 
 Create a local config file, usually `config/reclaim.local.json`:

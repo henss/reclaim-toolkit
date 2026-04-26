@@ -10,9 +10,97 @@ interface CommandResult {
   stderr: string;
 }
 
+interface ConsumerInstallMode {
+  label: string;
+  getInstallTarget: () => string;
+}
+
+interface TypeScriptConsumerMode {
+  label: string;
+  source: string;
+  tsconfig: Record<string, unknown>;
+}
+
 const repoRoot = process.cwd();
 const tempRoots: string[] = [];
 let packedTarballPath = "";
+const installTestTimeoutMs = 20_000;
+const typeScriptModes: TypeScriptConsumerMode[] = [
+  {
+    label: "TypeScript NodeNext imports",
+    source: [
+      "import { createReclaimOpenApiClient, loadReclaimConfig, tasks, type ReclaimTaskInput } from \"reclaim-toolkit\";",
+      "",
+      "const input: ReclaimTaskInput[] = [{",
+      "  title: \"TypeScript smoke task\",",
+      "  durationMinutes: 45,",
+      "  eventCategory: \"WORK\"",
+      "}];",
+      "",
+      "const preview = tasks.previewCreates(input, {",
+      "  timeSchemeId: \"policy-work\"",
+      "});",
+      "",
+      "const config = loadReclaimConfig();",
+      "if (config) {",
+      "  createReclaimOpenApiClient(config);",
+      "}",
+      "",
+      "const typedSummary: {",
+      "  taskCount: number;",
+      "  firstTaskTitle: string | undefined;",
+      "} = {",
+      "  taskCount: preview.taskCount,",
+      "  firstTaskTitle: preview.tasks[0]?.title",
+      "};",
+      "",
+      "console.log(typedSummary.taskCount);"
+    ].join("\n"),
+    tsconfig: {
+      compilerOptions: {
+        target: "ES2022",
+        module: "NodeNext",
+        moduleResolution: "NodeNext",
+        strict: true,
+        noEmit: true,
+        skipLibCheck: true
+      }
+    }
+  },
+  {
+    label: "TypeScript bundler imports",
+    source: [
+      "import { DEFAULT_RECLAIM_CONFIG_PATH, tasks, type ReclaimTaskInput } from \"reclaim-toolkit\";",
+      "",
+      "const input: ReclaimTaskInput[] = [{",
+      "  title: \"Bundler smoke task\",",
+      "  durationMinutes: 30",
+      "}];",
+      "",
+      "const preview = tasks.previewCreates(input, {",
+      "  timeSchemeId: \"policy-personal\"",
+      "});",
+      "",
+      "const typedSummary = {",
+      "  configPath: DEFAULT_RECLAIM_CONFIG_PATH,",
+      "  taskCount: preview.taskCount,",
+      "  firstTaskTitle: preview.tasks[0]?.request.title",
+      "};",
+      "",
+      "console.log(typedSummary.configPath);"
+    ].join("\n"),
+    tsconfig: {
+      compilerOptions: {
+        target: "ES2022",
+        module: "ESNext",
+        moduleResolution: "Bundler",
+        strict: true,
+        noEmit: true,
+        skipLibCheck: true
+      }
+    }
+  }
+];
 
 function makeTempDir(prefix: string): string {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -69,6 +157,21 @@ function writeConsumerPackage(consumerDir: string): void {
   );
 }
 
+function writeConsumerTypeScriptProject(
+  consumerDir: string,
+  options: {
+    source: string;
+    tsconfig: Record<string, unknown>;
+  }
+): void {
+  fs.writeFileSync(
+    path.join(consumerDir, "tsconfig.json"),
+    JSON.stringify(options.tsconfig, null, 2),
+    "utf8"
+  );
+  fs.writeFileSync(path.join(consumerDir, "consumer-smoke.ts"), options.source, "utf8");
+}
+
 function installPackage(consumerDir: string, installTarget: string): void {
   const installResult = runNpm(["install", "--no-package-lock", installTarget], consumerDir);
 
@@ -98,10 +201,87 @@ function runInstalledCli(consumerDir: string, args: string[]): CommandResult {
   return runProcess(binPath, args, consumerDir);
 }
 
+function runTypeScriptProject(consumerDir: string): CommandResult {
+  return runProcess(
+    process.execPath,
+    [
+      path.join(repoRoot, "node_modules", "typescript", "bin", "tsc"),
+      "--project",
+      path.join(consumerDir, "tsconfig.json"),
+      "--pretty",
+      "false"
+    ],
+    consumerDir
+  );
+}
+
 function createConsumerWorkspace(): string {
   const consumerDir = makeTempDir("reclaim-toolkit-consumer-");
   writeConsumerPackage(consumerDir);
   return consumerDir;
+}
+
+function assertEsmLibraryImportWorks(installMode: ConsumerInstallMode): void {
+  const consumerDir = createConsumerWorkspace();
+  installPackage(consumerDir, installMode.getInstallTarget());
+
+  const runResult = runNodeScript(
+    consumerDir,
+    [
+      "import { tasks } from \"reclaim-toolkit\";",
+      "const preview = tasks.previewCreates([{ title: \"Consumer smoke task\", durationMinutes: 30 }], {",
+      "  timeSchemeId: \"policy-work\",",
+      "  eventCategory: \"WORK\"",
+      "});",
+      "console.log(JSON.stringify({",
+      "  taskCount: preview.taskCount,",
+      "  firstTaskTitle: preview.tasks[0]?.title,",
+      "  timeSchemeId: preview.tasks[0]?.request.timeSchemeId,",
+      "  eventCategory: preview.tasks[0]?.request.eventCategory",
+      "}));"
+    ].join("\n")
+  );
+
+  expect(runResult.status).toBe(0);
+  expect(runResult.stderr).toBe("");
+  expect(JSON.parse(runResult.stdout)).toEqual({
+    taskCount: 1,
+    firstTaskTitle: "Consumer smoke task",
+    timeSchemeId: "policy-work",
+    eventCategory: "WORK"
+  });
+}
+
+function assertTypeScriptImportWorks(
+  installMode: ConsumerInstallMode,
+  typeScriptMode: TypeScriptConsumerMode
+): void {
+  const consumerDir = createConsumerWorkspace();
+  installPackage(consumerDir, installMode.getInstallTarget());
+  writeConsumerTypeScriptProject(consumerDir, typeScriptMode);
+
+  const compileResult = runTypeScriptProject(consumerDir);
+
+  expect(compileResult.status).toBe(0);
+  expect(compileResult.stderr).toBe("");
+}
+
+function assertInstalledCliWorks(installMode: ConsumerInstallMode): void {
+  const consumerDir = createConsumerWorkspace();
+  installPackage(consumerDir, installMode.getInstallTarget());
+
+  const cliResult = runInstalledCli(consumerDir, ["reclaim:onboarding"]);
+
+  expect(cliResult.status).toBe(0);
+  expect(cliResult.stderr).toBe("");
+  expect(JSON.parse(cliResult.stdout)).toMatchObject({
+    wizard: "reclaim-toolkit-onboarding",
+    writeSafety: "no_live_writes",
+    config: {
+      path: "config/reclaim.local.json",
+      parseStatus: "missing"
+    }
+  });
 }
 
 function packBuiltPackage(): string {
@@ -142,8 +322,7 @@ afterAll(() => {
 });
 
 describe("package consumer smoke matrix", () => {
-  const installTestTimeoutMs = 20_000;
-  const installModes = [
+  const installModes: ConsumerInstallMode[] = [
     {
       label: "workspace path install",
       getInstallTarget: () => repoRoot
@@ -156,52 +335,17 @@ describe("package consumer smoke matrix", () => {
 
   for (const installMode of installModes) {
     test(`supports ESM library imports via ${installMode.label}`, () => {
-      const consumerDir = createConsumerWorkspace();
-      installPackage(consumerDir, installMode.getInstallTarget());
-
-      const runResult = runNodeScript(
-        consumerDir,
-        [
-          "import { tasks } from \"reclaim-toolkit\";",
-          "const preview = tasks.previewCreates([{ title: \"Consumer smoke task\", durationMinutes: 30 }], {",
-          "  timeSchemeId: \"policy-work\",",
-          "  eventCategory: \"WORK\"",
-          "});",
-          "console.log(JSON.stringify({",
-          "  taskCount: preview.taskCount,",
-          "  firstTaskTitle: preview.tasks[0]?.title,",
-          "  timeSchemeId: preview.tasks[0]?.request.timeSchemeId,",
-          "  eventCategory: preview.tasks[0]?.request.eventCategory",
-          "}));"
-        ].join("\n")
-      );
-
-      expect(runResult.status).toBe(0);
-      expect(runResult.stderr).toBe("");
-      expect(JSON.parse(runResult.stdout)).toEqual({
-        taskCount: 1,
-        firstTaskTitle: "Consumer smoke task",
-        timeSchemeId: "policy-work",
-        eventCategory: "WORK"
-      });
+      assertEsmLibraryImportWorks(installMode);
     }, installTestTimeoutMs);
 
+    for (const typeScriptMode of typeScriptModes) {
+      test(`supports ${typeScriptMode.label} via ${installMode.label}`, () => {
+        assertTypeScriptImportWorks(installMode, typeScriptMode);
+      }, installTestTimeoutMs);
+    }
+
     test(`supports the installed CLI via ${installMode.label}`, () => {
-      const consumerDir = createConsumerWorkspace();
-      installPackage(consumerDir, installMode.getInstallTarget());
-
-      const cliResult = runInstalledCli(consumerDir, ["reclaim:onboarding"]);
-
-      expect(cliResult.status).toBe(0);
-      expect(cliResult.stderr).toBe("");
-      expect(JSON.parse(cliResult.stdout)).toMatchObject({
-        wizard: "reclaim-toolkit-onboarding",
-        writeSafety: "no_live_writes",
-        config: {
-          path: "config/reclaim.local.json",
-          parseStatus: "missing"
-        }
-      });
+      assertInstalledCliWorks(installMode);
     }, installTestTimeoutMs);
   }
 });
