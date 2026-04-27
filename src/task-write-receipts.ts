@@ -3,7 +3,7 @@ import type { ReclaimClient } from "./client.js";
 import type { ReclaimTaskRecord } from "./types.js";
 
 export interface TaskWriteReceipt {
-  operation: "task.create" | "task.delete";
+  operation: "task.create" | "task.update" | "task.delete";
   taskId: number;
   title?: string;
   confirmedAt: string;
@@ -11,7 +11,7 @@ export interface TaskWriteReceipt {
 }
 
 export const TaskWriteReceiptSchema = z.object({
-  operation: z.enum(["task.create", "task.delete"]),
+  operation: z.enum(["task.create", "task.update", "task.delete"]),
   taskId: z.number().int().nonnegative(),
   title: z.string().optional(),
   confirmedAt: z.string().min(1),
@@ -84,6 +84,16 @@ export function deletedTaskReceipt(taskId: number, title: string): TaskWriteRece
   };
 }
 
+export function updatedTaskReceipt(taskId: number, title: string): TaskWriteReceipt {
+  return {
+    operation: "task.update",
+    taskId,
+    title,
+    confirmedAt: nowIso(),
+    rollbackHint: `Review prior task state before manually reverting Reclaim task ${taskId}.`
+  };
+}
+
 function toRemoteTaskSummary(task: ReclaimTaskRecord): TaskReceiptRemoteTask {
   return {
     id: task.id,
@@ -103,7 +113,7 @@ function validateTaskWriteReceipt(
   const remoteTask = existingTasks.find((task) => task.id === receipt.taskId);
   const issues: TaskWriteReceiptValidationIssue[] = [];
 
-  if (receipt.operation === "task.create") {
+  if (receipt.operation === "task.create" || receipt.operation === "task.update") {
     if (!remoteTask) {
       issues.push({
         code: "remote_task_missing",

@@ -85,6 +85,26 @@ npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-categ
 
 CSV export returns `format: "csv"`, the exported `fields`, and a `content` string. The command does not write files, create tasks, update tasks, or delete tasks.
 
+## Task Update Preview And Confirmed Apply
+
+Preview task updates from a synthetic local fixture before any authenticated write:
+
+```bash
+npm run reclaim:tasks:preview-update -- --input examples/task-updates.example.json
+```
+
+The fixture accepts an `updates` array. Each update must include `taskId` plus at least one update field. Supported fields are `title`, `notes`, `durationMinutes`, `due`, `startAfter`, `timeSchemeId`, `eventCategory`, `splitAllowed`, and `alwaysPrivate`. When `durationMinutes` is present, the toolkit converts it into Reclaim time chunks; `splitAllowed` is accepted only with `durationMinutes` so chunk sizes are explicit.
+
+Preview fixtures may include synthetic `currentTasks` so the output can show a local change summary. The preview command does not read a configured account and returns `writeSafety: "preview_only"` plus the exact `PATCH` payloads that a confirmed apply would send later.
+
+Apply reviewed updates only with a local config and explicit confirmation:
+
+```bash
+npm run reclaim:tasks:update -- --config config/reclaim.local.json --input examples/task-updates.example.json --confirm-write
+```
+
+The confirmed command refuses to run without `--confirm-write`, sends one `PATCH /tasks/{taskId}` request per update, and returns `writeReceipts` for post-run audit. It does not complete, archive, delete, or bulk-update tasks.
+
 ## Mock API Demo Lab
 
 For credential-free CLI practice, run:
@@ -115,13 +135,13 @@ Design note: the lab stays inside this repository as a small in-memory test doub
 
 ## Write Receipts
 
-Confirmed task creation and duplicate cleanup return a `writeReceipts` array alongside the existing result fields. Task previews and confirmed task creation now also return `inputDuplicatePlan`, a local preflight snapshot of duplicate inputs inside the imported file. Confirmed task creation separately returns `duplicatePlan`, a warning-only snapshot of any exact existing duplicates found before the toolkit attempted new task writes. The toolkit does not delete either class of duplicates during `reclaim:tasks:create`; use `reclaim:tasks:inspect-duplicates` and `reclaim:tasks:cleanup-duplicates` when duplicate cleanup is explicitly intended.
+Confirmed task creation, task update, and duplicate cleanup return a `writeReceipts` array alongside the existing result fields. Task previews and confirmed task creation now also return `inputDuplicatePlan`, a local preflight snapshot of duplicate inputs inside the imported file. Confirmed task creation separately returns `duplicatePlan`, a warning-only snapshot of any exact existing duplicates found before the toolkit attempted new task writes. The toolkit does not delete either class of duplicates during `reclaim:tasks:create`; use `reclaim:tasks:inspect-duplicates` and `reclaim:tasks:cleanup-duplicates` when duplicate cleanup is explicitly intended.
 
 When `inputDuplicatePlan.duplicateGroupCount` is greater than `0`, the preview receipt shifts to `readinessStatus: "evidence_pending"` so starter-pack imports can be reviewed before any confirmed write.
 
 Each receipt includes:
 
-- `operation`: `task.create` or `task.delete`.
+- `operation`: `task.create`, `task.update`, or `task.delete`.
 - `taskId`: the Reclaim task id that was written.
 - `title`: the input or duplicate-group title when available.
 - `confirmedAt`: the ISO timestamp when the toolkit observed the confirmed write.
@@ -148,7 +168,7 @@ Validation is read-only and returns:
 - `issues` describing `remote_task_missing`, `remote_title_mismatch`, or `remote_task_still_present` mismatches.
 - `remoteTask` details when the current Reclaim task still exists and helps explain the result.
 
-For `task.create` receipts, the validator expects the task id to still exist and, when a receipt title is present, the current title to still match. For `task.delete` receipts, the validator expects the task id to be absent from the current remote task list.
+For `task.create` and `task.update` receipts, the validator expects the task id to still exist and, when a receipt title is present, the current title to still match. For `task.delete` receipts, the validator expects the task id to be absent from the current remote task list.
 
 ## Synthetic Scheduling Recipes
 

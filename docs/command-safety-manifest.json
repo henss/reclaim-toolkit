@@ -131,6 +131,16 @@
       "requiresConfig": false
     },
     {
+      "command": "reclaim:tasks:preview-update",
+      "invocation": "npm run reclaim:tasks:preview-update",
+      "summary": "Preview task update payloads from synthetic input fixtures.",
+      "groupId": "tasks",
+      "includeByDefault": true,
+      "safetyClass": "local_preview",
+      "currentMode": "stable",
+      "requiresConfig": false
+    },
+    {
       "command": "reclaim:scenarios:preview-weekly",
       "invocation": "npm run reclaim:scenarios:preview-weekly",
       "summary": "Compose a synthetic weekly agenda from task, habit, focus, buffer, and meeting preview fixtures.",
@@ -186,6 +196,17 @@
       "command": "reclaim:tasks:create",
       "invocation": "npm run reclaim:tasks:create",
       "summary": "Create tasks after explicit write confirmation.",
+      "groupId": "tasks",
+      "includeByDefault": true,
+      "safetyClass": "confirmed_write",
+      "currentMode": "live_write",
+      "requiresConfig": true,
+      "confirmationFlag": "--confirm-write"
+    },
+    {
+      "command": "reclaim:tasks:update",
+      "invocation": "npm run reclaim:tasks:update",
+      "summary": "Update tasks after explicit write confirmation.",
       "groupId": "tasks",
       "includeByDefault": true,
       "safetyClass": "confirmed_write",

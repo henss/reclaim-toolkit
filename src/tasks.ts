@@ -27,6 +27,10 @@ import {
   type InputDuplicateTaskGroup,
   type InputDuplicateTaskPlan
 } from "./task-duplicates.js";
+import {
+  previewUpdates,
+  update
+} from "./task-updates.js";
 import type {
   ReclaimCreateTaskInput,
   ReclaimTaskEventCategory,
@@ -49,6 +53,21 @@ export {
   type InputDuplicateTaskGroup,
   type InputDuplicateTaskPlan
 } from "./task-duplicates.js";
+export {
+  parseReclaimTaskUpdatePreviewInput,
+  parseReclaimTaskUpdates,
+  previewUpdates,
+  update,
+  ReclaimTaskUpdateInputSchema,
+  ReclaimTaskUpdateListSchema,
+  ReclaimTaskUpdatePreviewInputSchema,
+  type PreviewTaskUpdate,
+  type ReclaimTaskUpdateInput,
+  type TaskUpdatePreview,
+  type TaskUpdatePreviewChange,
+  type TaskUpdatePreviewInput,
+  type TaskUpdateResult
+} from "./task-updates.js";
 
 const RECLAIM_TIME_BLOCK_MINUTES = 15;
 const REQUIRED_TIME_SCHEME_ID = "TASK_ASSIGNMENT_TIME_SCHEME_ID_REQUIRED";
@@ -493,6 +512,8 @@ export const tasks = {
   listExistingTasks,
   exportExistingTasks,
   create,
+  previewUpdates,
+  update,
   inspectInputDuplicates: (
     taskInputs: ReclaimTaskInput[],
     options: {

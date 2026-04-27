@@ -40,6 +40,7 @@ Rules:
 - `support-bundle-preview.example.json`: synthetic support-bundle incident request for local preview troubleshooting.
 - `support-bundle-replay.expected.json`: committed redacted support-bundle replay snapshot with a normalized `generatedAt` placeholder for stable diffs.
 - `task-write-receipts.example.json`: synthetic task write-receipt fixture for read-only remote-state validation.
+- `task-updates.example.json`: synthetic task update fixture for previewing and confirming safe task patches.
 - `reclaim-fixture-recording.example.json`: synthetic raw interaction log for the library-only fixture recorder and scrubber prototype.
 
 Run the public-boundary lint before committing example changes:
@@ -167,6 +168,15 @@ The task write-receipt fixture is also read-only. Pair it with a private local c
 ```bash
 npm run reclaim:tasks:validate-write-receipts -- --config config/reclaim.local.json --input examples/task-write-receipts.example.json
 ```
+
+Preview synthetic task updates without credentials, then apply reviewed updates only with a local config and explicit confirmation:
+
+```bash
+npm run reclaim:tasks:preview-update -- --input examples/task-updates.example.json
+npm run reclaim:tasks:update -- --config config/reclaim.local.json --input examples/task-updates.example.json --confirm-write
+```
+
+The update fixture uses invented ids and generic task text. The preview output includes the exact patch payloads and local change summaries; the confirmed command returns write receipts.
 
 To run the same task flow against a local synthetic mock instead of a Reclaim account, use:
 

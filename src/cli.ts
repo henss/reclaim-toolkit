@@ -52,7 +52,9 @@ import {
 import { getReclaimOnboardingWizard } from "./onboarding.js";
 import {
   parseReclaimTaskPreviewInput,
+  parseReclaimTaskUpdatePreviewInput,
   parseReclaimTaskInputs,
+  parseReclaimTaskUpdates,
   parseTaskWriteReceipts,
   tasks,
   type TaskListFilters
@@ -206,6 +208,10 @@ function buildPreviewCommandHandlers(): Record<string, CommandHandler> {
           : undefined
       }));
     },
+    "reclaim:tasks:preview-update": () => {
+      const input = parseReclaimTaskUpdatePreviewInput(readJsonInput());
+      printJson(tasks.previewUpdates(input.updates, input.currentTasks));
+    },
     "reclaim:scenarios:preview-weekly": () => {
       printJson(weeklyScenarioComposer.preview(parseReclaimWeeklyScenarioComposerInput(readJsonInput())));
     },
@@ -322,6 +328,11 @@ function buildTaskWriteCommandHandlers(): Record<string, CommandHandler> {
   return {
     "reclaim:tasks:create": async () => {
       printJson(await tasks.create(loadClient(), parseReclaimTaskInputs(readJsonInput()), {
+        confirmWrite: hasFlag("--confirm-write")
+      }));
+    },
+    "reclaim:tasks:update": async () => {
+      printJson(await tasks.update(loadClient(), parseReclaimTaskUpdates(readJsonInput()), {
         confirmWrite: hasFlag("--confirm-write")
       }));
     },

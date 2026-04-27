@@ -1,0 +1,37 @@
+{
+  "currentTasks": [
+    {
+      "id": 101,
+      "title": "Draft planning notes",
+      "notes": "Capture open questions before the weekly review.",
+      "eventCategory": "WORK",
+      "timeSchemeId": "policy-work",
+      "due": "2026-05-06T17:00:00+02:00",
+      "snoozeUntil": "2026-05-06T09:00:00+02:00"
+    },
+    {
+      "id": 102,
+      "title": "Review pull request",
+      "notes": "Check the tests and leave concise review notes.",
+      "eventCategory": "WORK",
+      "timeSchemeId": "policy-work",
+      "due": "2026-05-07T12:00:00+02:00"
+    }
+  ],
+  "updates": [
+    {
+      "taskId": 101,
+      "title": "Draft planning notes",
+      "notes": "Capture decisions and open questions before the weekly review.",
+      "durationMinutes": 60,
+      "splitAllowed": true,
+      "due": "2026-05-06T18:00:00+02:00"
+    },
+    {
+      "taskId": 102,
+      "durationMinutes": 30,
+      "splitAllowed": false,
+      "startAfter": "2026-05-07T09:30:00+02:00"
+    }
+  ]
+}

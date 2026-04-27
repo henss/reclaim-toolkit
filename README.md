@@ -49,6 +49,7 @@ npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.ex
 npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json
+npm run reclaim:tasks:preview-update -- --input examples/task-updates.example.json
 npm run reclaim:scenarios:preview-weekly -- --input examples/compound-weekly-preview.example.json
 npm run reclaim:habits:preview-create -- --input examples/habits.example.json
 npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
@@ -71,6 +72,7 @@ npm run reclaim:tasks:list -- --config config/reclaim.local.json
 npm run reclaim:tasks:filter -- --config config/reclaim.local.json --title-contains notes --event-category WORK
 npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-category WORK --format csv
 npm run reclaim:tasks:create -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-write
+npm run reclaim:tasks:update -- --config config/reclaim.local.json --input examples/task-updates.example.json --confirm-write
 npm run reclaim:tasks:inspect-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json
 npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-reviewed-delete
 ```
@@ -92,7 +94,7 @@ When task, Focus, Buffer, or Hours preview fixtures include synthetic policy con
 `reclaim:meetings:preview-recurring-reschedule` is a synthetic local preview command that classifies recurring occurrences as keep, move, or blocked and suggests bounded alternative slots without touching a live calendar.
 Read collectors follow common paginated Reclaim response envelopes for tasks, meetings, and time schemes, and they retry bounded `429 Too Many Requests` responses when `Retry-After` is present.
 Task preview and creation now include `inputDuplicatePlan`, a local duplicate preflight for imported task files such as the starter packs. Task creation and duplicate deletion still require explicit confirmation flags, and `reclaim:tasks:create` also returns a warning-only `duplicatePlan` when it sees exact existing duplicates in the configured account before attempting new task writes.
-Confirmed task writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
+Confirmed task create, update, and duplicate-delete writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
 For machine parsing, use the npm scripts with `--silent` and follow the [agent-safe JSON CLI profile](docs/cli-json-profile.md).
 For a committed machine-readable inventory of command safety classes, confirmation flags, default visibility, and readiness gates, use [docs/command-safety-manifest.json](docs/command-safety-manifest.json).
 

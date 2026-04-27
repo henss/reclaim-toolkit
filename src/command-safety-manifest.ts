@@ -8,6 +8,8 @@ export type ReclaimCommandCurrentMode = "stable" | "preview_only" | "read_only" 
 export type ReclaimCommandReadinessStatus = "ready" | "evidence_pending" | "review_pending" | "blocked";
 export type ReclaimCommandGroupId = "core" | "tasks" | "optional";
 
+export type ReclaimCommandConfirmationFlag = "--confirm-write" | "--confirm-reviewed-delete";
+
 export interface ReclaimCommandSafetyDefinition {
   command: string;
   summary: string;
@@ -16,7 +18,7 @@ export interface ReclaimCommandSafetyDefinition {
   requiresConfig: boolean;
   groupId: ReclaimCommandGroupId;
   includeByDefault: boolean;
-  confirmationFlag?: "--confirm-write" | "--confirm-reviewed-delete";
+  confirmationFlag?: ReclaimCommandConfirmationFlag;
   readinessStatus?: ReclaimCommandReadinessStatus;
   readinessGate?: string;
 }
@@ -30,7 +32,7 @@ export interface ReclaimCommandSafetyManifestCommand {
   safetyClass: ReclaimCommandSafetyClass;
   currentMode: ReclaimCommandCurrentMode;
   requiresConfig: boolean;
-  confirmationFlag?: "--confirm-write" | "--confirm-reviewed-delete";
+  confirmationFlag?: ReclaimCommandConfirmationFlag;
   readinessStatus?: ReclaimCommandReadinessStatus;
   readinessGate?: string;
 }
@@ -156,6 +158,15 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
     includeByDefault: true
   },
   {
+    command: "reclaim:tasks:preview-update",
+    summary: "Preview task update payloads from synthetic input fixtures.",
+    safetyClass: "local_preview",
+    currentMode: "stable",
+    requiresConfig: false,
+    groupId: "tasks",
+    includeByDefault: true
+  },
+  {
     command: "reclaim:scenarios:preview-weekly",
     summary: "Compose a synthetic weekly agenda from task, habit, focus, buffer, and meeting preview fixtures.",
     safetyClass: "local_preview",
@@ -206,6 +217,16 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
   {
     command: "reclaim:tasks:create",
     summary: "Create tasks after explicit write confirmation.",
+    safetyClass: "confirmed_write",
+    currentMode: "live_write",
+    requiresConfig: true,
+    groupId: "tasks",
+    includeByDefault: true,
+    confirmationFlag: "--confirm-write"
+  },
+  {
+    command: "reclaim:tasks:update",
+    summary: "Update tasks after explicit write confirmation.",
     safetyClass: "confirmed_write",
     currentMode: "live_write",
     requiresConfig: true,
