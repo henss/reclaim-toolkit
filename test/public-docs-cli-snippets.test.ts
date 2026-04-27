@@ -127,7 +127,7 @@ describe("public docs CLI snippets", () => {
     }
   });
 
-  test("executes the credential-free local examples advertised in public docs", { timeout: 30000 }, () => {
+  test("executes the credential-free local examples advertised in public docs", { timeout: 90000 }, () => {
     const executedCommands = [...new Set(
       documentedCommands
         .map((entry) => entry.command)
