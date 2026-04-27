@@ -27,7 +27,7 @@ It redacts authorization headers, ids, emails, titles, notes, and generic free t
 ## TypeScript Usage
 
 ```ts
-import { scrubReclaimFixtureRecording, assertReclaimFixturePrivacy } from "reclaim-toolkit";
+import { scrubReclaimFixtureRecording, assertReclaimFixturePrivacy } from "reclaim-toolkit/mock";
 
 const scrubbed = scrubReclaimFixtureRecording(rawRecording);
 assertReclaimFixturePrivacy(scrubbed);

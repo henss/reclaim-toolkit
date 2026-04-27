@@ -11,7 +11,8 @@ This repo runs a small consumer smoke matrix to keep the public package surface 
 | TypeScript compile with `moduleResolution: "Bundler"` | workspace path and packed tarball | pass | Verifies the same public entrypoint works in bundler-oriented projects. |
 | TypeScript compile from `reclaim-toolkit/core` | workspace path and packed tarball | pass | Verifies the core client subpath can be imported without relying on CLI or mock utility exports. |
 | Installed CLI command | workspace path and packed tarball | pass | Runs `reclaim:onboarding` and confirms the conventional `config/reclaim.local.json` default. |
-| Public subpath export smoke | workspace path and packed tarball | pass | Verifies `reclaim-toolkit/core`, `reclaim-toolkit/cli`, and `reclaim-toolkit/mock` expose their intended surfaces without cross-exporting each other. |
+| Public entrypoint export smoke | workspace path and packed tarball | pass | Verifies the root entrypoint, `reclaim-toolkit/core`, `reclaim-toolkit/cli`, and `reclaim-toolkit/mock` expose their intended surfaces without cross-exporting each other. |
+| Built core dependency graph | packed build output | pass | Verifies `dist/core.js` reaches only config, client, health, OpenAPI client, and request-collector modules, not CLI or mock modules. |
 
 ## Intentionally unsupported shapes
 

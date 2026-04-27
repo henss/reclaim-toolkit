@@ -1,4 +1,3 @@
-export * from "./cli-api.js";
 export * from "./core.js";
 export * from "./account-audit.js";
 export * from "./buffer-rules.js";
@@ -30,7 +29,6 @@ export {
 export * from "./meeting-availability.js";
 export * from "./meeting-recurring-reschedule.js";
 export * from "./meetings-hours.js";
-export * from "./mock.js";
 export * from "./preview-receipts.js";
 export * from "./support-bundle.js";
 export * from "./time-policies.js";

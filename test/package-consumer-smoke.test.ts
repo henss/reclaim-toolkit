@@ -34,6 +34,12 @@ let packedTarballPath = "";
 const installTestTimeoutMs = 20_000;
 const exportSurfaceExpectations: ExportSurfaceExpectation[] = [
   {
+    label: "root library entrypoint",
+    importPath: "reclaim-toolkit",
+    expectedExports: ["createReclaimClient", "loadReclaimConfig", "tasks"],
+    forbiddenExports: ["getReclaimCliHelp", "runMockReadonlyReclaimMcpServer", "runMockReclaimApiDemo"]
+  },
+  {
     label: "core client subpath",
     importPath: "reclaim-toolkit/core",
     expectedExports: ["createReclaimClient", "createReclaimOpenApiClient", "loadReclaimConfig"],
@@ -269,10 +275,55 @@ function runTypeScriptProject(consumerDir: string): CommandResult {
   );
 }
 
+function collectDistImportGraph(entryFileName: string): Set<string> {
+  const seen = new Set<string>();
+  const pending = [path.join(repoRoot, "dist", entryFileName)];
+  const importPattern = /(?:from\s+|import\s*\()\s*["'](\.\/[^"']+\.js)["']/g;
+
+  while (pending.length > 0) {
+    const currentFile = pending.pop();
+    if (!currentFile) {
+      continue;
+    }
+    const relativeFile = path.relative(path.join(repoRoot, "dist"), currentFile).replaceAll(path.sep, "/");
+    if (seen.has(relativeFile)) {
+      continue;
+    }
+    seen.add(relativeFile);
+
+    const source = fs.readFileSync(currentFile, "utf8");
+    for (const match of source.matchAll(importPattern)) {
+      const specifier = match[1];
+      const nextFile = path.resolve(path.dirname(currentFile), specifier);
+      pending.push(nextFile);
+    }
+  }
+
+  return seen;
+}
+
 function createConsumerWorkspace(): string {
   const consumerDir = makeTempDir("reclaim-toolkit-consumer-");
   writeConsumerPackage(consumerDir);
   return consumerDir;
+}
+
+function assertCoreEntrypointDoesNotReachCliOrMockModules(): void {
+  const coreGraph = collectDistImportGraph("core.js");
+
+  expect([...coreGraph].sort()).toEqual([
+    "client-read-collector.js",
+    "client.js",
+    "config.js",
+    "core.js",
+    "health.js",
+    "openapi-client.js"
+  ]);
+  expect(coreGraph).not.toContain("cli-api.js");
+  expect(coreGraph).not.toContain("cli.js");
+  expect(coreGraph).not.toContain("mock.js");
+  expect(coreGraph).not.toContain("mock-lab.js");
+  expect(coreGraph).not.toContain("mock-readonly-mcp.js");
 }
 
 function assertEsmLibraryImportWorks(installMode: ConsumerInstallMode): void {
@@ -391,6 +442,8 @@ beforeAll(() => {
 
   expect(buildResult.status).toBe(0);
   expect(buildResult.stderr).not.toContain("npm ERR!");
+
+  assertCoreEntrypointDoesNotReachCliOrMockModules();
 
   packedTarballPath = packBuiltPackage();
 });
