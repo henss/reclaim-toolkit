@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
 import {
@@ -8,12 +9,120 @@ import {
   parseTaskWriteReceipts,
   tasks
 } from "../src/index.js";
-import { runNpmCli } from "./cli-test-helpers.js";
+import {
+  listen,
+  makeTempDir,
+  runNpmCli,
+  runNpmCliAsync,
+  writeConfigFile
+} from "./cli-test-helpers.js";
 
 function loadTaskUpdatesFixture(): unknown {
   return JSON.parse(
     fs.readFileSync(path.join(process.cwd(), "examples", "task-updates.example.json"), "utf8")
   ) as unknown;
+}
+
+interface PatchCall {
+  url: string | undefined;
+  body: unknown;
+}
+
+interface TaskUpdateCliOutput {
+  updatedTasks: Array<{ title: string; taskId: number }>;
+  writeReceipts: Array<{ operation: string; taskId: number; rollbackHint: string }>;
+}
+
+const EXPECTED_CLI_PATCH_CALLS: PatchCall[] = [
+  {
+    url: "/api/tasks/101",
+    body: {
+      title: "Draft planning notes",
+      notes: "Capture decisions and open questions before the weekly review.",
+      timeChunksRequired: 4,
+      maxChunkSize: 4,
+      minChunkSize: 1,
+      due: "2026-05-06T18:00:00+02:00"
+    }
+  },
+  {
+    url: "/api/tasks/102",
+    body: {
+      timeChunksRequired: 2,
+      maxChunkSize: 2,
+      minChunkSize: 2,
+      snoozeUntil: "2026-05-07T09:30:00+02:00"
+    }
+  }
+];
+
+function writeSyntheticConfig(apiUrl: string): string {
+  const repoPath = makeTempDir();
+  const configPath = path.join(repoPath, "config", "reclaim.local.json");
+  writeConfigFile(configPath, {
+    apiUrl,
+    apiKey: "synthetic-key",
+    timeoutMs: 1000,
+    defaultTaskEventCategory: "WORK"
+  });
+  return configPath;
+}
+
+function syntheticTaskTitle(taskId: number): string {
+  return taskId === 101 ? "Draft planning notes" : "Review pull request";
+}
+
+function handleSyntheticTaskPatch(
+  patchCalls: PatchCall[],
+  request: IncomingMessage,
+  response: ServerResponse
+): void {
+  let body = "";
+  request.setEncoding("utf8");
+  request.on("data", (chunk: string) => {
+    body += chunk;
+  });
+  request.on("end", () => {
+    const taskId = Number(request.url?.split("/").pop());
+    patchCalls.push({ url: request.url, body: JSON.parse(body) as unknown });
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({
+      id: taskId,
+      title: syntheticTaskTitle(taskId),
+      eventCategory: "WORK",
+      timeSchemeId: "policy-work"
+    }));
+  });
+}
+
+function createSyntheticTaskUpdateServer(patchCalls: PatchCall[]): Server {
+  return createServer((request, response) => {
+    if (request.method === "PATCH" && request.url?.startsWith("/api/tasks/")) {
+      handleSyntheticTaskPatch(patchCalls, request, response);
+      return;
+    }
+    response.writeHead(404);
+    response.end();
+  });
+}
+
+function expectConfirmedTaskUpdateCliOutput(output: TaskUpdateCliOutput): void {
+  expect(output.updatedTasks).toEqual([
+    { title: "Draft planning notes", taskId: 101 },
+    { title: "Review pull request", taskId: 102 }
+  ]);
+  expect(output.writeReceipts).toEqual([
+    expect.objectContaining({
+      operation: "task.update",
+      taskId: 101,
+      rollbackHint: "Review prior task state before manually reverting Reclaim task 101."
+    }),
+    expect.objectContaining({
+      operation: "task.update",
+      taskId: 102,
+      rollbackHint: "Review prior task state before manually reverting Reclaim task 102."
+    })
+  ]);
 }
 
 describe("task update previews", () => {
@@ -157,5 +266,48 @@ describe("task update writes", () => {
       title: "Updated synthetic task"
     });
     expect(parseTaskWriteReceipts(result)).toEqual(result.writeReceipts);
+  });
+
+  test("refuses the task update CLI without the confirmation flag", async () => {
+    const configPath = writeSyntheticConfig("http://127.0.0.1:43210");
+
+    const result = await runNpmCliAsync([
+      "reclaim:tasks:update",
+      "--",
+      "--config",
+      configPath,
+      "--input",
+      path.join("examples", "task-updates.example.json")
+    ]);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr.trim()).toBe("Refusing to update Reclaim tasks without confirmWrite.");
+  });
+
+  test("applies confirmed task updates through the CLI against a synthetic API", async () => {
+    const patchCalls: PatchCall[] = [];
+    const server = createSyntheticTaskUpdateServer(patchCalls);
+    const port = await listen(server);
+    const configPath = writeSyntheticConfig(`http://127.0.0.1:${port}`);
+
+    try {
+      const result = await runNpmCliAsync([
+        "reclaim:tasks:update",
+        "--",
+        "--config",
+        configPath,
+        "--input",
+        path.join("examples", "task-updates.example.json"),
+        "--confirm-write"
+      ]);
+
+      expect(result.status).toBe(0);
+      expect(result.stderr).toBe("");
+      expect(patchCalls).toEqual(EXPECTED_CLI_PATCH_CALLS);
+      expectConfirmedTaskUpdateCliOutput(JSON.parse(result.stdout) as TaskUpdateCliOutput);
+    } finally {
+      server.close();
+    }
   });
 });
