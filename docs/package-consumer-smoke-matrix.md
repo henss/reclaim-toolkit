@@ -14,6 +14,19 @@ This repo runs a small consumer smoke matrix to keep the public package surface 
 | Public entrypoint export smoke | workspace path and packed tarball | pass | Verifies the root entrypoint, `reclaim-toolkit/core`, `reclaim-toolkit/cli`, and `reclaim-toolkit/mock` expose their intended surfaces without cross-exporting each other. |
 | Built core dependency graph | packed build output | pass | Verifies `dist/core.js` reaches only config, client, health, OpenAPI client, and request-collector modules, not CLI or mock modules. |
 
+## Package export contract
+
+The package `exports` map is intentionally small:
+
+| Import path | Built entry | Intended surface |
+| --- | --- | --- |
+| `reclaim-toolkit` | `dist/index.js` | Main library helpers for ordinary toolkit use. |
+| `reclaim-toolkit/core` | `dist/core.js` | Config, typed Reclaim clients, health checks, and shared public types. |
+| `reclaim-toolkit/cli` | `dist/cli-api.js` | CLI metadata helpers for command indexes, onboarding, and safety manifests without running the installed binary. |
+| `reclaim-toolkit/mock` | `dist/mock.js` | Synthetic fixture recording, mock API lab, and read-only MCP mock utilities. |
+
+This split uses the native npm package `exports` field and TypeScript declaration output instead of adding a routing or packaging dependency. That keeps the public package conventional, avoids a broader compatibility promise, and lets the smoke matrix verify the actual packed tarball consumed by downstream projects.
+
 ## Intentionally unsupported shapes
 
 | Consumer shape | Status | Why |
