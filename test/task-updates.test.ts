@@ -189,6 +189,7 @@ describe("task update previews", () => {
   });
 
   test("requires at least one update field and a duration for split changes", () => {
+    expect(() => parseReclaimTaskUpdates([{ taskId: 0, title: "Updated synthetic task" }])).toThrow();
     expect(() => parseReclaimTaskUpdates([{ taskId: 101 }])).toThrow();
     expect(() => parseReclaimTaskUpdates([{ taskId: 101, splitAllowed: false }])).toThrow();
   });

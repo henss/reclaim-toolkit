@@ -105,6 +105,8 @@ npm run reclaim:tasks:update -- --config config/reclaim.local.json --input examp
 
 The confirmed command refuses to run without `--confirm-write`, sends one `PATCH /tasks/{taskId}` request per update, and returns `writeReceipts` for post-run audit. It does not complete, archive, delete, or bulk-update tasks.
 
+Build-vs-buy note: task updates stay in this repo as a thin typed helper over the existing Reclaim client instead of adopting a broader SDK, CLI, connector, or workflow runner. The required behavior is only schema validation, synthetic preview output, explicit confirmation, and one `PATCH` request per reviewed task; broader automation would add dependency and public API surface without improving this bounded write guard.
+
 ## Mock API Demo Lab
 
 For credential-free CLI practice, run:

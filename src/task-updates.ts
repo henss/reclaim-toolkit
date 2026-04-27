@@ -13,7 +13,7 @@ import type {
 const RECLAIM_TIME_BLOCK_MINUTES = 15;
 
 const TaskUpdateInputBaseSchema = z.object({
-  taskId: z.number().int().nonnegative(),
+  taskId: z.number().int().positive(),
   title: z.string().min(1).optional(),
   notes: z.string().optional(),
   durationMinutes: z.number().int().positive().optional(),
