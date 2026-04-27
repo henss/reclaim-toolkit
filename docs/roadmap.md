@@ -12,6 +12,7 @@ Future modules can cover:
 
 New modules should ship only when they have a tested implementation and synthetic examples.
 
+See [safe write expansion program](safe-write-expansion-program.md) for the program scope, candidate status, and governing gates for Habit, Focus, and Buffer live writes.
 See [write expansion routing](write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
 See [scheduling surface expansion: first proof](scheduling-surface-first-proof.md) for the current public-safe judgment on why scheduling helpers stay preview-only or read-only.
 See [scheduling surface expansion: discovery brief](scheduling-surface-expansion-discovery-brief.md) for the overall expansion program summary and the recommended governing choice on Habit, Focus, and Buffer sequencing.
