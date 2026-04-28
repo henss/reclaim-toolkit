@@ -1,0 +1,25 @@
+id: component:reclaim-toolkit-source
+kind: component
+title: reclaim-toolkit Source Surface
+summary: Main source, configuration, scripts, docs, and tests agents should inspect before broad repository search.
+status: active
+visibility: public
+code:
+  paths:
+    - src/**
+    - scripts/**
+    - test/**
+    - docs/**
+    - package.json
+    - README.md
+relations:
+  - type: part-of
+    target: domain:reclaim-toolkit-local
+  - type: tested-by
+    target: test-scope:reclaim-toolkit-verification
+  - type: documented-in
+    target: document:reclaim-toolkit-readme
+agent:
+  load_when:
+    - Changing source, scripts, docs, tests, or repo-level configuration.
+  token_budget_hint: 600

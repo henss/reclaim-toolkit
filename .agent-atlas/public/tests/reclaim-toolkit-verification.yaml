@@ -1,0 +1,22 @@
+id: test-scope:reclaim-toolkit-verification
+kind: test-scope
+title: reclaim-toolkit Verification
+summary: Narrow default verification commands for repo-local changes; prefer more specific tests when the task identifies them.
+status: active
+visibility: public
+commands:
+  - command: pnpm verify:session
+    cwd: .
+    purpose: Repo-local verification candidate.
+  - command: pnpm test
+    cwd: .
+    purpose: Repo-local verification candidate.
+  - command: pnpm build
+    cwd: .
+    purpose: Repo-local verification candidate.
+  - command: pnpm typecheck
+    cwd: .
+    purpose: Repo-local verification candidate.
+relations:
+  - type: verifies
+    target: component:reclaim-toolkit-source

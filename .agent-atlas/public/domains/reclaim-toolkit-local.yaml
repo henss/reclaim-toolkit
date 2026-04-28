@@ -1,0 +1,9 @@
+id: domain:reclaim-toolkit-local
+kind: domain
+title: reclaim-toolkit Local Surface
+summary: Repo-local architecture, docs, and verification surfaces for reclaim-toolkit.
+status: active
+visibility: public
+relations:
+  - type: contains
+    target: repository:reclaim-toolkit

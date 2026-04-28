@@ -1,0 +1,14 @@
+id: repository:reclaim-toolkit
+kind: repository
+title: reclaim-toolkit
+summary: TypeScript utilities and an npm-first CLI for working with Reclaim.ai APIs.
+status: active
+visibility: public
+uri: repo://reclaim-toolkit
+relations:
+  - type: related-to
+    target: domain:reclaim-toolkit-local
+agent:
+  load_when:
+    - Orienting in this repository or building a repo-local context pack.
+  token_budget_hint: 300

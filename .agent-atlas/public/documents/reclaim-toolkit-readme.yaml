@@ -1,0 +1,12 @@
+id: document:reclaim-toolkit-readme
+kind: document
+title: reclaim-toolkit README
+summary: Primary repo entrypoint for setup, usage, architecture, and maintenance notes.
+status: active
+visibility: public
+document:
+  paths:
+    - README.md
+relations:
+  - type: documents
+    target: component:reclaim-toolkit-source
