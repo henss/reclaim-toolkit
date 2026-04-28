@@ -102,7 +102,7 @@
     "arch": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --ignore-known .dependency-cruiser-known-violations.json --output-type err",
     "arch:baseline": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --output-type baseline --output-to .dependency-cruiser-known-violations.json",
     "arch:graph": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --ignore-known .dependency-cruiser-known-violations.json --output-type mermaid",
-    "lint:docs": "node -e \"const cp=require('node:child_process'),p=require('node:path'),fs=require('node:fs');const roots=[process.env.LLM_ORCHESTRATOR_ROOT,p.resolve(process.cwd(),'..','llm-orchestrator'),'D:/workspace/llm-orchestrator'].filter(Boolean);const root=roots.find((r)=>fs.existsSync(p.join(r,'package.json')));if(!root)throw new Error('Set LLM_ORCHESTRATOR_ROOT to the llm-orchestrator repo');const result=cp.spawnSync('pnpm',['--dir',root,'orch','docs:lint','--','--repo-root',process.cwd()],{stdio:'inherit',shell:process.platform==='win32'});process.exit(result.status??1)\""
+    "lint:docs": "node scripts/docs-quality-lint.mjs"
   },
   "dependencies": {
     "openapi-fetch": "^0.17.0",
