@@ -9,11 +9,12 @@ This file is the repo-local agent entrypoint. It is generated from the shared po
 - Before non-trivial implementation, read this file and `.codex/portfolio-guidance.md`.
 - Prefer repo-local conventions and verification commands over generic assumptions.
 - Before non-trivial TypeScript edits, run `pnpm check:agent-surface:preedit -- <candidate files>` when that script exists.
-- Prefer named exports and type-only imports, and run repo-local lint/typecheck/test or `pnpm verify:session` before stopping.
+- Prefer named exports and type-only imports, and run the narrowest repo-local lint/typecheck/test command before stopping.
 - Promote repeated workflows into reusable skills, scripts, or local automation; promote repeated mistakes or ambiguity into evals or the appropriate durable guidance surface.
 - Use scoped autonomy envelopes to let bounded public, paid, creative, venture, tool, distribution, or ad experiments proceed when downside is capped and recoverable; stop for hard-to-recover legal, financial, reputation, security, client/company, credential, or safety risk.
 - Keep TypeScript files small and single-purpose, expose clear feature/package APIs, validate external boundaries with schemas or generated types, exclude generated API output from source-size budgets, inject IO/time/randomness seams, keep high-signal tests near code, and avoid broad barrels, ambient globals, dynamic import magic, shared mutable state, grab-bag utils, hidden build magic, and mock-heavy tests.
 - Before non-trivial code edits, use this repo's agent-surface or size guard when present; if a touched file is near-limit or structurally busy, extract a focused seam before adding feature weight.
+- When this repo exposes Agent Atlas surfaces such as `.agent-atlas`, `docs/agents/atlas.md`, or `pnpm atlas ...`, use them before broad search; add or expand atlas metadata only when a concrete task exposes repeated navigation waste or cross-repo context ambiguity.
 - Prefer repo-local current state, generated status, or live tool output before older notes or historical ledgers when deciding what is true now.
 - Prefer explicit fields, frontmatter, typed records, YAML/JSON blocks, and schema-backed artifacts over parsing free-form prose to infer workflow state. If the needed field does not exist, add or repair the structured source instead of extending regex heuristics.
 - Prefer structural fixes over patch stacks. If repeated exceptions, guards, or caveats exist only to compensate for a bad abstraction or stale authority source, remove or reshape that seam instead of adding one more workaround.
