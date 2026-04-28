@@ -1,0 +1,35 @@
+mode: audit
+readme:
+  path: README.md
+  max_lines: 120
+  required_links:
+    - docs/index.md
+  required_link_severity: warning
+
+docs:
+  root: docs
+  entrypoints:
+    - docs/index.md
+  missing_entrypoint_severity: warning
+  generated: []
+  exclude_from_reachability:
+    - docs/generated/**
+    - docs/.vitepress/**
+    - docs/.docusaurus/**
+  exempt_line_count:
+    - docs/generated/**
+    - docs/.vitepress/**
+    - docs/.docusaurus/**
+  max_file_lines:
+    default: 500
+    by_directory:
+      docs/generated: 5000
+  required_directory_indexes:
+    - docs/index.md
+  required_directory_index_severity: warning
+  root_markdown_files:
+    allowed:
+      - docs/index.md
+    extra_file_severity: warning
+  directory_types: {}
+  content_shape_severity: warning
