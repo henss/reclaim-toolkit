@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// [MANAGED_BY_PORTFOLIO_GUIDANCE_SYNC]
 /* global console, process */
 import fs from "node:fs";
 import path from "node:path";
