@@ -1,6 +1,8 @@
 # reclaim-toolkit
 
-TypeScript utilities for working with Reclaim.ai APIs.
+TypeScript utilities and an npm-first CLI for working with Reclaim.ai APIs.
+
+The toolkit is designed for cautious automation: local preview commands work with synthetic fixtures, authenticated read commands require a private config file, and live task writes require explicit confirmation flags.
 
 ## Install
 
@@ -8,11 +10,18 @@ TypeScript utilities for working with Reclaim.ai APIs.
 npm install reclaim-toolkit
 ```
 
-For the currently exercised consumer install and TypeScript compile shapes, see [docs/package-consumer-smoke-matrix.md](docs/package-consumer-smoke-matrix.md).
+When working from this repository, install dependencies first and use the checked-in npm scripts:
 
-## Configuration
+```bash
+npm install
+npm run reclaim:onboarding
+```
 
-Create a local config file, usually `config/reclaim.local.json`:
+`reclaim:onboarding` is credential-free. It reports local config readiness, safe synthetic fixture commands, and write-guard reminders without contacting Reclaim or writing files.
+
+## Configure
+
+Create a private local config file, usually `config/reclaim.local.json`:
 
 ```json
 {
@@ -24,103 +33,35 @@ Create a local config file, usually `config/reclaim.local.json`:
 }
 ```
 
-`apiUrl` is normalized to include `/api`, so either `https://api.app.reclaim.ai` or `https://api.app.reclaim.ai/api` works.
-Set either `preferredTimePolicyId` or `preferredTimePolicyTitle` when task creation should use a specific Reclaim task-assignment time policy. If neither is set, task creation selects the first policy matching `defaultTaskEventCategory`, then falls back to the first returned policy.
+Do not commit local config files or command output containing account-specific ids, emails, task titles, policy titles, or secrets.
 
-## CLI
+`apiUrl` is normalized to include `/api`, so either `https://api.app.reclaim.ai` or `https://api.app.reclaim.ai/api` works. Set either `preferredTimePolicyId` or `preferredTimePolicyTitle` when task creation should use a specific Reclaim task-assignment time policy.
+
+## Try The CLI
+
+Start with credential-free commands:
 
 ```bash
 npm run reclaim:help
-npm run reclaim:help -- --include-optional
-npm run reclaim:onboarding
-npm run reclaim:config:status -- --config config/reclaim.local.json
-npm run reclaim:support:bundle -- --input examples/support-bundle-preview.example.json
-npm run reclaim:health -- --config config/reclaim.local.json
-npm run reclaim:openapi:capability-matrix
-npm run reclaim:openapi:capability-matrix -- --input generated/reclaim-openapi/reclaim-api-0.1.raw.yml
-npm run reclaim:time-policies:list -- --config config/reclaim.local.json
-npm run reclaim:time-policies:explain-conflicts -- --input examples/time-policy-conflicts.example.json
-npm run reclaim:mcp:mock-readonly -- --input examples/mock-readonly-mcp.example.json
 npm run reclaim:tasks:preview-create -- --input examples/tasks.example.json
-npm run reclaim:tasks:preview-create -- --input examples/scheduling-recipes.example.json
-npm run reclaim:tasks:preview-create -- --input examples/shopping-errand-windows.example.json
-npm run reclaim:tasks:preview-create -- --input examples/event-prep-block-example-pack.example.json
-npm run reclaim:tasks:preview-create -- --input examples/todoist-starter-pack.example.json
-npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.example.json
-npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
-npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json
-npm run reclaim:tasks:preview-update -- --input examples/task-updates.example.json
-npm run reclaim:scenarios:preview-weekly -- --input examples/compound-weekly-preview.example.json
-npm run reclaim:habits:preview-create -- --input examples/habits.example.json
-npm run reclaim:focus:preview-create -- --input examples/focus-and-buffers.example.json
-npm run reclaim:buffers:preview-create -- --input examples/focus-and-buffers.example.json
-npm run reclaim:buffers:preview-rule -- --input examples/buffer-rules.example.json
-npm run reclaim:buffers:preview-template -- --input examples/buffer-templates.example.json
-npm run reclaim:meetings:preview-availability -- --input examples/meeting-availability.example.json
-npm run reclaim:meetings:preview-recurring-reschedule -- --input examples/recurring-meeting-reschedule.example.json
-npm run reclaim:meetings-hours:preview-inspect -- --input examples/meetings-and-hours.example.json
-npm run reclaim:hours-config:preview-audit -- --input examples/hours-config.example.json
-npm run reclaim:hours-config:preview-diff -- --input examples/hours-config-diff.example.json
-npm run reclaim:account-audit:preview-inspect -- --input examples/account-audit.example.json
-npm run reclaim:account-audit:preview-drift -- --input examples/account-audit-drift.example.json
-npm run reclaim:meetings-hours:inspect -- --config config/reclaim.local.json
-npm run reclaim:hours-config:audit -- --config config/reclaim.local.json
-npm run reclaim:account-audit:inspect -- --config config/reclaim.local.json
 npm run reclaim:demo:mock-api -- --input examples/tasks.example.json
-npm run reclaim:demo:mock-api -- --profile failure-modes
-npm run reclaim:tasks:list -- --config config/reclaim.local.json
-npm run reclaim:tasks:filter -- --config config/reclaim.local.json --title-contains notes --event-category WORK
-npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-category WORK --format csv
-npm run reclaim:tasks:create -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-write
-npm run reclaim:tasks:update -- --config config/reclaim.local.json --input examples/task-updates.example.json --confirm-write
-npm run reclaim:tasks:inspect-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json
-npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-reviewed-delete
 ```
 
-`reclaim:help` prints a parseable npm-first command index. By default it stays focused on the conventional public baseline, and `--include-optional` reveals preview-only and read-only optional surfaces with explicit readiness gates.
-`reclaim:onboarding` is a credential-free wizard that reports local config readiness, safe synthetic fixture commands, and write-guard reminders without contacting Reclaim or writing files.
-`reclaim:openapi:capability-matrix` is a credential-free public-metadata command that compares the published Reclaim API document with the toolkit's shipped and roadmap surfaces, then emits a ranked `nextSurfaceReport` so future module bets can start from auditable contract evidence instead of ad hoc backlog expansion.
-`reclaim:support:bundle` is a redacted troubleshooting command for preview or config incidents. It preserves structural JSON signals, dates, times, and safety enums while redacting task titles, ids, emails, secrets, free-text notes, and absolute paths.
-Task list, filter, export, duplicate-inspection, meetings-and-hours inspection, health, and time-policy discovery commands are read-only authenticated commands. `reclaim:tasks:export` keeps the CLI profile parseable by returning JSON; CSV exports are placed in the JSON `content` field.
-`reclaim:hours-config:audit` is a summary-only authenticated read command that collapses Reclaim time-scheme state into coverage, timezone, and window counts instead of returning policy ids or policy titles.
-`reclaim:account-audit:inspect` is a summary-only authenticated read command that collapses account state into counts and capability coverage instead of returning task titles, meeting titles, ids, or user identifiers.
-`reclaim:hours-config:preview-diff` is a source-handle preview command that compares two synthetic hours-config snapshots and emits a summary-only drift digest without replaying policy ids or policy titles.
-`reclaim:account-audit:preview-drift` is a source-handle preview command that compares two synthetic account snapshots and emits a summary-only drift digest plus a normalized change class without copying task titles, meeting titles, ids, or user identifiers.
-`reclaim:time-policies:explain-conflicts` is a synthetic local preview command that explains policy fit and conflict reasons from fixture-backed task, focus, buffer, hours-profile, and policy inputs.
-`reclaim:mcp:mock-readonly` is a fixture-backed stdio MCP prototype that exposes read-only task, time-policy, and meetings-hours tools for local agent experiments without any live Reclaim account access.
-When task, Focus, Buffer, or Hours preview fixtures include synthetic policy context, the preview JSON now carries per-item `timePolicyExplanation` objects so callers can inspect policy fit, selection reasoning, and conflicts without changing commands.
-`reclaim:scenarios:preview-weekly` is a synthetic local preview command that composes task, habit, focus, buffer, and meeting-availability fixtures into one weekly agenda view and preserves each underlying preview payload for review.
-`reclaim:meetings:preview-availability` is a synthetic local preview command that derives public-safe availability windows, candidate meeting slots, and exclusion reasons from synthetic time-policy windows and synthetic busy meetings.
-`reclaim:meetings:preview-recurring-reschedule` is a synthetic local preview command that classifies recurring occurrences as keep, move, or blocked and suggests bounded alternative slots without touching a live calendar.
-Read collectors follow common paginated Reclaim response envelopes for tasks, meetings, and time schemes, and they retry bounded `429 Too Many Requests` responses when `Retry-After` is present.
-Task preview and creation now include `inputDuplicatePlan`, a local duplicate preflight for imported task files such as the starter packs. Task creation and duplicate deletion still require explicit confirmation flags, and `reclaim:tasks:create` also returns a warning-only `duplicatePlan` when it sees exact existing duplicates in the configured account before attempting new task writes.
-Confirmed task create, update, and duplicate-delete writes return `writeReceipts` in the command JSON. Each receipt records the task id, write operation, confirmation timestamp, and a manual rollback hint for post-run audit.
-For machine parsing, use the npm scripts with `--silent` and follow the [agent-safe JSON CLI profile](docs/cli-json-profile.md).
-For a committed machine-readable inventory of command safety classes, confirmation flags, default visibility, and readiness gates, use [docs/command-safety-manifest.json](docs/command-safety-manifest.json).
-
-## Agent-Safe JSON CLI Profile
-
-Agent and script callers should use the npm script surface with `--silent`, for example:
+Use authenticated read commands only after creating a private config:
 
 ```bash
-npm run --silent reclaim:onboarding
-npm run --silent reclaim:tasks:preview-create -- --input examples/tasks.example.json
+npm run reclaim:health -- --config config/reclaim.local.json
+npm run reclaim:tasks:list -- --config config/reclaim.local.json
 ```
 
-On success, commands emit one pretty-printed JSON document to stdout, write no normal-status text to stderr, and exit with code `0`. On failure, commands emit a concise diagnostic to stderr, leave stdout empty for profile-covered errors, and exit with code `1`.
+Confirmed task writes are available, but they require explicit confirmation flags such as `--confirm-write`. Review previews and duplicate warnings before running live writes.
 
-Local preview commands are safe for credential-free practice when paired with synthetic fixtures. Authenticated read commands require a local config and may return account-specific values. Confirmed write commands require their explicit confirmation flags and should be reviewed before use.
+For the full command catalog, safety classes, and parseable JSON rules, see [docs/cli-commands.md](docs/cli-commands.md) and [docs/cli-json-profile.md](docs/cli-json-profile.md).
 
-To practice the task flow without Reclaim credentials, run `npm run reclaim:demo:mock-api -- --input examples/tasks.example.json`. The default `baseline` profile uses an in-memory synthetic API surface with placeholder policies and tasks, then prints health, time-policy, preview, duplicate-cleanup, and create results.
-
-To exercise the public-safe failure-mode lab, run `npm run reclaim:demo:mock-api -- --profile failure-modes`. That profile emits a small synthetic matrix covering paginated reads, bounded rate-limit recovery, exhausted rate-limit retries, missing-task errors, and unknown-route errors.
-
-The lab remains intentionally narrow. It is not a complete Reclaim emulator or compatibility promise. The auditable route and failure fixtures live in `docs/mock-api-response-matrix.example.json` and `docs/mock-api-failure-mode-matrix.example.json`.
-
-## Library
+## Use As A Library
 
 ```ts
-import { createReclaimClient, loadReclaimConfig, tasks, timePolicies } from "reclaim-toolkit";
+import { createReclaimClient, loadReclaimConfig, tasks } from "reclaim-toolkit";
 
 const config = loadReclaimConfig("config/reclaim.local.json");
 if (!config) {
@@ -129,25 +70,14 @@ if (!config) {
 
 const client = createReclaimClient(config);
 const input = [{ title: "Review pull request", durationMinutes: 30 }];
+
 const preview = tasks.previewCreates(input, { timeSchemeId: "policy-work" });
-const policyPreview = tasks.previewTimePolicySelection(await client.listTaskAssignmentTimeSchemes(), {
-  preferredTimePolicyTitle: config.preferredTimePolicyTitle,
-  eventCategory: config.defaultTaskEventCategory
-});
-const policyConflicts = timePolicies.explainConflicts({
-  tasks: input,
-  focusBlocks: [],
-  buffers: [],
-  timeSchemes: await client.listTaskAssignmentTimeSchemes(),
-  defaultTaskEventCategory: config.defaultTaskEventCategory,
-  preferredTimePolicyTitle: config.preferredTimePolicyTitle
-});
-const readOnlyTasks = tasks.listExistingTasks(await client.listTasks(), { eventCategory: "WORK" });
 const result = await tasks.create(client, input, { confirmWrite: true });
-console.log({ policyPreview, policyConflicts, readOnlyTasks, writeReceipts: result.writeReceipts });
+
+console.log({ preview, writeReceipts: result.writeReceipts });
 ```
 
-The package also exposes narrower subpaths for consumers that want to keep runtime surfaces explicit:
+The package also exposes narrower subpaths:
 
 ```ts
 import { createReclaimClient, loadReclaimConfig } from "reclaim-toolkit/core";
@@ -155,54 +85,24 @@ import { getReclaimCliHelp } from "reclaim-toolkit/cli";
 import { runMockReclaimApiDemo } from "reclaim-toolkit/mock";
 ```
 
-`reclaim-toolkit/core` is the client/config/type surface, `reclaim-toolkit/cli` exposes CLI metadata helpers without running the installed binary, and `reclaim-toolkit/mock` contains synthetic fixture and mock-lab utilities.
+For the currently exercised consumer install and TypeScript compile shapes, see [docs/package-consumer-smoke-matrix.md](docs/package-consumer-smoke-matrix.md).
 
-## Modules
+## Capabilities
 
-Wave 1 includes config, client, health, task utilities, preview-only Habit, Focus, Buffer, Meeting Availability, and recurring meeting reschedule helpers, a Buffer rule preview helper with diff-style receipts, a Buffer template preview helper, a summary-only Hours Config audit plus synthetic drift digest, a summary-only Account Audit snapshot plus synthetic drift digest, and a read-only Meetings and Hours inspector prototype. Future modules can add write support only after an approved API contract.
+| Capability | Safety level | Start here |
+| --- | --- | --- |
+| CLI output and command safety | Public metadata, local preview, authenticated read, confirmed write | [docs/cli-commands.md](docs/cli-commands.md) |
+| Task preview, reads, writes, receipts, and duplicate checks | Local preview through confirmed write | [docs/tasks.md](docs/tasks.md) |
+| Time-policy fit and conflict explanations | Local preview and authenticated read | [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) |
+| Habit, Focus, Buffer, and scheduling previews | Local preview | [docs/focus-and-buffers.md](docs/focus-and-buffers.md) |
+| Meeting availability and recurring reschedule previews | Local preview | [docs/meeting-availability.md](docs/meeting-availability.md) |
+| Meetings, hours, and account inspection | Authenticated read with summary-only outputs | [docs/meetings-and-hours.md](docs/meetings-and-hours.md) |
+| OpenAPI client and generated contract refresh | Public metadata and library API | [docs/openapi-client-generation.md](docs/openapi-client-generation.md) |
+| Synthetic fixtures and examples | Public-safe local examples | [examples/README.md](examples/README.md) |
 
-See [docs/reclaim-fixture-recording.md](docs/reclaim-fixture-recording.md) for the synthetic raw-to-scrubbed fixture recorder prototype and leak-check rules.
-See [docs/habits.md](docs/habits.md) for the public-safe Habit input shape.
-See [docs/focus-and-buffers.md](docs/focus-and-buffers.md) for the public-safe Focus and Buffer input shapes.
-See [docs/buffer-rules.md](docs/buffer-rules.md) for the preview-only Buffer rule diff receipt helper.
-See [docs/buffer-templates.md](docs/buffer-templates.md) for the preview-only Buffer template helper.
-See [docs/meeting-availability.md](docs/meeting-availability.md) for the preview-only Meeting Availability helper.
-See [docs/recurring-meeting-reschedule.md](docs/recurring-meeting-reschedule.md) for the preview-only recurring meeting reschedule simulator.
-See [docs/hours-config.md](docs/hours-config.md) for the summary-only Hours Config audit output and source-handle drift digest.
-See [docs/account-audit.md](docs/account-audit.md) for the summary-only Account Audit snapshot output and source-handle drift digest.
-See [docs/meetings-and-hours.md](docs/meetings-and-hours.md) for the read-only Meetings and Hours inspector output.
-See [docs/time-policy-conflicts.md](docs/time-policy-conflicts.md) for the synthetic time-policy conflict explainer input and output.
-See [docs/mock-readonly-mcp.md](docs/mock-readonly-mcp.md) for the fixture-backed read-only MCP prototype.
-See [docs/event-prep-block-example-pack.md](docs/event-prep-block-example-pack.md) for a synthetic guest-visit preparation pack that stays on the same preview-only task surface.
-See [docs/integration-starter-packs.md](docs/integration-starter-packs.md) for the Todoist, Linear, and GitHub starter packs that already fit the task preview contract.
-See [docs/agent-ops-week-scenario-pack.md](docs/agent-ops-week-scenario-pack.md) for a synthetic Monday-through-Friday agent-ops pack that stays on the same preview-only task surface.
-See [docs/weekly-scenario-composer.md](docs/weekly-scenario-composer.md) for the public-safe compound weekly composer that combines multiple preview surfaces into one agenda.
-See [docs/support-bundles.md](docs/support-bundles.md) for the redacted support-bundle generator used for preview and config incidents.
-See [docs/build-vs-buy-workflows.md](docs/build-vs-buy-workflows.md) for the public-safe build-vs-buy comparison across the repo's current workflow categories.
-See [docs/write-expansion-routing.md](docs/write-expansion-routing.md) for the proposed review gates before adding live writes beyond tasks.
-See [docs/write-expansion-first-proof.md](docs/write-expansion-first-proof.md) for the current public-safe candidate ranking and next proof slice for expanding writes beyond tasks.
-See [docs/scheduling-surface-first-proof.md](docs/scheduling-surface-first-proof.md) for the current public-safe judgment on why scheduling helpers stay preview-only or read-only.
-See [docs/freshness-signals-spike.md](docs/freshness-signals-spike.md) for the public-safe webhook-versus-snapshot freshness spike and synthetic scenario matrix for the public-safe freshness-signal scenario.
-See [docs/openapi-client-generation.md](docs/openapi-client-generation.md) for the published Reclaim OpenAPI surface, the local spec-sanitizing step, and the generator commands future client work should start from.
+## Documentation
 
-## OpenAPI Client
-
-The repo also exposes a thin typed OpenAPI client wrapper:
-
-```ts
-import { createReclaimOpenApiClient, loadReclaimConfig } from "reclaim-toolkit";
-
-const config = loadReclaimConfig("config/reclaim.local.json");
-if (!config) {
-  throw new Error("Missing Reclaim config.");
-}
-
-const client = createReclaimOpenApiClient(config);
-const currentUser = await client.GET("/api/users/current");
-console.log(currentUser.data);
-```
-
-This wrapper uses the generated `paths` contract from the published Reclaim OpenAPI document and applies the existing auth and timeout defaults. Run `npm run reclaim:openapi:generate` when refreshing the underlying contract.
+[docs/README.md](docs/README.md) is the documentation index. It groups the existing guides by user task, including getting started, write safety, scheduling previews, account inspection, examples, support workflows, and maintainer references.
 
 ## Related Work
 
