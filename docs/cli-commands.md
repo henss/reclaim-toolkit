@@ -32,6 +32,7 @@ Confirmed writes require explicit review flags:
 ```bash
 npm run reclaim:tasks:create -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-write
 npm run reclaim:tasks:update -- --config config/reclaim.local.json --input examples/task-updates.example.json --confirm-write
+npm run reclaim:tasks:retarget -- --config config/reclaim.local.json --input examples/task-retarget.example.json --confirm-write
 npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-reviewed-delete
 ```
 
@@ -42,7 +43,7 @@ npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json -
 | `public_metadata` | Reads only package metadata, local files, or public API contract information. | `reclaim:help`, `reclaim:onboarding`, `reclaim:config:status` |
 | `local_preview` | Uses local synthetic fixtures or redacted inputs without live Reclaim writes. | `reclaim:tasks:preview-create`, `reclaim:demo:mock-api`, `reclaim:support:bundle` |
 | `authenticated_read` | Reads account data through the configured Reclaim API key. | `reclaim:health`, `reclaim:tasks:list`, `reclaim:tasks:export` |
-| `confirmed_write` | Performs live task writes only when an explicit confirmation flag is present. | `reclaim:tasks:create`, `reclaim:tasks:update`, `reclaim:tasks:cleanup-duplicates` |
+| `confirmed_write` | Performs live task writes only when an explicit confirmation flag is present. | `reclaim:tasks:create`, `reclaim:tasks:update`, `reclaim:tasks:retarget`, `reclaim:tasks:cleanup-duplicates` |
 
 ## Core Commands
 
@@ -82,6 +83,7 @@ npm run reclaim:tasks:preview-create -- --input examples/linear-starter-pack.exa
 npm run reclaim:tasks:preview-create -- --input examples/github-starter-pack.example.json
 npm run reclaim:tasks:preview-create -- --input examples/agent-ops-week-scenario-pack.example.json
 npm run reclaim:tasks:preview-update -- --input examples/task-updates.example.json
+npm run reclaim:tasks:preview-retarget -- --input examples/task-retarget.example.json
 npm run reclaim:tasks:list -- --config config/reclaim.local.json
 npm run reclaim:tasks:filter -- --config config/reclaim.local.json --title-contains notes --event-category WORK
 npm run reclaim:tasks:export -- --config config/reclaim.local.json --event-category WORK --format csv
@@ -89,10 +91,11 @@ npm run reclaim:tasks:inspect-duplicates -- --config config/reclaim.local.json -
 npm run reclaim:tasks:validate-write-receipts -- --config config/reclaim.local.json --input examples/task-write-receipts.example.json
 npm run reclaim:tasks:create -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-write
 npm run reclaim:tasks:update -- --config config/reclaim.local.json --input examples/task-updates.example.json --confirm-write
+npm run reclaim:tasks:retarget -- --config config/reclaim.local.json --input examples/task-retarget.example.json --confirm-write
 npm run reclaim:tasks:cleanup-duplicates -- --config config/reclaim.local.json --input examples/tasks.example.json --confirm-reviewed-delete
 ```
 
-Task create, update, and duplicate-delete writes return `writeReceipts` for post-run audit. See [tasks.md](tasks.md) for the input shape, read filters, duplicate behavior, and receipt validation.
+Task create, update, retarget, and duplicate-delete writes return `writeReceipts` for post-run audit. See [tasks.md](tasks.md) for the input shape, read filters, duplicate behavior, retarget behavior, and receipt validation.
 
 ## Scheduling And Preview Commands
 

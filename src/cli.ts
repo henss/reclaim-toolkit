@@ -52,6 +52,8 @@ import {
 import { getReclaimOnboardingWizard } from "./onboarding.js";
 import {
   parseReclaimTaskPreviewInput,
+  parseReclaimTaskRetargetInput,
+  parseReclaimTaskRetargetPreviewInput,
   parseReclaimTaskUpdatePreviewInput,
   parseReclaimTaskInputs,
   parseReclaimTaskUpdates,
@@ -212,6 +214,9 @@ function buildPreviewCommandHandlers(): Record<string, CommandHandler> {
       const input = parseReclaimTaskUpdatePreviewInput(readJsonInput());
       printJson(tasks.previewUpdates(input.updates, input.currentTasks));
     },
+    "reclaim:tasks:preview-retarget": () => {
+      printJson(tasks.previewRetarget(parseReclaimTaskRetargetPreviewInput(readJsonInput())));
+    },
     "reclaim:scenarios:preview-weekly": () => {
       printJson(weeklyScenarioComposer.preview(parseReclaimWeeklyScenarioComposerInput(readJsonInput())));
     },
@@ -333,6 +338,11 @@ function buildTaskWriteCommandHandlers(): Record<string, CommandHandler> {
     },
     "reclaim:tasks:update": async () => {
       printJson(await tasks.update(loadClient(), parseReclaimTaskUpdates(readJsonInput()), {
+        confirmWrite: hasFlag("--confirm-write")
+      }));
+    },
+    "reclaim:tasks:retarget": async () => {
+      printJson(await tasks.retarget(loadClient(), parseReclaimTaskRetargetInput(readJsonInput()), {
         confirmWrite: hasFlag("--confirm-write")
       }));
     },

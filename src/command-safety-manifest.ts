@@ -167,6 +167,15 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
     includeByDefault: true
   },
   {
+    command: "reclaim:tasks:preview-retarget",
+    summary: "Preview date-shifted task retarget update payloads from synthetic snapshots.",
+    safetyClass: "local_preview",
+    currentMode: "stable",
+    requiresConfig: false,
+    groupId: "tasks",
+    includeByDefault: true
+  },
+  {
     command: "reclaim:scenarios:preview-weekly",
     summary: "Compose a synthetic weekly agenda from task, habit, focus, buffer, and meeting preview fixtures.",
     safetyClass: "local_preview",
@@ -227,6 +236,16 @@ export const reclaimCommandDefinitions: ReclaimCommandSafetyDefinition[] = [
   {
     command: "reclaim:tasks:update",
     summary: "Update tasks after explicit write confirmation.",
+    safetyClass: "confirmed_write",
+    currentMode: "live_write",
+    requiresConfig: true,
+    groupId: "tasks",
+    includeByDefault: true,
+    confirmationFlag: "--confirm-write"
+  },
+  {
+    command: "reclaim:tasks:retarget",
+    summary: "Retarget existing tasks by shifting reviewed date fields after explicit write confirmation.",
     safetyClass: "confirmed_write",
     currentMode: "live_write",
     requiresConfig: true,

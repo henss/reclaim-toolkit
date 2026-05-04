@@ -107,6 +107,24 @@ The confirmed command refuses to run without `--confirm-write`, sends one `PATCH
 
 Build-vs-buy note: task updates stay in this repo as a thin typed helper over the existing Reclaim client instead of adopting a broader SDK, CLI, connector, or workflow runner. The required behavior is only schema validation, synthetic preview output, explicit confirmation, and one `PATCH` request per reviewed task; broader automation would add dependency and public API surface without improving this bounded write guard.
 
+## Task Retarget Preview And Confirmed Apply
+
+When a set of existing tasks should move from one planning anchor to another, preview the derived date-shifted updates from a synthetic task snapshot:
+
+```bash
+npm run reclaim:tasks:preview-retarget -- --input examples/task-retarget.example.json
+```
+
+The fixture accepts `taskIds`, `sourceAnchor`, `targetAnchor`, optional literal `noteReplacements`, and preview-only `currentTasks`. The preview shifts each selected task's `due` and `snoozeUntil` values by the difference between the two anchors. `snoozeUntil` is shown as the public input field `startAfter` in derived updates and as `snoozeUntil` in the exact Reclaim patch payload.
+
+Apply a reviewed retarget only with a local config and explicit confirmation:
+
+```bash
+npm run reclaim:tasks:retarget -- --config config/reclaim.local.json --input examples/task-retarget.example.json --confirm-write
+```
+
+The confirmed command reads the current task list, derives the same bounded update payloads for the selected task ids, refuses to run without `--confirm-write`, and returns the same `writeReceipts` shape as `reclaim:tasks:update`. It does not complete, archive, delete, or create tasks.
+
 ## Mock API Demo Lab
 
 For credential-free CLI practice, run:

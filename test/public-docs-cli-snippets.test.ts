@@ -117,7 +117,7 @@ describe("public docs CLI snippets", () => {
         expect(configPath, `${entry.file}: ${entry.command}`).toBe(CONVENTIONAL_CONFIG_PATH);
       }
 
-      if (parsed.script === "reclaim:tasks:create") {
+      if (parsed.script === "reclaim:tasks:create" || parsed.script === "reclaim:tasks:retarget") {
         expect(parsed.args, `${entry.file}: ${entry.command}`).toContain("--confirm-write");
       }
 

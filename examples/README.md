@@ -41,6 +41,7 @@ Rules:
 - `support-bundle-replay.expected.json`: committed redacted support-bundle replay snapshot with a normalized `generatedAt` placeholder for stable diffs.
 - `task-write-receipts.example.json`: synthetic task write-receipt fixture for read-only remote-state validation.
 - `task-updates.example.json`: synthetic task update fixture for previewing and confirming safe task patches.
+- `task-retarget.example.json`: synthetic task retarget fixture for shifting existing task date fields from one planning anchor to another.
 - `reclaim-fixture-recording.example.json`: synthetic raw interaction log for the library-only fixture recorder and scrubber prototype.
 
 Run the public-boundary lint before committing example changes:
@@ -177,6 +178,15 @@ npm run reclaim:tasks:update -- --config config/reclaim.local.json --input examp
 ```
 
 The update fixture uses invented ids and generic task text. The preview output includes the exact patch payloads and local change summaries; the confirmed command returns write receipts.
+
+Preview a synthetic task retarget without credentials, then apply reviewed retargeted updates only with a local config and explicit confirmation:
+
+```bash
+npm run reclaim:tasks:preview-retarget -- --input examples/task-retarget.example.json
+npm run reclaim:tasks:retarget -- --config config/reclaim.local.json --input examples/task-retarget.example.json --confirm-write
+```
+
+The retarget fixture uses invented ids and generic task text. The preview shifts selected task date fields by the difference between two anchors; the confirmed command returns write receipts.
 
 To run the same task flow against a local synthetic mock instead of a Reclaim account, use:
 

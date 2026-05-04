@@ -141,6 +141,16 @@
       "requiresConfig": false
     },
     {
+      "command": "reclaim:tasks:preview-retarget",
+      "invocation": "npm run reclaim:tasks:preview-retarget",
+      "summary": "Preview date-shifted task retarget update payloads from synthetic snapshots.",
+      "groupId": "tasks",
+      "includeByDefault": true,
+      "safetyClass": "local_preview",
+      "currentMode": "stable",
+      "requiresConfig": false
+    },
+    {
       "command": "reclaim:scenarios:preview-weekly",
       "invocation": "npm run reclaim:scenarios:preview-weekly",
       "summary": "Compose a synthetic weekly agenda from task, habit, focus, buffer, and meeting preview fixtures.",
@@ -207,6 +217,17 @@
       "command": "reclaim:tasks:update",
       "invocation": "npm run reclaim:tasks:update",
       "summary": "Update tasks after explicit write confirmation.",
+      "groupId": "tasks",
+      "includeByDefault": true,
+      "safetyClass": "confirmed_write",
+      "currentMode": "live_write",
+      "requiresConfig": true,
+      "confirmationFlag": "--confirm-write"
+    },
+    {
+      "command": "reclaim:tasks:retarget",
+      "invocation": "npm run reclaim:tasks:retarget",
+      "summary": "Retarget existing tasks by shifting reviewed date fields after explicit write confirmation.",
       "groupId": "tasks",
       "includeByDefault": true,
       "safetyClass": "confirmed_write",

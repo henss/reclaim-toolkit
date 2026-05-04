@@ -1,0 +1,33 @@
+{
+  "taskIds": [
+    201,
+    202
+  ],
+  "sourceAnchor": "2026-05-03T00:00:00.000Z",
+  "targetAnchor": "2026-05-10T00:00:00.000Z",
+  "noteReplacements": [
+    {
+      "from": "2026-05-03",
+      "to": "2026-05-10"
+    }
+  ],
+  "currentTasks": [
+    {
+      "id": 201,
+      "title": "Prepare long-cook meal",
+      "notes": "Original target 2026-05-03.",
+      "eventCategory": "PERSONAL",
+      "timeSchemeId": "policy-personal",
+      "due": "2026-05-04T12:00:00.000Z",
+      "snoozeUntil": "2026-05-03T10:00:00.000Z"
+    },
+    {
+      "id": 202,
+      "title": "Check ingredients",
+      "notes": "Confirm pantry before 2026-05-03.",
+      "eventCategory": "PERSONAL",
+      "timeSchemeId": "policy-personal",
+      "due": "2026-05-03T18:00:00.000Z"
+    }
+  ]
+}
