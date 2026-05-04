@@ -13,6 +13,13 @@ Repo-local architecture, docs, and verification surfaces for reclaim-toolkit.
 - status: `active`
 - visibility: `public`
 
+## Drill Down
+
+### Components
+
+- `component:reclaim-toolkit-source`
+
+
 ## Relations
 
 ### `contains`
