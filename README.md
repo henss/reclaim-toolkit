@@ -104,6 +104,8 @@ For the currently exercised consumer install and TypeScript compile shapes, see 
 
 [docs/README.md](docs/README.md) is the documentation index. It groups the existing guides by user task, including getting started, write safety, scheduling previews, account inspection, examples, support workflows, and maintainer references.
 
+For the public scope boundary and review gates, see [docs/project-contract.md](docs/project-contract.md).
+
 ## Related Work
 
 See [docs/related-work.md](docs/related-work.md) for other unofficial Reclaim.ai SDKs, CLIs, automation nodes, MCP servers, and agent-facing tools.
