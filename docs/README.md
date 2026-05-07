@@ -42,7 +42,7 @@ This directory contains the detailed guides behind the short project README. Sta
 
 ## Maintainer And API Contract References
 
-- [Project contract](project-contract.md): public scope boundary, defaults, review gates, and non-goals.
+- [Project contract](project-contract.md): public scope boundary, agent contract sources, defaults, review gates, and non-goals.
 - [OpenAPI client generation](openapi-client-generation.md): published Reclaim OpenAPI surface, local sanitizing step, and generator commands.
 - [Mock read-only MCP](mock-readonly-mcp.md): fixture-backed read-only MCP prototype.
 - [Build-vs-buy workflows](build-vs-buy-workflows.md): public-safe comparison across workflow categories.

@@ -11,6 +11,12 @@
 - Use the generated OpenAPI declaration and public Reclaim documentation as contract evidence before adding or widening helper APIs.
 - Keep examples generic and synthetic. Do not commit account-specific ids, emails, task titles, policy titles, calendars, or private config.
 
+## Agent Contract Sources
+
+When an agent execution starts from a bounded runtime launch packet, that packet can be the authoritative task-detail surface for the active session even when no older project contract artifact exists in a private ledger. Treat the packet as the source for scope, deliverables, boundaries, and continuation rules, then verify any repo-local command or file path against this repository before acting on it.
+
+Do not copy private launch-packet paths, tracker internals, operator-specific policy, account data, scheduling ledgers, or approval reasoning into this public repo. If the packet points to a public-safe repo change, record only the generic convention or artifact that future users of the toolkit need.
+
 ## What This Repo Is Not
 
 This repo is not a standalone scheduling product, a private operations ledger, or a broad automation runtime. It should stay thin support infrastructure for downstream tools that need public-safe Reclaim previews, summaries, fixtures, and typed helper seams.
