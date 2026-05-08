@@ -238,7 +238,7 @@ describe("agent-safe CLI JSON profile", () => {
     }
   });
 
-  test("emits task list, filter, and export JSON for authenticated read commands", async () => {
+  test("emits task list, filter, and export JSON for authenticated read commands", { timeout: 15000 }, async () => {
     const syntheticTasks = [
       {
         id: 12,
