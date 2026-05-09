@@ -33,6 +33,7 @@ This file is the repo-local agent entrypoint. It is generated from the shared po
 - For repo-internal generated artifacts primarily consumed by agents, prefer sparse structured retrieval over human-oriented narrative, keep stable headings used by tooling, and omit empty or non-material sections.
 - For reusable tooling, automation, parser/renderers, integration glue, dependency tooling, or repeated workflow support, treat the best-of-breed registry as the first shared read path and then check the repo-local adoption overlay before building locally.
 - Before adding non-trivial reusable tooling or package-like infrastructure, check maintained third-party options that fit this repo's trust, license, and integration boundary, or record why the work is one-off or local ownership is cheaper.
+- In operational UIs and agent review surfaces, avoid adjacent duplicate labels, badges, metadata, or provenance that repeat the same concept. Keep visible text focused on attention, action boundaries, and distinct evidence.
 - Run the narrowest repo-local verification command that defends the change before stopping, or record the exact command and blocker if verification cannot pass safely.
 
 <!-- [LOCAL_START] -->

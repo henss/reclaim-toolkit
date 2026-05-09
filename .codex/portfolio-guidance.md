@@ -36,6 +36,7 @@ This file is a self-contained shared standard for agents working directly in thi
 - For repo-internal generated artifacts primarily consumed by agents, prefer sparse structured retrieval over human-oriented narrative, keep stable headings used by tooling, and omit empty or non-material sections.
 - For reusable tooling, automation, shared helpers, parser/renderers, integration glue, dependency tooling, or repeated workflow support, first check `registry/solutions/` plus the repo adoption overlay. Record exceptions explicitly instead of silently bypassing the shared candidate path.
 - Before adding reusable tooling, shared helpers, workflow automation, connector clients, parser/renderers, supply-chain tooling, context packaging, or package-like code, check maintained third-party options or record why the work is one-off or local ownership is cheaper.
+- When changing UI, remove adjacent redundant information instead of restyling it. Do not show the same concept in a section title, badge, field label, metadata row, and provenance line unless each instance supports a different decision. Optimize for scan clarity, action relevance, and lower cognitive load.
 - Run the narrowest repo-local verification command that defends the change. If verification cannot pass because of unrelated dirty state, existing failures, or missing external access, record the exact command and blocker.
 
 <!-- [LOCAL_START] -->
