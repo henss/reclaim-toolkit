@@ -6,7 +6,7 @@ This file is the repo-local agent entrypoint. It is generated from the shared po
 
 ## Required Agent Behavior
 
-- Before non-trivial implementation, read this file and `.codex/portfolio-guidance.md`.
+- Before non-trivial implementation, read this file; open `.codex/portfolio-guidance.md` only when this file or the local task points you to the detailed shared rules.
 - Prefer repo-local conventions and verification commands over generic assumptions.
 - Before non-trivial TypeScript edits, run `pnpm check:agent-surface:preedit -- <candidate files>` when that script exists.
 - Prefer named exports and type-only imports, and run the narrowest repo-local lint/typecheck/test command before stopping.
