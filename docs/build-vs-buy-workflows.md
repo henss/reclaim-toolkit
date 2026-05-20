@@ -1,8 +1,8 @@
 # Build Vs Buy For Reclaim Toolkit Workflows
 
-This document is a proposal artifact for OPS-1742. It compares the current public-safe workflow surfaces in `reclaim-toolkit` against existing external options and recommends where this repo should keep building, where it should adopt an external path, and where it should explicitly not advance a public workflow.
+This document is a proposal artifact. It compares the current public-safe workflow surfaces in `reclaim-toolkit` against existing external options and recommends where this repo should keep building, where it should adopt an external path, and where it should explicitly not advance a public workflow.
 
-The goal is not to create a standalone product roadmap for this repo. The goal is to keep `reclaim-toolkit` useful as thin support infrastructure for higher-priority Stefan-owned tools and initiatives.
+The goal is not to create a standalone product roadmap for this repo. The goal is to keep `reclaim-toolkit` useful as thin support infrastructure for higher-priority private tools and initiatives.
 
 ## Decision Summary
 

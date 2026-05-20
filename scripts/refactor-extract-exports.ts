@@ -1,4 +1,4 @@
-// Managed by llm-orchestrator TypeScript agent-surface standard.
+// Managed TypeScript agent-surface standard.
 import fs from "node:fs";
 import path from "node:path";
 import { Node, Project, SyntaxKind, type SourceFile } from "ts-morph";

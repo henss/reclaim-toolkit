@@ -55,7 +55,7 @@ See [safe write expansion: first proof](write-expansion-first-proof.md) and [hab
 
 ## Program Status
 
-**Backlog.** No active Stefan-approved write-expansion need exists. The explanation receipts already added to Habit, Focus, and Buffer preview commands satisfy the current signal requirement without requiring a live write gate decision.
+**Backlog.** No active approved write-expansion need exists. The explanation receipts already added to Habit, Focus, and Buffer preview commands satisfy the current signal requirement without requiring a live write gate decision.
 
 The program should remain in backlog until:
 

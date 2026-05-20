@@ -1,4 +1,4 @@
-// Managed by llm-orchestrator TypeScript agent-surface standard.
+// Managed TypeScript agent-surface standard.
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";

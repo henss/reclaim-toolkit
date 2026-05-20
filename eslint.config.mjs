@@ -1,4 +1,4 @@
-// Managed by llm-orchestrator TypeScript agent-surface standard.
+// Managed TypeScript agent-surface standard.
 import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
