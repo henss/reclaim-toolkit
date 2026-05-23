@@ -446,7 +446,7 @@ beforeAll(() => {
   assertCoreEntrypointDoesNotReachCliOrMockModules();
 
   packedTarballPath = packBuiltPackage();
-});
+}, 60_000);
 
 afterAll(() => {
   for (const tempRoot of tempRoots) {

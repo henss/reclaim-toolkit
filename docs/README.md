@@ -52,5 +52,5 @@ This directory contains the detailed guides behind the short project README. Sta
 - [Scheduling surface first proof](scheduling-surface-first-proof.md): why scheduling helpers remain preview-only or read-only.
 - [Scheduling surface discovery brief](scheduling-surface-expansion-discovery-brief.md): scheduling expansion options and governing choice.
 - [Freshness signals spike](freshness-signals-spike.md): webhook-versus-snapshot freshness notes and scenario matrix.
-- [Roadmap](roadmap.md): high-level future direction.
+- [Roadmap](roadmap.md): conditional surface candidates and review boundaries, not a standalone product backlog.
 - [Agent-surface pre-edit check](agent-surface-preedit.md): local guard for keeping TypeScript surfaces small.

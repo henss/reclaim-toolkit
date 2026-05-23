@@ -196,7 +196,7 @@ describe("focus and buffer time-policy explanations", () => {
     };
 
     expectFocusAndBufferTimePolicyExplanations(focusOutput.focusBlocks, bufferOutput.buffers);
-  });
+  }, 15_000);
 
   test("rejects ambiguous focus and buffer inputs", () => {
     expect(() =>

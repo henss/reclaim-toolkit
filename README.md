@@ -4,6 +4,10 @@ TypeScript utilities and an npm-first CLI for working with Reclaim.ai APIs.
 
 The toolkit is designed for cautious automation: local preview commands work with synthetic fixtures, authenticated read commands require a private config file, and live task writes require explicit confirmation flags.
 
+The repo stays intentionally narrow. It is support infrastructure for downstream tools that need public-safe Reclaim previews, summaries, fixtures, and thin TypeScript helper seams, not a standalone scheduling product or a broad automation runtime.
+
+Changes that would widen live-write scope, public API commitments, or release and distribution posture still stop for explicit review. For the public scope boundary and review gates, see [docs/project-contract.md](docs/project-contract.md).
+
 ## Install
 
 ```bash
@@ -103,8 +107,6 @@ For the currently exercised consumer install and TypeScript compile shapes, see 
 ## Documentation
 
 [docs/README.md](docs/README.md) is the documentation index. It groups the existing guides by user task, including getting started, write safety, scheduling previews, account inspection, examples, support workflows, and maintainer references.
-
-For the public scope boundary and review gates, see [docs/project-contract.md](docs/project-contract.md).
 
 ## Related Work
 
