@@ -9,3 +9,8 @@ if git diff --name-only "$surface_base_ref"..HEAD | grep -Eq '\.(ts|js|mjs|cjs)$
 fi
 echo "pre-push: running typecheck when present"
 npm run --if-present typecheck
+
+# >>> agent-boundary commit gate (classified) — added 2026-06-01 >>>
+echo "pre-push: running agent-boundary classified-content gate"
+PRE_COMMIT_REMOTE_URL="${2:-}" node ../agent-boundary/scripts/boundary-scan.mjs classified
+# <<< agent-boundary commit gate <<<

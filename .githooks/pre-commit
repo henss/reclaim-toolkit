@@ -16,3 +16,8 @@ if has_eslint_repo_check; then
   echo "pre-commit: running repo ESLint check"
   run_eslint_repo_check
 fi
+
+# >>> agent-boundary commit gate (secrets) — added 2026-06-01 >>>
+echo "pre-commit: running agent-boundary secret scan"
+node ../agent-boundary/scripts/boundary-scan.mjs secrets
+# <<< agent-boundary commit gate <<<
